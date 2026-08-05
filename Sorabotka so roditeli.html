@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Годишна програма за работа со родители</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f0f4fa;
+            padding: 2rem 1.5rem;
+            color: #0b1a33;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            padding: 2.5rem 3rem 3rem;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #0b1a33;
+            text-transform: uppercase;
+        }
+
+        .header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2563eb;
+            margin-top: 0.2rem;
+            letter-spacing: 0.5px;
+        }
+
+        .header .year {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #475569;
+            background: #eef2f6;
+            display: inline-block;
+            padding: 0.2rem 1.8rem;
+            border-radius: 40px;
+            margin-top: 0.3rem;
+        }
+
+        .header .teacher {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #0b1a33;
+            margin-top: 0.5rem;
+            background: #dbeafe;
+            display: inline-block;
+            padding: 0.2rem 1.8rem;
+            border-radius: 40px;
+        }
+
+        .header .grade-selector {
+            margin-top: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .header .grade-selector label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
+        .header .grade-selector select {
+            padding: 0.4rem 2rem 0.4rem 1rem;
+            border-radius: 60px;
+            border: 2px solid #dce1e9;
+            background: #f8fafc;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0b1a33;
+            cursor: pointer;
+            transition: 0.2s;
+            min-width: 100px;
+        }
+
+        .header .grade-selector select:focus {
+            border-color: #2563eb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            background-color: #ffffff;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            padding: 12px 20px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-success {
+            background: #22c55e;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #16a34a;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .btn-info {
+            background: #8b5cf6;
+            color: white;
+        }
+        .btn-info:hover {
+            background: #7c3aed;
+        }
+
+        .statistika {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-karticka {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-karticka .broj {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+        .stat-karticka .label {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .intro {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid #2563eb;
+            line-height: 1.7;
+            color: #1e293b;
+            font-size: 0.98rem;
+        }
+
+        .intro strong {
+            color: #0b1a33;
+        }
+
+        .types-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0 2rem;
+        }
+
+        .type-card {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            transition: 0.15s;
+            cursor: pointer;
+        }
+
+        .type-card:hover {
+            border-color: #2563eb;
+            background: #f0f7ff;
+        }
+
+        .type-card .num {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .type-card .label {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #0b1a33;
+            margin-top: 0.2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0b1a33;
+            border-left: 5px solid #2563eb;
+            padding-left: 1rem;
+            margin: 2rem 0 1.2rem;
+        }
+
+        .section-title .sub {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #64748b;
+            display: block;
+            margin-top: 0.1rem;
+        }
+
+        .meeting-card {
+            background: #fafcff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.2rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            transition: 0.15s;
+        }
+
+        .meeting-card:hover {
+            border-color: #b9c8e0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .meeting-card .meeting-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+            border-bottom: 2px solid #e9edf2;
+            padding-bottom: 0.6rem;
+        }
+
+        .meeting-card .meeting-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0b1a33;
+        }
+
+        .meeting-card .meeting-title .ordinal {
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        .meeting-card .meeting-date {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #2563eb;
+            background: #dbeafe;
+            padding: 0.15rem 1rem;
+            border-radius: 30px;
+            white-space: nowrap;
+        }
+
+        .meeting-card .meeting-goal {
+            font-size: 0.98rem;
+            color: #1e293b;
+            margin-bottom: 0.8rem;
+            padding: 0.4rem 0.8rem;
+            background: #f1f5f9;
+            border-radius: 0.6rem;
+            border-left: 3px solid #22c55e;
+        }
+
+        .meeting-card .meeting-goal strong {
+            color: #0b1a33;
+        }
+
+        .meeting-card .agenda {
+            margin: 0.6rem 0 0.8rem 1.2rem;
+            list-style: none;
+            padding: 0;
+        }
+
+        .meeting-card .agenda li {
+            padding: 0.2rem 0 0.2rem 1.5rem;
+            position: relative;
+            font-size: 0.95rem;
+            color: #1e293b;
+        }
+
+        .meeting-card .agenda li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        .meeting-card .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px dashed #dce1e9;
+        }
+
+        .meeting-card .meta-item {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .meeting-card .meta-item strong {
+            color: #0b1a33;
+            font-weight: 600;
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #64748b;
+        }
+
+        .meeting-card .meta-item .value {
+            font-size: 0.95rem;
+            color: #1e293b;
+        }
+
+        .zapisnik-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #e9edf2;
+        }
+
+        .zapisnik-section .zapisnik-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .zapisnik-section .zapisnik-header h4 {
+            font-size: 1rem;
+            color: #0b1a33;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .zapisnik-content {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 3px solid #2563eb;
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+            color: #1e293b;
+        }
+
+        .zapisnik-content.empty {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .group-meeting,
+        .individual-meeting {
+            background: #fafcff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.2rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .group-meeting .gm-title,
+        .individual-meeting .im-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0b1a33;
+            margin-bottom: 0.5rem;
+        }
+
+        .group-meeting .gm-title .badge,
+        .individual-meeting .im-title .badge {
+            background: #2563eb;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .group-meeting p,
+        .individual-meeting p {
+            color: #1e293b;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .group-meeting ul,
+        .individual-meeting ul {
+            margin: 0.5rem 0 0 1.5rem;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        .group-meeting ul li,
+        .individual-meeting ul li {
+            padding: 0.15rem 0;
+        }
+
+        .group-meeting .meta-grid,
+        .individual-meeting .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px dashed #dce1e9;
+        }
+
+        .group-meeting .meta-item,
+        .individual-meeting .meta-item {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .group-meeting .meta-item strong,
+        .individual-meeting .meta-item strong {
+            color: #0b1a33;
+            font-weight: 600;
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #64748b;
+        }
+
+        .footer {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e9edf2;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer .teacher-sign {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0b1a33;
+        }
+
+        .footer .teacher-sign span {
+            display: block;
+            font-weight: 400;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .footer .note {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-align: right;
+            font-style: italic;
+        }
+
+        .footer .print-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .footer .print-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal h3 {
+            margin-bottom: 15px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal .form-group {
+            margin-bottom: 12px;
+        }
+        .modal .form-group label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #334155;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .modal .form-group input,
+        .modal .form-group select,
+        .modal .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .modal .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        .modal .form-group input:focus,
+        .modal .form-group select:focus,
+        .modal .form-group textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e293b;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 4000;
+        }
+        .toast.show {
+            display: block;
+            animation: fadeInUp 0.3s ease;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 850px) {
+            .container {
+                padding: 1.5rem 1.2rem;
+            }
+            .types-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 0.6rem;
+            }
+            .meeting-card .meta-grid,
+            .group-meeting .meta-grid,
+            .individual-meeting .meta-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .meeting-card .meeting-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 550px) {
+            body {
+                padding: 1rem 0.8rem;
+            }
+            .container {
+                padding: 1rem 0.8rem;
+                border-radius: 1rem;
+            }
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            .header h2 {
+                font-size: 1rem;
+            }
+            .types-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            .meeting-card {
+                padding: 1rem 1.2rem;
+            }
+            .meeting-card .meta-grid,
+            .group-meeting .meta-grid,
+            .individual-meeting .meta-grid {
+                grid-template-columns: 1fr;
+            }
+            .group-meeting,
+            .individual-meeting {
+                padding: 1rem 1.2rem;
+            }
+            .footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .footer .note {
+                text-align: left;
+            }
+            .footer .print-btn {
+                width: 100%;
+                text-align: center;
+            }
+            .statistika {
+                grid-template-columns: 1fr 1fr;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0.5rem;
+            }
+            .container {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                border-radius: 0.5rem;
+                padding: 1.5rem;
+            }
+            .header .grade-selector {
+                display: none !important;
+            }
+            .footer .print-btn {
+                display: none !important;
+            }
+            .toolbar {
+                display: none !important;
+            }
+            .statistika {
+                display: none !important;
+            }
+            .meeting-card:hover {
+                box-shadow: none;
+                transform: none;
+            }
+            .type-card:hover {
+                border-color: #e2e8f0;
+                background: #f8fafc;
+            }
+            .meeting-card {
+                break-inside: avoid;
+            }
+            .zapisnik-content {
+                max-height: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="header">
+            <h1>Годишна програма</h1>
+            <h2>за работа со родители</h2>
+            <div class="year" id="schoolYearDisplay">2026/2027</div>
+            <div class="teacher">👨‍🏫 Класен раководител: проф. Решат Маловски</div>
+
+            <div class="grade-selector">
+                <label for="gradeSelect">📚 Избор на година:</label>
+                <select id="gradeSelect">
+                    <option value="I">I година</option>
+                    <option value="II">II година</option>
+                    <option value="III">III година</option>
+                    <option value="IV" selected>IV година</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+            <div style="font-weight:600;font-size:16px;">📁 Записници од родителски средби</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="otvoriZapisnik(1)">📝 Записник 1</button>
+                <button class="btn btn-primary" onclick="otvoriZapisnik(2)">📝 Записник 2</button>
+                <button class="btn btn-primary" onclick="otvoriZapisnik(3)">📝 Записник 3</button>
+                <button class="btn btn-primary" onclick="otvoriZapisnik(4)">📝 Записник 4</button>
+                <button class="btn btn-danger" onclick="izbrisiSite()">🗑 Избриши сите</button>
+            </div>
+        </div>
+
+        <!-- STATISTICS -->
+        <div class="statistika">
+            <div class="stat-karticka">
+                <div class="broj" id="brojZapisnici">0</div>
+                <div class="label">Вкупно записници</div>
+            </div>
+            <div class="stat-karticka">
+                <div class="broj" id="brojSredbi">4</div>
+                <div class="label">Планирани средби</div>
+            </div>
+            <div class="stat-karticka">
+                <div class="broj" id="brojRealizirani">0</div>
+                <div class="label">Реализирани средби</div>
+            </div>
+        </div>
+
+        <!-- INTRO -->
+        <div class="intro">
+            <p><strong>Соработка со родители</strong></p>
+            <p>
+                Вклучувањето на родителите во работата на училиштето е од огромна важност како за учениците така и за училиштето. Инволвирањето на родителите во воспитниот образовен процес, неминовно ќе доведе до зголемена меѓусебна помош, постигнување на повисоки резултати, квалитетно решавање на тековните и заедничките проблеми, размена на искуства и идеи и подобрување на условите за работа во училиштето.
+            </p>
+            <p style="margin-top:0.5rem;">
+                Во текот на оваа учебна година се планирани да се одржат <strong>4 општи родителски средби</strong>, доколку има потреба ќе се одржуваат групни средби и индивидуални средби со родителите надвор од предвидените временски рамки.
+            </p>
+        </div>
+
+        <!-- TYPES -->
+        <div class="types-grid">
+            <div class="type-card">
+                <div class="num">I</div>
+                <div class="label">Општи родителски средби</div>
+            </div>
+            <div class="type-card">
+                <div class="num">II</div>
+                <div class="label">Групни родителски средби</div>
+            </div>
+            <div class="type-card">
+                <div class="num">III</div>
+                <div class="label">Индивидуални родителски средби</div>
+            </div>
+        </div>
+
+        <!-- I. ОПШТИ РОДИТЕЛСКИ СРЕДБИ -->
+        <div class="section-title">
+            I. Општи родителски средби
+            <span class="sub">4 средби во текот на учебната година</span>
+        </div>
+
+        <!-- 1-ва средба -->
+        <div class="meeting-card" id="meeting1">
+            <div class="meeting-header">
+                <div class="meeting-title"><span class="ordinal">Прва</span> родителска средба</div>
+                <div class="meeting-date">📅 26.09.2026</div>
+            </div>
+            <div class="meeting-goal">
+                <strong>🎯 Главна цел:</strong> Запознавање на родителите со наставните планови и програми предвидени за учениците, правилникот за однесување на учениците, правилникот за регулирање на изостаноците и начинот на известување за напредокот на нивните деца.
+            </div>
+            <div class="agenda">
+                <li>Анализа на успехот, поведението и изостаноците на учениците од претходната година</li>
+                <li>Известување на родителите за наставните програми и планови предвидени за тековната година</li>
+                <li>Известување за правилникот за регулирање на изостаноците на учениците</li>
+                <li>Известување за начинот на известување на родителите за напредокот</li>
+                <li>Бесплатни информации за учениците</li>
+                <li>Размена на информации за контакт (меил, телефон)</li>
+            </div>
+            <div class="meta-grid">
+                <div class="meta-item"><strong>Форми</strong><span class="value">разговор, дискусија, групна дискусија</span></div>
+                <div class="meta-item"><strong>Ресурси</strong><span class="value">правилник за однесување, правилник за изостаноци, распоред на наставни предмети, евидентен лист</span></div>
+                <div class="meta-item"><strong>Очекувани резултати</strong><span class="value">информирани родители за предметите, начинот на контакт, информирање за напредокот</span></div>
+            </div>
+            <div class="zapisnik-section">
+                <div class="zapisnik-header">
+                    <h4>📝 Записник од средбата</h4>
+                    <button class="btn btn-success" onclick="otvoriZapisnik(1)">✏️ Внеси/Уреди записник</button>
+                </div>
+                <div id="zapisnik1" class="zapisnik-content empty">Нема внесен записник за оваа средба.</div>
+            </div>
+        </div>
+
+        <!-- 2-ра средба -->
+        <div class="meeting-card" id="meeting2">
+            <div class="meeting-header">
+                <div class="meeting-title"><span class="ordinal">Втора</span> родителска средба</div>
+                <div class="meeting-date">📅 14.11.2026</div>
+            </div>
+            <div class="meeting-goal">
+                <strong>🎯 Главна цел:</strong> Родителите да бидат навремено информирани за активностите на училиштето како и за напредокот на нивните деца во воспитно образовниот процес.
+            </div>
+            <div class="agenda">
+                <li>Соопштување на успехот на учениците постигнат во првото тромесечие</li>
+                <li>Известување за реализација на наставниот план во изминатиот период</li>
+                <li>Тековни прашања</li>
+            </div>
+            <div class="meta-grid">
+                <div class="meta-item"><strong>Форми</strong><span class="value">разговор, дискусија, групна дискусија</span></div>
+                <div class="meta-item"><strong>Ресурси</strong><span class="value">утврдени состојби, податоци од советот, разни податоци и извештаи</span></div>
+                <div class="meta-item"><strong>Очекувани исходи</strong><span class="value">дискусија за постигнатиот успех на учениците во првото тромесечие</span></div>
+            </div>
+            <div class="zapisnik-section">
+                <div class="zapisnik-header">
+                    <h4>📝 Записник од средбата</h4>
+                    <button class="btn btn-success" onclick="otvoriZapisnik(2)">✏️ Внеси/Уреди записник</button>
+                </div>
+                <div id="zapisnik2" class="zapisnik-content empty">Нема внесен записник за оваа средба.</div>
+            </div>
+        </div>
+
+        <!-- 3-та средба -->
+        <div class="meeting-card" id="meeting3">
+            <div class="meeting-header">
+                <div class="meeting-title"><span class="ordinal">Трета</span> родителска средба</div>
+                <div class="meeting-date">📅 16.01.2027</div>
+            </div>
+            <div class="meeting-goal">
+                <strong>🎯 Главна цел:</strong> Родителите да бидат навремено информирани за активностите на училиштето како и за напредокот на нивните деца.
+            </div>
+            <div class="agenda">
+                <li>Соопштување на успехот, поведението и изостаноците на учениците постигнати во првото полугодие</li>
+                <li>Известување на родителите за актуелности, проекти и други тековни активности</li>
+                <li>Тековни прашања</li>
+            </div>
+            <div class="meta-grid">
+                <div class="meta-item"><strong>Форми</strong><span class="value">разговор, дискусија, групна дискусија</span></div>
+                <div class="meta-item"><strong>Ресурси</strong><span class="value">евидентен лист за успех, извештај за успех на ниво на клас, статистички податоци</span></div>
+                <div class="meta-item"><strong>Очекувани исходи</strong><span class="value">информирани родители за напредокот, обработка за подобрување на успехот</span></div>
+            </div>
+            <div class="zapisnik-section">
+                <div class="zapisnik-header">
+                    <h4>📝 Записник од средбата</h4>
+                    <button class="btn btn-success" onclick="otvoriZapisnik(3)">✏️ Внеси/Уреди записник</button>
+                </div>
+                <div id="zapisnik3" class="zapisnik-content empty">Нема внесен записник за оваа средба.</div>
+            </div>
+        </div>
+
+        <!-- 4-та средба -->
+        <div class="meeting-card" id="meeting4">
+            <div class="meeting-header">
+                <div class="meeting-title"><span class="ordinal">Четврта</span> родителска средба</div>
+                <div class="meeting-date">📅 17.04.2027</div>
+            </div>
+            <div class="meeting-goal">
+                <strong>🎯 Главна цел:</strong> Родителите да бидат навремено информирани за активностите на училиштето како и за напредокот на нивните деца.
+            </div>
+            <div class="agenda">
+                <li>Соопштување на успехот на учениците постигнат во трето тромесечие</li>
+                <li>Известување за реализација на наставниот план во изминатиот период</li>
+                <li>Тековни прашања (подготовки за завршни испити, избор на факултет и сл.)</li>
+            </div>
+            <div class="meta-grid">
+                <div class="meta-item"><strong>Форми</strong><span class="value">разговор, дискусија, групна дискусија</span></div>
+                <div class="meta-item"><strong>Ресурси</strong><span class="value">утврдени состојби, податоци од советот, разни податоци и извештаи</span></div>
+                <div class="meta-item"><strong>Очекувани исходи</strong><span class="value">дискусија за постигнатиот успех на учениците од третото тромесечие</span></div>
+            </div>
+            <div class="zapisnik-section">
+                <div class="zapisnik-header">
+                    <h4>📝 Записник од средбата</h4>
+                    <button class="btn btn-success" onclick="otvoriZapisnik(4)">✏️ Внеси/Уреди записник</button>
+                </div>
+                <div id="zapisnik4" class="zapisnik-content empty">Нема внесен записник за оваа средба.</div>
+            </div>
+        </div>
+
+        <!-- II. ГРУПНИ РОДИТЕЛСКИ СРЕДБИ -->
+        <div class="section-title" style="margin-top:2.5rem;">
+            II. Групни родителски средби
+            <span class="sub">по потреба во текот на целата учебна година</span>
+        </div>
+
+        <div class="group-meeting">
+            <div class="gm-title">
+                Групни родителски средби
+                <span class="badge">по потреба</span>
+            </div>
+            <p>
+                <strong>Главна цел:</strong> Родителите да бидат навремено информирани за активностите на училиштето како и за напредокот на нивните деца.
+            </p>
+            <p style="margin-top:0.5rem;">
+                Групните средби позитивно влијаат на учењето на учениците, нивната редовност или решавање на тековни проблеми, а со тоа постигнува подобар успех и подобро однесување.
+            </p>
+            <div class="meta-grid">
+                <div class="meta-item"><strong>Форми</strong><span class="value">разговор, дискусија</span></div>
+                <div class="meta-item"><strong>Ресурси</strong><span class="value">утврдени состојби, податоци од советот, разговор со други професори</span></div>
+                <div class="meta-item"><strong>Очекувани исходи</strong><span class="value">подобрување на успехот и дисциплината на ученикот</span></div>
+            </div>
+        </div>
+
+        <!-- III. ИНДИВИДУАЛНИ РОДИТЕЛСКИ СРЕДБИ -->
+        <div class="section-title" style="margin-top:2.5rem;">
+            III. Индивидуални родителски средби
+            <span class="sub">во текот на целата година</span>
+        </div>
+
+        <div class="individual-meeting">
+            <div class="im-title">
+                Индивидуални родителски средби
+                <span class="badge">по потреба</span>
+            </div>
+            <p>
+                <strong>Главна цел:</strong> Родителите да бидат навремено информирани за активностите на училиштето како и за напредокот на нивните деца.
+            </p>
+            <p style="margin-top:0.5rem;">
+                Индивидуалните средби позитивно влијаат на учењето на учениците, а со тоа се постигнува подобар успех и подобро однесување.
+            </p>
+            <div class="meta-grid">
+                <div class="meta-item"><strong>Форми</strong><span class="value">разговор, дискусија</span></div>
+                <div class="meta-item"><strong>Ресурси</strong><span class="value">утврдени состојби, податоци од советот, разни податоци и извештаи</span></div>
+                <div class="meta-item"><strong>Очекувани исходи</strong><span class="value">подобрување на успехот и дисциплината на ученикот</span></div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <div class="teacher-sign">
+                Класен раководител:
+                <span>проф. Решат Маловски</span>
+            </div>
+            <div style="display:flex; gap:0.8rem; align-items:center; flex-wrap:wrap;">
+                <div class="note" id="footerNote">
+                    📅 Програмата е изработена за учебната 2026/2027 година
+                </div>
+                <button class="print-btn" onclick="window.print()">🖨️ Печати</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL ZA ZAPISNIK -->
+    <div class="modal-overlay" id="modalZapisnik">
+        <div class="modal">
+            <h3>📝 Внеси записник од родителска средба</h3>
+            <div class="form-group">
+                <label>Наслов на средбата</label>
+                <input type="text" id="zapisnikNaslov" readonly>
+            </div>
+            <div class="form-group">
+                <label>Датум на одржување</label>
+                <input type="text" id="zapisnikDatum" readonly>
+            </div>
+            <div class="form-group">
+                <label>Записник</label>
+                <textarea id="zapisnikTekst" placeholder="Внесете детален записник од одржаната родителска средба..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Присутни родители (оддели/имиња, одвоени со запирка)</label>
+                <input type="text" id="zapisnikPrisotni" placeholder="Пример: 3-1, 3-2, 4-1, Ана Петрова">
+            </div>
+            <div class="form-group">
+                <label>Заклучоци и договори</label>
+                <textarea id="zapisnikZaklucci" placeholder="Внесете ги донесените заклучоци и договори..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-success" onclick="zapisiZapisnik()">💾 Зачувај записник</button>
+                <button class="btn btn-danger" onclick="zatvoriModal()">Откажи</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ─── STORAGE ───────────────────────────────────────────────────
+        const STORAGE_KEY = 'roditelski_zapisnici';
+
+        function getZapisnici() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function setZapisnici(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // ─── ПОМОШНИ ──────────────────────────────────────────────────
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function escHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // ─── ПОДАТОЦИ ЗА СРЕДБИТЕ ─────────────────────────────────────
+        const meetingData = {
+            1: { naslov: 'Прва родителска средба', datum: '26.09.2026' },
+            2: { naslov: 'Втора родителска средба', datum: '14.11.2026' },
+            3: { naslov: 'Трета родителска средба', datum: '16.01.2027' },
+            4: { naslov: 'Четврта родителска средба', datum: '17.04.2027' }
+        };
+
+        // ─── УЧЕБНА ГОДИНА ────────────────────────────────────────────
+        function getSchoolYear() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = now.getMonth();
+            if (m >= 6) {
+                return y + '/' + (y + 1);
+            } else {
+                return (y - 1) + '/' + y;
+            }
+        }
+
+        // ─── ФУНКЦИЈА ЗА ОТВОРАЊЕ ЗАПИСНИК ───────────────────────────
+        function otvoriZapisnik(broj) {
+            // Проверка дали функцијата е повикана
+            console.log('Отворање записник за средба:', broj);
+
+            if (!meetingData[broj]) {
+                alert('Грешка: не постои средба со број ' + broj);
+                showToast('❌ Грешка: не постои средба со број ' + broj);
+                return;
+            }
+
+            const modal = document.getElementById('modalZapisnik');
+            if (!modal) {
+                alert('Грешка: модалот не е пронајден');
+                return;
+            }
+
+            const key = 'sredba' + broj;
+            const data = getZapisnici();
+            const existing = data[key] || {};
+
+            document.getElementById('zapisnikNaslov').value = meetingData[broj].naslov;
+            document.getElementById('zapisnikDatum').value = meetingData[broj].datum;
+            document.getElementById('zapisnikTekst').value = existing.tekst || '';
+            document.getElementById('zapisnikPrisotni').value = existing.prisotni || '';
+            document.getElementById('zapisnikZaklucci').value = existing.zaklucci || '';
+
+            // Зачувај го клучот за подоцна
+            modal.dataset.currentKey = key;
+            modal.classList.add('active');
+
+            // Ако е веќе активен, ensure дека е видлив
+            modal.style.display = 'flex';
+        }
+
+        // ─── ФУНКЦИЈА ЗА ЗАТВОРАЊЕ МОДАЛ ─────────────────────────────
+        function zatvoriModal() {
+            const modal = document.getElementById('modalZapisnik');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+            }
+        }
+
+        // ─── ФУНКЦИЈА ЗА ЗАПИШИ ЗАПИСНИК ─────────────────────────────
+        function zapisiZapisnik() {
+            const modal = document.getElementById('modalZapisnik');
+            const key = modal.dataset.currentKey;
+
+            if (!key) {
+                showToast('❌ Грешка: не е избрана средба');
+                return;
+            }
+
+            const tekst = document.getElementById('zapisnikTekst').value.trim();
+            const prisotni = document.getElementById('zapisnikPrisotni').value.trim();
+            const zaklucci = document.getElementById('zapisnikZaklucci').value.trim();
+
+            if (!tekst) {
+                showToast('❌ Ве молиме внесете текст на записникот');
+                return;
+            }
+
+            const data = getZapisnici();
+            data[key] = {
+                tekst: tekst,
+                prisotni: prisotni || 'Не се евидентирани',
+                zaklucci: zaklucci || 'Нема донесени заклучоци',
+                realizirano: true,
+                datum: document.getElementById('zapisnikDatum').value
+            };
+
+            setZapisnici(data);
+            ucitajZapisnici();
+            zatvoriModal();
+            showToast('✅ Записникот е успешно зачуван');
+        }
+
+        // ─── ВЧИТАЈ ЗАПИСНИЦИ ─────────────────────────────────────────
+        function ucitajZapisnici() {
+            const data = getZapisnici();
+            let brojZapisnici = 0;
+            let brojRealizirani = 0;
+
+            for (let i = 1; i <= 4; i++) {
+                const key = 'sredba' + i;
+                const container = document.getElementById('zapisnik' + i);
+                if (data[key] && data[key].tekst) {
+                    const z = data[key];
+                    let html = '';
+                    if (z.tekst) {
+                        html += '<div style="margin-bottom:8px;">' + escHtml(z.tekst) + '</div>';
+                    }
+                    if (z.prisotni) {
+                        html += '<div><strong>👥 Присутни:</strong> ' + escHtml(z.prisotni) + '</div>';
+                    }
+                    if (z.zaklucci) {
+                        html += '<div><strong>📋 Заклучоци:</strong> ' + escHtml(z.zaklucci) + '</div>';
+                    }
+                    container.innerHTML = html;
+                    container.className = 'zapisnik-content';
+                    brojZapisnici++;
+                    if (z.realizirano !== false) {
+                        brojRealizirani++;
+                    }
+                } else {
+                    container.innerHTML = 'Нема внесен записник за оваа средба.';
+                    container.className = 'zapisnik-content empty';
+                }
+            }
+
+            document.getElementById('brojZapisnici').textContent = brojZapisnici;
+            document.getElementById('brojRealizirani').textContent = brojRealizirani;
+        }
+
+        // ─── ИЗБРИШИ СИТЕ ЗАПИСНИЦИ ──────────────────────────────────
+        function izbrisiSite() {
+            if (!confirm('Сигурен? Ќе ги избришеш СИТЕ записници.')) return;
+            setZapisnici({});
+            ucitajZapisnici();
+            showToast('🗑 Сите записници се избришани');
+        }
+
+        // ─── ЗАТВОРИ МОДАЛ ПРИ КЛИК НА ПОЗАДИНА ─────────────────────
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('modalZapisnik');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                        this.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // ─── ИНИЦИЈАЛИЗАЦИЈА ──────────────────────────────────────────
+        (function() {
+            const schoolYear = getSchoolYear();
+            const yearDisplay = document.getElementById('schoolYearDisplay');
+            const footerNote = document.getElementById('footerNote');
+            if (yearDisplay) yearDisplay.textContent = schoolYear;
+            if (footerNote) footerNote.textContent = '📅 Програмата е изработена за учебната ' + schoolYear + ' година';
+
+            const savedGrade = localStorage.getItem('parentMeetingGrade');
+            const gradeSelect = document.getElementById('gradeSelect');
+            if (gradeSelect) {
+                if (savedGrade && ['I', 'II', 'III', 'IV'].includes(savedGrade)) {
+                    gradeSelect.value = savedGrade;
+                }
+                gradeSelect.addEventListener('change', function() {
+                    localStorage.setItem('parentMeetingGrade', this.value);
+                });
+            }
+
+            ucitajZapisnici();
+
+            // Тестирање дали функцијата работи
+            console.log('Апликацијата е иницијализирана.');
+            console.log('Функцијата otvoriZapisnik е достапна:', typeof otvoriZapisnik === 'function');
+        })();
+    </script>
+</body>
+</html>

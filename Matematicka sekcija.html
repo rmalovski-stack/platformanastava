@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Математичка секција 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.10);
+            padding: 2rem 1.5rem 2.5rem;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        .title-underline {
+            width: 80px;
+            height: 4px;
+            background: #3b82f6;
+            border-radius: 4px;
+            margin: 0.5rem auto 1.8rem;
+        }
+
+        /* ─── TABLE ─── */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1rem;
+            min-width: 500px;
+        }
+
+        thead th {
+            background: #1e293b;
+            color: #f8fafc;
+            font-weight: 600;
+            font-size: 1.05rem;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            border-right: 1px solid #334155;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        thead th:last-child {
+            border-right: none;
+        }
+
+        tbody td {
+            padding: 0.4rem 0.3rem;
+            text-align: center;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+            background: #ffffff;
+            transition: background 0.15s;
+        }
+
+        tbody td:last-child {
+            border-right: none;
+        }
+
+        /* row numbers */
+        .row-num {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 0.95rem;
+            background: #f1f5f9 !important;
+            width: 3.2rem;
+            min-width: 3.2rem;
+            user-select: none;
+        }
+
+        /* year columns */
+        .col-year-1 {
+            background: #fafcff;
+        }
+        .col-year-2 {
+            background: #f1f5f9;
+        }
+        .col-year-3 {
+            background: #fafcff;
+        }
+        .col-year-4 {
+            background: #f1f5f9;
+        }
+
+        /* input fields inside table */
+        .student-input {
+            width: 100%;
+            padding: 0.5rem 0.4rem;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: transparent;
+            transition: all 0.2s;
+            color: #0f172a;
+            text-align: center;
+        }
+
+        .student-input:hover {
+            background: #ffffff;
+            border-color: #cbd5e1;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .student-input:focus {
+            outline: none;
+            background: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .student-input::placeholder {
+            color: #94a3b8;
+            font-weight: 300;
+            font-size: 0.85rem;
+        }
+
+        /* ─── CONTROLS ─── */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn:active {
+            transform: translateY(0px);
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: #22c55e;
+            color: #ffffff;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-outline:hover {
+            border-color: #94a3b8;
+            background: #f8fafc;
+        }
+
+        .btn-sm {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-icon {
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        .remove-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .remove-btn:hover {
+            color: #ef4444;
+            background: #fef2f2;
+        }
+
+        /* ─── INFO ROW ─── */
+        .info-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .info-bar span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .info-bar .badge {
+            background: #e2e8f0;
+            padding: 0.1rem 0.6rem;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 700px) {
+            .container {
+                padding: 1.2rem 0.8rem 1.8rem;
+            }
+
+            .title {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+                min-width: 380px;
+            }
+
+            thead th {
+                font-size: 0.85rem;
+                padding: 0.7rem 0.3rem;
+            }
+
+            tbody td {
+                padding: 0.3rem 0.2rem;
+            }
+
+            .student-input {
+                font-size: 0.85rem;
+                padding: 0.35rem 0.2rem;
+            }
+
+            .row-num {
+                width: 2.2rem;
+                min-width: 2.2rem;
+                font-size: 0.8rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-group {
+                justify-content: center;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .title {
+                font-size: 1.2rem;
+            }
+
+            table {
+                font-size: 0.8rem;
+                min-width: 320px;
+            }
+
+            thead th {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.2rem;
+            }
+
+            .student-input {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.15rem;
+            }
+
+            .row-num {
+                width: 1.8rem;
+                min-width: 1.8rem;
+                font-size: 0.7rem;
+            }
+
+            .btn {
+                padding: 0.4rem 0.7rem;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h1 class="title">МАТЕМАТИЧКА СЕКЦИЈА</h1>
+        <div class="title-underline"></div>
+
+        <div class="table-wrapper">
+            <table id="studentTable">
+                <thead>
+                    <tr>
+                        <th style="width:3.2rem; min-width:3.2rem;">#</th>
+                        <th>Прва година</th>
+                        <th>Втора година</th>
+                        <th>Трета година</th>
+                        <th>Четврта година</th>
+                        <th style="width:3rem; min-width:3rem;"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- rows will be inserted by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ─── CONTROLS ─── -->
+        <div class="controls">
+            <div class="btn-group">
+                <button class="btn btn-primary" id="addRowBtn">
+                    <span class="btn-icon">＋</span> Додади ученик
+                </button>
+                <button class="btn btn-outline" id="addMultipleBtn">
+                    <span class="btn-icon">＋＋</span> Додади 5
+                </button>
+                <button class="btn btn-danger" id="clearAllBtn">
+                    <span class="btn-icon">✕</span> Избриши сите
+                </button>
+            </div>
+            <div class="info-bar">
+                <span>👥 <span class="badge" id="studentCount">0</span> ученици</span>
+                <span>💾 <span style="color:#22c55e;">●</span> Автоматско зачувување</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const tbody = document.getElementById('tableBody');
+            const studentCount = document.getElementById('studentCount');
+            const addRowBtn = document.getElementById('addRowBtn');
+            const addMultipleBtn = document.getElementById('addMultipleBtn');
+            const clearAllBtn = document.getElementById('clearAllBtn');
+
+            const STORAGE_KEY = 'matematicka_sekcija_2025_data';
+
+            // ─── DATA ───────────────────────────────────────────────
+            // Each row: { year1, year2, year3, year4 }
+            let students = [];
+
+            // ─── LOAD / SAVE ────────────────────────────────────────
+            function loadData() {
+                try {
+                    const saved = localStorage.getItem(STORAGE_KEY);
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            students = parsed;
+                            return;
+                        }
+                    }
+                } catch (_) { /* ignore */ }
+                // Default: 8 empty rows
+                students = [];
+                for (let i = 0; i < 8; i++) {
+                    students.push({ year1: '', year2: '', year3: '', year4: '' });
+                }
+            }
+
+            function saveData() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
+                } catch (_) { /* ignore */ }
+            }
+
+            // ─── RENDER ─────────────────────────────────────────────
+            function render() {
+                // Build rows
+                let html = '';
+                students.forEach((row, index) => {
+                    const num = index + 1;
+                    html += `
+                        <tr data-index="${index}">
+                            <td class="row-num">${num}</td>
+                            <td class="col-year-1">
+                                <input class="student-input" type="text" 
+                                       placeholder="Внеси ученик" 
+                                       value="${escapeHtml(row.year1)}"
+                                       data-year="year1" data-index="${index}" />
+                            </td>
+                            <td class="col-year-2">
+                                <input class="student-input" type="text" 
+                                       placeholder="Внеси ученик" 
+                                       value="${escapeHtml(row.year2)}"
+                                       data-year="year2" data-index="${index}" />
+                            </td>
+                            <td class="col-year-3">
+                                <input class="student-input" type="text" 
+                                       placeholder="Внеси ученик" 
+                                       value="${escapeHtml(row.year3)}"
+                                       data-year="year3" data-index="${index}" />
+                            </td>
+                            <td class="col-year-4">
+                                <input class="student-input" type="text" 
+                                       placeholder="Внеси ученик" 
+                                       value="${escapeHtml(row.year4)}"
+                                       data-year="year4" data-index="${index}" />
+                            </td>
+                            <td style="background:#fafcff;">
+                                <button class="remove-btn" data-index="${index}" title="Избриши го овој ученик">✕</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = html;
+
+                // Update counter
+                studentCount.textContent = students.length;
+
+                // ─── ATTACH EVENTS ──────────────────────────────
+
+                // Input events – update data on change
+                tbody.querySelectorAll('.student-input').forEach(input => {
+                    input.addEventListener('input', function() {
+                        const idx = parseInt(this.dataset.index);
+                        const year = this.dataset.year;
+                        if (!isNaN(idx) && idx >= 0 && idx < students.length) {
+                            students[idx][year] = this.value;
+                            saveData();
+                            // update row number (in case of deletion shifts)
+                            updateRowNumbers();
+                        }
+                    });
+                });
+
+                // Remove buttons
+                tbody.querySelectorAll('.remove-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const idx = parseInt(this.dataset.index);
+                        if (!isNaN(idx) && idx >= 0 && idx < students.length) {
+                            if (students.length <= 1) {
+                                // Don't remove the last row – just clear it
+                                students[idx] = { year1: '', year2: '', year3: '', year4: '' };
+                                saveData();
+                                render();
+                                return;
+                            }
+                            students.splice(idx, 1);
+                            saveData();
+                            render();
+                        }
+                    });
+                });
+            }
+
+            // ─── HELPERS ─────────────────────────────────────────────
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function updateRowNumbers() {
+                const rows = tbody.querySelectorAll('tr');
+                rows.forEach((row, idx) => {
+                    const numCell = row.querySelector('.row-num');
+                    if (numCell) numCell.textContent = idx + 1;
+                    // update data-index on inputs and buttons
+                    row.querySelectorAll('.student-input').forEach(inp => inp.dataset.index = idx);
+                    const rmBtn = row.querySelector('.remove-btn');
+                    if (rmBtn) rmBtn.dataset.index = idx;
+                });
+            }
+
+            // ─── ACTIONS ─────────────────────────────────────────────
+
+            function addRow() {
+                students.push({ year1: '', year2: '', year3: '', year4: '' });
+                saveData();
+                render();
+                // focus the first input of the new row
+                const rows = tbody.querySelectorAll('tr');
+                if (rows.length > 0) {
+                    const lastRow = rows[rows.length - 1];
+                    const firstInput = lastRow.querySelector('.student-input');
+                    if (firstInput) {
+                        setTimeout(() => firstInput.focus(), 50);
+                    }
+                }
+            }
+
+            function addMultiple(count = 5) {
+                for (let i = 0; i < count; i++) {
+                    students.push({ year1: '', year2: '', year3: '', year4: '' });
+                }
+                saveData();
+                render();
+            }
+
+            function clearAll() {
+                if (students.length === 0) return;
+                if (!confirm('Дали сте сигурни дека сакате да ги избришете сите ученици?')) return;
+                students = [{ year1: '', year2: '', year3: '', year4: '' }];
+                saveData();
+                render();
+            }
+
+            // ─── INIT ────────────────────────────────────────────────
+
+            loadData();
+            render();
+
+            // ─── BUTTON BINDINGS ────────────────────────────────────
+
+            addRowBtn.addEventListener('click', addRow);
+
+            addMultipleBtn.addEventListener('click', function() {
+                addMultiple(5);
+            });
+
+            clearAllBtn.addEventListener('click', clearAll);
+
+            // Keyboard shortcut: press "A" to add a student (when not in input)
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'a' || e.key === 'A') {
+                    const tag = e.target.tagName.toLowerCase();
+                    if (tag === 'input' || tag === 'textarea') return;
+                    e.preventDefault();
+                    addRow();
+                }
+            });
+
+        })();
+    </script>
+
+</body>
+</html>

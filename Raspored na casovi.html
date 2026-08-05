@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Распоред на часови</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #eef2f7;
+            padding: 20px;
+            color: #1a2639;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            padding: 30px 35px 40px;
+            box-shadow: 0 20px 60px rgba(0, 20, 50, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2px;
+        }
+        .header-class {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #0a2647;
+            margin: 4px 0 2px;
+        }
+        .header-year {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            color: #1f3a6b;
+            margin: 2px 0;
+        }
+        .header-validity {
+            text-align: center;
+            font-size: 16px;
+            color: #2a4a6a;
+            margin: 2px 0 12px;
+            background: rgba(220, 232, 248, 0.4);
+            padding: 4px 18px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
+            width: auto;
+        }
+        .header-center {
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 14px 20px;
+            margin: 12px 0 20px;
+        }
+        .controls label {
+            font-weight: 600;
+            color: #0a2647;
+        }
+        .controls select,
+        .controls input[type="date"] {
+            padding: 8px 14px;
+            border-radius: 30px;
+            border: 2px solid #dce3ef;
+            font-size: 15px;
+            background: white;
+            outline: none;
+            transition: 0.2s;
+        }
+        .controls select:focus,
+        .controls input[type="date"]:focus {
+            border-color: #1f3a6b;
+            box-shadow: 0 0 0 4px rgba(31, 58, 107, 0.12);
+        }
+
+        .btn {
+            background: #1f3a6b;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(30, 60, 120, 0.2);
+        }
+        .btn:hover {
+            background: #16325a;
+            transform: scale(1.02);
+        }
+        .btn-secondary {
+            background: #4a6a8f;
+        }
+        .btn-secondary:hover {
+            background: #2f4a6b;
+        }
+        .btn-success {
+            background: #1f7a4a;
+        }
+        .btn-success:hover {
+            background: #14633a;
+        }
+        .btn-danger {
+            background: #b22234;
+        }
+        .btn-danger:hover {
+            background: #8a1a28;
+        }
+
+        .share-box {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            background: #f0f4fc;
+            padding: 12px 20px;
+            border-radius: 40px;
+            margin: 12px 0 18px;
+        }
+        .share-box input {
+            flex: 1 1 300px;
+            padding: 8px 14px;
+            border-radius: 30px;
+            border: 2px solid #dce3ef;
+            font-size: 14px;
+            background: white;
+            outline: none;
+        }
+        .share-box input:focus {
+            border-color: #1f3a6b;
+        }
+
+        .schedule-wrap {
+            overflow-x: auto;
+            margin: 10px 0 16px;
+        }
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
+        .schedule-table th {
+            background: #1f3a6b;
+            color: white;
+            padding: 12px 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .schedule-table td {
+            border: 1px solid #e6edf6;
+            padding: 4px 6px;
+            text-align: center;
+            vertical-align: middle;
+            min-width: 100px;
+        }
+        .schedule-table .hour-label {
+            background: #f0f4fc;
+            font-weight: 700;
+            color: #0a2647;
+            min-width: 60px;
+        }
+        .schedule-table select {
+            width: 100%;
+            padding: 6px 4px;
+            border: 1px solid #dce3ef;
+            border-radius: 8px;
+            font-size: 13px;
+            background: white;
+            outline: none;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .schedule-table select:disabled {
+            opacity: 0.7;
+            cursor: default;
+            background: #f8faff;
+            border-color: #d0d8e6;
+        }
+        .schedule-table select:not(:disabled):hover {
+            border-color: #1f3a6b;
+        }
+        .schedule-table select:not(:disabled):focus {
+            border-color: #1f3a6b;
+            box-shadow: 0 0 0 3px rgba(31, 58, 107, 0.15);
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0.5in;
+            }
+            .card {
+                box-shadow: none;
+                border: none;
+                padding: 10px;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .schedule-table th {
+                background: #1f3a6b !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .schedule-table .hour-label {
+                background: #f0f4fc !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .schedule-table select {
+                border: 1px solid #aaa;
+                background: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .share-box,
+            .controls .btn {
+                display: none !important;
+            }
+            .header-validity {
+                background: none !important;
+                padding: 0 !important;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .card {
+                padding: 20px 16px 24px;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .schedule-table td,
+            .schedule-table th {
+                padding: 4px 4px;
+                font-size: 12px;
+                min-width: 70px;
+            }
+            .schedule-table select {
+                font-size: 11px;
+                padding: 4px 2px;
+            }
+            .header-class {
+                font-size: 20px;
+            }
+            .header-year {
+                font-size: 16px;
+            }
+            .header-validity {
+                font-size: 14px;
+                padding: 2px 14px;
+            }
+        }
+
+        .import-section {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            background: #e8f0fe;
+            padding: 10px 18px;
+            border-radius: 40px;
+            margin: 4px 0 12px;
+            border: 1px dashed #1f3a6b;
+        }
+        .import-section label {
+            font-weight: 600;
+            color: #0a2647;
+            font-size: 14px;
+        }
+        .import-section .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .import-section .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .import-section .btn-sm {
+            padding: 4px 14px;
+            font-size: 13px;
+        }
+        .import-status {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f7a4a;
+        }
+        .import-section select {
+            padding: 6px 12px;
+            border-radius: 30px;
+            border: 2px solid #dce3ef;
+            font-size: 14px;
+            background: white;
+            outline: none;
+            min-width: 140px;
+        }
+        .import-section select:focus {
+            border-color: #1f3a6b;
+            box-shadow: 0 0 0 4px rgba(31, 58, 107, 0.12);
+        }
+        .separator {
+            color: #1f3a6b;
+            font-weight: 700;
+            padding: 0 4px;
+        }
+        .nasoka-options {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            background: #dce8f5;
+            padding: 4px 14px;
+            border-radius: 30px;
+        }
+        .nasoka-options label {
+            font-weight: 600;
+            color: #0a2647;
+            font-size: 13px;
+        }
+        .nasoka-options select {
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 2px solid #dce3ef;
+            font-size: 13px;
+            background: white;
+            outline: none;
+            min-width: 140px;
+            font-weight: 500;
+        }
+        .nasoka-options select:focus {
+            border-color: #1f3a6b;
+            box-shadow: 0 0 0 3px rgba(31, 58, 107, 0.12);
+        }
+        .nasoka-label {
+            font-weight: 700;
+            color: #1f3a6b;
+            font-size: 14px;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .import-info {
+            font-size: 13px;
+            color: #1a3a5a;
+            background: rgba(220, 232, 248, 0.5);
+            padding: 2px 12px;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>📅 Распоред на часови</h1>
+            <div class="header-center">
+                <div class="header-class" id="classDisplay">IV-6</div>
+                <div class="header-year" id="yearDisplay">Учебна 2025/2026 година</div>
+                <div class="header-validity" id="validityDisplay">со важност од 01.09.2025 до 10.06.2026</div>
+            </div>
+
+            <div class="controls no-print" id="controlsContainer">
+                <label>📚 Учебна година
+                    <select id="yearSelect"></select>
+                </label>
+                <label>🏫 Година
+                    <select id="gradeSelect">
+                        <option value="I">I</option>
+                        <option value="II">II</option>
+                        <option value="III">III</option>
+                        <option value="IV" selected>IV</option>
+                    </select>
+                </label>
+                <label>🔢 Паралелка
+                    <select id="classSelect">
+                        <option value="5">5</option>
+                        <option value="6" selected>6</option>
+                        <option value="7">7</option>
+                    </select>
+                </label>
+                <label>📆 Датум (почеток на недела)
+                    <input type="date" id="datePicker" />
+                </label>
+            </div>
+
+            <!-- УВОЗ НА EXCEL -->
+            <div class="import-section no-print" id="importContainer">
+                <label>📂 Увези Excel:</label>
+                <div class="file-input-wrapper">
+                    <button class="btn btn-secondary btn-sm">Избери фајл</button>
+                    <input type="file" id="excelFileInput" accept=".xlsx,.xls" />
+                </div>
+
+                <span class="import-info" id="importInfo">Нема вчитан Excel</span>
+
+                <span class="separator">|</span>
+
+                <div class="nasoka-options">
+                    <span class="nasoka-label">📋 Насока:</span>
+                    <select id="nasokaSelect">
+                        <option value="prirodna">🌿 Природна</option>
+                        <option value="opstestvena">🏛 Општествена</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-success btn-sm" id="importExcelBtn">📥 Увези предмети</button>
+                <button class="btn btn-danger btn-sm" id="resetSubjectsBtn">↺ Стандардни</button>
+                <span class="import-status" id="importStatus"></span>
+            </div>
+
+            <div class="schedule-wrap">
+                <table class="schedule-table" id="scheduleTable">
+                    <thead>
+                        <tr>
+                            <th>Час</th>
+                            <th>Понеделник</th>
+                            <th>Вторник</th>
+                            <th>Среда</th>
+                            <th>Четврток</th>
+                            <th>Петок</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="share-box no-print" id="shareContainer">
+                <input type="text" id="shareLinkInput" readonly placeholder="Генерирај линк за споделување..." />
+                <button class="btn btn-success" id="generateShareBtn">🔗 Генерирај линк</button>
+                <button class="btn btn-secondary" id="copyShareBtn">📋 Копирај</button>
+                <button class="btn btn-secondary" id="printBtn">🖨 Печати</button>
+            </div>
+
+            <div id="loadMessage" style="margin-top:8px; font-weight:500; color:#1f7a4a; text-align:center;"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const DEFAULT_SUBJECTS = [
+                'Македонски јазик и литература',
+                'Англиски јазик',
+                'Германски јазик',
+                'Филозофија',
+                'Математика',
+                'Бизнис и претприемништво',
+                'Спорт и спортски активности',
+                'Физика',
+                'Хемија',
+                'Биологија',
+                'Класен час'
+            ];
+
+            const HOURS = 7;
+
+            // ЕЛЕМЕНТИ
+            const yearSelect = document.getElementById('yearSelect');
+            const gradeSelect = document.getElementById('gradeSelect');
+            const classSelect = document.getElementById('classSelect');
+            const datePicker = document.getElementById('datePicker');
+            const tableBody = document.getElementById('tableBody');
+            const shareLinkInput = document.getElementById('shareLinkInput');
+            const generateShareBtn = document.getElementById('generateShareBtn');
+            const copyShareBtn = document.getElementById('copyShareBtn');
+            const printBtn = document.getElementById('printBtn');
+            const loadMessage = document.getElementById('loadMessage');
+            const classDisplay = document.getElementById('classDisplay');
+            const yearDisplay = document.getElementById('yearDisplay');
+            const validityDisplay = document.getElementById('validityDisplay');
+            const controlsContainer = document.getElementById('controlsContainer');
+            const shareContainer = document.getElementById('shareContainer');
+            const importContainer = document.getElementById('importContainer');
+            const excelFileInput = document.getElementById('excelFileInput');
+            const importExcelBtn = document.getElementById('importExcelBtn');
+            const resetSubjectsBtn = document.getElementById('resetSubjectsBtn');
+            const importStatus = document.getElementById('importStatus');
+            const importInfo = document.getElementById('importInfo');
+            const nasokaSelect = document.getElementById('nasokaSelect');
+
+            // СОСТОЈБА
+            let schedule = {};
+            let currentYear = '2025/2026';
+            let currentGrade = 'IV';
+            let currentClass = '6';
+            let currentDate = new Date();
+            let viewOnly = false;
+            let subjects = [];
+            let excelWorkbook = null;
+            let sheetNames = [];
+
+            // ПОМОШНИ
+            function getStorageKey() {
+                return `schedule_${currentYear}_${currentGrade}_${currentClass}`;
+            }
+
+            function getSubjectsStorageKey() {
+                return `subjects_${currentYear}_${currentGrade}_${currentClass}`;
+            }
+
+            function loadFromStorage() {
+                const key = getStorageKey();
+                const stored = localStorage.getItem(key);
+                if (stored) {
+                    try {
+                        schedule = JSON.parse(stored);
+                    } catch (e) {
+                        schedule = {};
+                    }
+                } else {
+                    schedule = {};
+                }
+            }
+
+            function saveToStorage() {
+                if (viewOnly) return;
+                const key = getStorageKey();
+                localStorage.setItem(key, JSON.stringify(schedule));
+            }
+
+            function loadSubjectsFromStorage() {
+                const key = getSubjectsStorageKey();
+                const stored = localStorage.getItem(key);
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            subjects = parsed;
+                            return;
+                        }
+                    } catch (e) {}
+                }
+                subjects = [...DEFAULT_SUBJECTS];
+                saveSubjectsToStorage();
+            }
+
+            function saveSubjectsToStorage() {
+                if (viewOnly) return;
+                const key = getSubjectsStorageKey();
+                localStorage.setItem(key, JSON.stringify(subjects));
+            }
+
+            function resetSubjectsToDefault() {
+                subjects = [...DEFAULT_SUBJECTS];
+                saveSubjectsToStorage();
+                importStatus.textContent = '✅ Вратени стандардни предмети';
+                importStatus.style.color = '#1f7a4a';
+                renderSchedule();
+            }
+
+            // ------ ИЗВЛЕКУВАЊЕ ПРЕДМЕТИ ОД ЛИСТ (ПРВА КОЛОНА - ЦЕЛА) ------
+            function getSubjectsFromSheetColumn(sheetName, columnIndex) {
+                if (!excelWorkbook || !sheetName) return [];
+                try {
+                    const sheet = excelWorkbook.Sheets[sheetName];
+                    if (!sheet) return [];
+                    const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    const raw = [];
+                    jsonData.forEach(row => {
+                        if (row && row.length > columnIndex && row[columnIndex]) {
+                            const val = String(row[columnIndex]).trim();
+                            if (val.length > 0) {
+                                raw.push(val);
+                            }
+                        }
+                    });
+                    return [...new Set(raw)];
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            // ------ АВТОМАТСКО ПРОНАОЃАЊЕ НА ЛИСТ ЗА ОДРЕДЕНА ГОДИНА ------
+            function findSheetForGrade(grade, nasoka) {
+                const isPrirodna = nasoka === 'prirodna';
+                const gradePatterns = {
+                    'I': ['I', '1'],
+                    'II': ['II', '2'],
+                    'III': ['III', '3'],
+                    'IV': ['IV', '4']
+                };
+
+                const patterns = gradePatterns[grade] || [];
+                const nasokaPatterns = isPrirodna ? ['1', 'ПРИР', 'ПРИРОДНА'] : ['2', 'ОПШ', 'ОПШТЕСТВЕНА'];
+
+                // Прво обид со специфични обрасци
+                for (let name of sheetNames) {
+                    const upper = name.toUpperCase();
+                    let gradeMatch = false;
+                    for (let p of patterns) {
+                        if (upper.includes(p)) gradeMatch = true;
+                    }
+                    let nasokaMatch = false;
+                    for (let p of nasokaPatterns) {
+                        if (upper.includes(p)) nasokaMatch = true;
+                    }
+                    if (gradeMatch && nasokaMatch) {
+                        return name;
+                    }
+                }
+
+                // Ако не најде, обид само со годината
+                for (let name of sheetNames) {
+                    const upper = name.toUpperCase();
+                    for (let p of patterns) {
+                        if (upper.includes(p)) {
+                            return name;
+                        }
+                    }
+                }
+
+                return '';
+            }
+
+            // ------ ЗЕМИ ГИ ПРЕДМЕТИТЕ СПОРЕД ИЗБРАНАТА ГОДИНА ------
+            function getSubjectsForGrade(grade) {
+                const columnIndex = 0; // ПРВА КОЛОНА (A)
+
+                if (grade === 'I') {
+                    const sheetName = findSheetForGrade('I', '');
+                    if (!sheetName) {
+                        importStatus.textContent = '⚠️ Не е пронајден лист за I година!';
+                        importStatus.style.color = '#b22234';
+                        return [];
+                    }
+                    importInfo.textContent = `📄 Пронајден лист: "${sheetName}"`;
+                    return getSubjectsFromSheetColumn(sheetName, columnIndex);
+                } else if (grade === 'II') {
+                    const sheetName = findSheetForGrade('II', '');
+                    if (!sheetName) {
+                        importStatus.textContent = '⚠️ Не е пронајден лист за II година!';
+                        importStatus.style.color = '#b22234';
+                        return [];
+                    }
+                    importInfo.textContent = `📄 Пронајден лист: "${sheetName}"`;
+                    return getSubjectsFromSheetColumn(sheetName, columnIndex);
+                } else if (grade === 'III' || grade === 'IV') {
+                    const nasoka = nasokaSelect.value;
+                    const sheetName = findSheetForGrade(grade, nasoka);
+                    if (!sheetName) {
+                        const nasokaIme = nasoka === 'prirodna' ? 'Природна' : 'Општествена';
+                        importStatus.textContent = `⚠️ Не е пронајден лист за ${grade} година (${nasokaIme})!`;
+                        importStatus.style.color = '#b22234';
+                        return [];
+                    }
+                    const nasokaIme = nasoka === 'prirodna' ? 'Природна' : 'Општествена';
+                    importInfo.textContent = `✅ Пронајдена ${nasokaIme} насока`;
+                    return getSubjectsFromSheetColumn(sheetName, columnIndex);
+                }
+                return [];
+            }
+
+            // ------ ГЛАВНА ФУНКЦИЈА ЗА УВОЗ ------
+            function importSubjects() {
+                const grade = gradeSelect.value;
+
+                if (!excelWorkbook) {
+                    importStatus.textContent = '⚠️ Прво вчитајте Excel фајл!';
+                    importStatus.style.color = '#b22234';
+                    return;
+                }
+
+                const result = getSubjectsForGrade(grade);
+
+                if (result.length === 0) {
+                    if (!importStatus.textContent.includes('Не е пронајден')) {
+                        importStatus.textContent = `⚠️ Нема пронајдено предмети! Проверете ја првата колона во листовите.`;
+                        importStatus.style.color = '#b22234';
+                    }
+                    return;
+                }
+
+                subjects = result;
+                saveSubjectsToStorage();
+
+                let nasokaIme = '';
+                if (grade === 'III' || grade === 'IV') {
+                    nasokaIme = nasokaSelect.value === 'prirodna' ? 'Природна' : 'Општествена';
+                }
+
+                let msg = `✅ Увезени ${subjects.length} предмети за ${grade} година`;
+                if (nasokaIme) {
+                    msg += ` (${nasokaIme})`;
+                }
+                importStatus.textContent = msg;
+                importStatus.style.color = '#1f7a4a';
+                renderSchedule();
+            }
+
+            // ------ УВОЗ ОД EXCEL ------
+            function importFromExcel(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        excelWorkbook = XLSX.read(data, { type: 'array' });
+                        sheetNames = excelWorkbook.SheetNames;
+
+                        importInfo.textContent = `✅ Вчитани ${sheetNames.length} листови`;
+
+                        // Автоматски пронајди го листот за тековната година
+                        const grade = gradeSelect.value;
+                        if (grade === 'I') {
+                            const sheet = findSheetForGrade('I', '');
+                            if (sheet) importInfo.textContent = `📄 Пронајден лист: "${sheet}"`;
+                        } else if (grade === 'II') {
+                            const sheet = findSheetForGrade('II', '');
+                            if (sheet) importInfo.textContent = `📄 Пронајден лист: "${sheet}"`;
+                        } else if (grade === 'III' || grade === 'IV') {
+                            const nasoka = nasokaSelect.value;
+                            const sheet = findSheetForGrade(grade, nasoka);
+                            const nasokaIme = nasoka === 'prirodna' ? 'Природна' : 'Општествена';
+                            if (sheet) {
+                                importInfo.textContent = `✅ Пронајдена ${nasokaIme} насока`;
+                            } else {
+                                importInfo.textContent = `⚠️ Нема лист за ${grade} година (${nasokaIme})`;
+                            }
+                        }
+
+                        importStatus.textContent = `✅ Вчитан Excel. Кликнете "Увези предмети".`;
+                        importStatus.style.color = '#1f7a4a';
+
+                    } catch (err) {
+                        importStatus.textContent = '❌ Грешка при читање на Excel фајлот: ' + err.message;
+                        importStatus.style.color = '#b22234';
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            // ------ ДАТУМ/НЕДЕЛА ------
+            function getWeekDays(date) {
+                const d = new Date(date);
+                d.setHours(0, 0, 0, 0);
+                const day = d.getDay();
+                const diff = (day === 0 ? 6 : day - 1);
+                const monday = new Date(d);
+                monday.setDate(d.getDate() - diff);
+                const week = [];
+                for (let i = 0; i < 5; i++) {
+                    const dayDate = new Date(monday);
+                    dayDate.setDate(monday.getDate() + i);
+                    week.push(dayDate);
+                }
+                return week;
+            }
+
+            function formatDateISO(date) {
+                const d = new Date(date);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            function formatDateMK(date) {
+                const d = new Date(date);
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                return `${day}.${month}.${year}`;
+            }
+
+            function getDefaultScheduleForDay() {
+                const obj = {};
+                for (let i = 1; i <= HOURS; i++) {
+                    obj[i] = '';
+                }
+                return obj;
+            }
+
+            function ensureDay(dateISO) {
+                if (!schedule[dateISO]) {
+                    schedule[dateISO] = getDefaultScheduleForDay();
+                }
+            }
+
+            function updateHeader() {
+                const grade = gradeSelect.value;
+                const cls = classSelect.value;
+                const year = yearSelect.value;
+
+                classDisplay.textContent = `${grade}-${cls}`;
+                yearDisplay.textContent = `Учебна ${year} година`;
+
+                const yearParts = year.split('/');
+                const secondYear = yearParts.length > 1 ? yearParts[1] : yearParts[0];
+                const weekDays = getWeekDays(currentDate);
+                const startDate = weekDays.length > 0 ? weekDays[0] : currentDate;
+                const startStr = formatDateMK(startDate);
+                validityDisplay.textContent = `со важност од ${startStr} до 10.06.${secondYear}`;
+            }
+
+            function renderSchedule() {
+                const weekDays = getWeekDays(currentDate);
+                weekDays.forEach(day => {
+                    const iso = formatDateISO(day);
+                    ensureDay(iso);
+                });
+
+                loadSubjectsFromStorage();
+
+                let html = '';
+                for (let hour = 1; hour <= HOURS; hour++) {
+                    html += '<tr>';
+                    html += `<td class="hour-label">${hour}</td>`;
+                    weekDays.forEach(day => {
+                        const iso = formatDateISO(day);
+                        const dayData = schedule[iso] || getDefaultScheduleForDay();
+                        const currentSubject = dayData[hour] || '';
+                        html += '<td>';
+                        html +=
+                            `<select data-date="${iso}" data-hour="${hour}" class="subject-select" ${viewOnly ? 'disabled' : ''}>`;
+                        html += `<option value="">–</option>`;
+                        subjects.forEach(subj => {
+                            const selected = (subj === currentSubject) ? 'selected' : '';
+                            html += `<option value="${subj}" ${selected}>${subj}</option>`;
+                        });
+                        html += '</select>';
+                        html += '</td>';
+                    });
+                    html += '</tr>';
+                }
+
+                tableBody.innerHTML = html;
+
+                const firstDay = weekDays[0];
+                datePicker.value = formatDateISO(firstDay);
+
+                if (!viewOnly) {
+                    document.querySelectorAll('.subject-select').forEach(sel => {
+                        sel.addEventListener('change', function() {
+                            const dateISO = this.dataset.date;
+                            const hour = parseInt(this.dataset.hour);
+                            const value = this.value;
+                            if (!schedule[dateISO]) {
+                                schedule[dateISO] = getDefaultScheduleForDay();
+                            }
+                            schedule[dateISO][hour] = value;
+                            saveToStorage();
+                        });
+                    });
+                }
+
+                updateHeader();
+            }
+
+            function goToDate(date) {
+                currentDate = new Date(date);
+                currentDate.setHours(0, 0, 0, 0);
+                renderSchedule();
+            }
+
+            function goToday() {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                goToDate(today);
+            }
+
+            // ------ СПОДЕЛУВАЊЕ ------
+            function generateShareLink() {
+                saveToStorage();
+                const json = JSON.stringify(schedule);
+                const encoded = btoa(unescape(encodeURIComponent(json)));
+                const url = new URL(window.location.href);
+                url.searchParams.set('year', currentYear);
+                url.searchParams.set('grade', currentGrade);
+                url.searchParams.set('class', currentClass);
+                url.searchParams.set('data', encoded);
+                url.searchParams.set('viewonly', 'true');
+                return url.toString();
+            }
+
+            function loadSharedData() {
+                const params = new URLSearchParams(window.location.search);
+                const year = params.get('year');
+                const grade = params.get('grade');
+                const cls = params.get('class');
+                const dataEncoded = params.get('data');
+                const view = params.get('viewonly') === 'true';
+                viewOnly = view;
+
+                if (viewOnly) {
+                    controlsContainer.style.display = 'none';
+                    shareContainer.style.display = 'none';
+                    importContainer.style.display = 'none';
+                } else {
+                    controlsContainer.style.display = 'flex';
+                    shareContainer.style.display = 'flex';
+                    importContainer.style.display = 'flex';
+                }
+
+                if (year && grade && cls && dataEncoded) {
+                    yearSelect.value = year;
+                    gradeSelect.value = grade;
+                    classSelect.value = cls;
+                    currentYear = year;
+                    currentGrade = grade;
+                    currentClass = cls;
+                    try {
+                        const json = decodeURIComponent(escape(atob(dataEncoded)));
+                        const parsed = JSON.parse(json);
+                        const key = getStorageKey();
+                        if (!viewOnly) {
+                            localStorage.setItem(key, JSON.stringify(parsed));
+                        }
+                        schedule = parsed;
+                        loadMessage.textContent = viewOnly ? '✅ Приказ на распоред (само за читање)' :
+                            '✅ Успешно вчитан споделен распоред!';
+                        loadMessage.style.color = '#1f7a4a';
+                        const dates = Object.keys(parsed);
+                        if (dates.length > 0) {
+                            const firstDate = new Date(dates[0] + 'T00:00:00');
+                            goToDate(firstDate);
+                        } else {
+                            goToday();
+                        }
+                        const cleanUrl = window.location.pathname + window.location.search.replace(/[?&]data=[^&]*/, '')
+                            .replace(/[?&]year=[^&]*/, '').replace(/[?&]grade=[^&]*/, '').replace(/[?&]class=[^&]*/, '');
+                        if (!viewOnly) {
+                            window.history.replaceState({}, document.title, cleanUrl);
+                        }
+                    } catch (e) {
+                        loadMessage.textContent = '❌ Грешка при вчитување на споделениот распоред.';
+                        loadMessage.style.color = '#b22234';
+                        loadFromStorage();
+                        goToday();
+                    }
+                } else {
+                    loadMessage.textContent = '';
+                    if (!viewOnly) {
+                        loadFromStorage();
+                        if (Object.keys(schedule).length === 0) {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const week = getWeekDays(today);
+                            week.forEach(day => {
+                                const iso = formatDateISO(day);
+                                ensureDay(iso);
+                            });
+                            saveToStorage();
+                        }
+                        goToday();
+                    } else {
+                        loadFromStorage();
+                        if (Object.keys(schedule).length > 0) {
+                            goToday();
+                        } else {
+                            tableBody.innerHTML =
+                                '<tr><td colspan="6" style="padding:20px;text-align:center;color:#888;">Нема распоред за приказ.</td></tr>';
+                            updateHeader();
+                        }
+                    }
+                }
+                loadSubjectsFromStorage();
+            }
+
+            function populateYears() {
+                const startYear = 2025;
+                for (let i = 0; i < 10; i++) {
+                    const year = startYear + i;
+                    const option = document.createElement('option');
+                    option.value = `${year}/${year+1}`;
+                    option.textContent = `${year}/${year+1}`;
+                    if (i === 0) option.selected = true;
+                    yearSelect.appendChild(option);
+                }
+            }
+
+            function init() {
+                populateYears();
+                currentYear = yearSelect.value;
+                currentGrade = gradeSelect.value;
+                currentClass = classSelect.value;
+
+                loadSharedData();
+
+                if (!viewOnly) {
+                    yearSelect.addEventListener('change', function() {
+                        currentYear = this.value;
+                        loadFromStorage();
+                        if (Object.keys(schedule).length === 0) {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const week = getWeekDays(today);
+                            week.forEach(day => {
+                                const iso = formatDateISO(day);
+                                ensureDay(iso);
+                            });
+                            saveToStorage();
+                        }
+                        goToday();
+                    });
+
+                    gradeSelect.addEventListener('change', function() {
+                        currentGrade = this.value;
+                        loadFromStorage();
+                        if (Object.keys(schedule).length === 0) {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const week = getWeekDays(today);
+                            week.forEach(day => {
+                                const iso = formatDateISO(day);
+                                ensureDay(iso);
+                            });
+                            saveToStorage();
+                        }
+                        goToday();
+                        // Ажурирај ја информацијата за листот
+                        if (excelWorkbook) {
+                            const grade = this.value;
+                            if (grade === 'I') {
+                                const sheet = findSheetForGrade('I', '');
+                                if (sheet) importInfo.textContent = `📄 Пронајден лист: "${sheet}"`;
+                            } else if (grade === 'II') {
+                                const sheet = findSheetForGrade('II', '');
+                                if (sheet) importInfo.textContent = `📄 Пронајден лист: "${sheet}"`;
+                            } else if (grade === 'III' || grade === 'IV') {
+                                const nasoka = nasokaSelect.value;
+                                const sheet = findSheetForGrade(grade, nasoka);
+                                const nasokaIme = nasoka === 'prirodna' ? 'Природна' : 'Општествена';
+                                if (sheet) {
+                                    importInfo.textContent = `✅ Пронајдена ${nasokaIme} насока`;
+                                } else {
+                                    importInfo.textContent = `⚠️ Нема лист за ${grade} година (${nasokaIme})`;
+                                }
+                            }
+                        }
+                    });
+
+                    classSelect.addEventListener('change', function() {
+                        currentClass = this.value;
+                        loadFromStorage();
+                        if (Object.keys(schedule).length === 0) {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const week = getWeekDays(today);
+                            week.forEach(day => {
+                                const iso = formatDateISO(day);
+                                ensureDay(iso);
+                            });
+                            saveToStorage();
+                        }
+                        goToday();
+                    });
+
+                    datePicker.addEventListener('change', function() {
+                        if (this.value) {
+                            const d = new Date(this.value + 'T00:00:00');
+                            goToDate(d);
+                        }
+                    });
+
+                    nasokaSelect.addEventListener('change', function() {
+                        if (excelWorkbook && (currentGrade === 'III' || currentGrade === 'IV')) {
+                            const sheet = findSheetForGrade(currentGrade, this.value);
+                            const nasokaIme = this.value === 'prirodna' ? 'Природна' : 'Општествена';
+                            if (sheet) {
+                                importInfo.textContent = `✅ Пронајдена ${nasokaIme} насока`;
+                            } else {
+                                importInfo.textContent = `⚠️ Нема лист за ${currentGrade} година (${nasokaIme})`;
+                            }
+                        }
+                    });
+
+                    importExcelBtn.addEventListener('click', function() {
+                        const file = excelFileInput.files[0];
+                        if (!file) {
+                            importStatus.textContent = '⚠️ Изберете Excel фајл прво.';
+                            importStatus.style.color = '#b22234';
+                            return;
+                        }
+                        if (excelWorkbook) {
+                            importSubjects();
+                        } else {
+                            importFromExcel(file);
+                        }
+                    });
+
+                    excelFileInput.addEventListener('change', function() {
+                        if (this.files && this.files[0]) {
+                            importFromExcel(this.files[0]);
+                        }
+                    });
+
+                    resetSubjectsBtn.addEventListener('click', function() {
+                        resetSubjectsToDefault();
+                    });
+
+                    generateShareBtn.addEventListener('click', function() {
+                        const link = generateShareLink();
+                        shareLinkInput.value = link;
+                        navigator.clipboard.writeText(link).then(() => {
+                            loadMessage.textContent = '🔗 Линкот е копиран во клипборд! (viewonly)';
+                            loadMessage.style.color = '#1f7a4a';
+                        }).catch(() => {
+                            loadMessage.textContent = '🔗 Линкот е генериран (копирај го рачно).';
+                            loadMessage.style.color = '#1f3a6b';
+                        });
+                    });
+
+                    copyShareBtn.addEventListener('click', function() {
+                        const link = shareLinkInput.value;
+                        if (link) {
+                            navigator.clipboard.writeText(link).then(() => {
+                                loadMessage.textContent = '📋 Линкот е копиран!';
+                                loadMessage.style.color = '#1f7a4a';
+                            }).catch(() => {
+                                loadMessage.textContent = '❌ Неуспешно копирање.';
+                                loadMessage.style.color = '#b22234';
+                            });
+                        } else {
+                            loadMessage.textContent = '⚠️ Прво генерирајте линк.';
+                            loadMessage.style.color = '#b22234';
+                        }
+                    });
+                }
+
+                printBtn.addEventListener('click', function() {
+                    window.print();
+                });
+
+                if (viewOnly && Object.keys(schedule).length === 0) {
+                    loadFromStorage();
+                    if (Object.keys(schedule).length > 0) {
+                        goToday();
+                    } else {
+                        tableBody.innerHTML =
+                            '<tr><td colspan="6" style="padding:20px;text-align:center;color:#888;">Нема распоред за приказ.</td></tr>';
+                        updateHeader();
+                    }
+                }
+
+                loadSubjectsFromStorage();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+    </script>
+</body>
+</html>

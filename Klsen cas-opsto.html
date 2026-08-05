@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Програма за класен час – 36 часа</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f2f6fc;
+            padding: 2rem 1.5rem;
+            color: #0b1a33;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            padding: 2rem 2rem 2.5rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #0b1a33;
+            border-left: 6px solid #2563eb;
+            padding-left: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .sub {
+            color: #475569;
+            font-size: 1rem;
+            margin-left: 1.8rem;
+            margin-bottom: 0.4rem;
+            border-bottom: 1px solid #e9edf2;
+            padding-bottom: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .teacher-info {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #0b1a33;
+            background: #eef2f6;
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+            display: inline-block;
+        }
+
+        .school-year {
+            font-weight: 600;
+            color: #2563eb;
+            background: #dbeafe;
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+        }
+
+        /* filter */
+        .filter-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .filter-group select {
+            padding: 0.5rem 2rem 0.5rem 1rem;
+            border-radius: 60px;
+            border: 1px solid #dce1e9;
+            background: #f1f5f9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23475669' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 1rem center;
+            background-size: 12px;
+            appearance: none;
+            font-size: 0.95rem;
+            color: #0b1a33;
+            cursor: pointer;
+            transition: 0.2s;
+            min-width: 200px;
+        }
+
+        .filter-group select:focus {
+            border-color: #2563eb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            background-color: #ffffff;
+        }
+
+        .stats {
+            font-size: 0.95rem;
+            background: #eef2f6;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            color: #1e293b;
+            white-space: nowrap;
+        }
+
+        .stats span {
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        /* grid */
+        .program-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .card {
+            background: #fafcff;
+            border-radius: 1.2rem;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem 1.3rem 1.2rem;
+            transition: all 0.15s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 8px 20px -8px rgba(37, 99, 235, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .card.selected {
+            border-color: #2563eb;
+            background: #f0f7ff;
+            box-shadow: 0 8px 20px -8px rgba(37, 99, 235, 0.25);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: baseline;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+
+        .hour-badge {
+            background: #1e293b;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+        }
+
+        .month-tag {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #2563eb;
+            background: #dbeafe;
+            padding: 0.15rem 0.9rem;
+            border-radius: 30px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0.4rem 0 0.2rem;
+            color: #0b1a33;
+            line-height: 1.3;
+        }
+
+        .card-activities {
+            margin: 0.6rem 0 0.2rem;
+            font-size: 0.95rem;
+            color: #1e293b;
+        }
+
+        .card-activities strong {
+            color: #075985;
+            font-weight: 600;
+        }
+
+        .card-desc {
+            font-size: 0.92rem;
+            color: #334155;
+            line-height: 1.5;
+            margin-top: 0.5rem;
+            border-top: 1px dashed #dce1e9;
+            padding-top: 0.7rem;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #64748b;
+            font-size: 1.1rem;
+            background: #f8fafc;
+            border-radius: 2rem;
+        }
+
+        .footer-note {
+            margin-top: 2rem;
+            text-align: right;
+            font-size: 0.9rem;
+            color: #64748b;
+            border-top: 1px solid #e9edf2;
+            padding-top: 1.2rem;
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .container { padding: 1.2rem; }
+            h1 { font-size: 1.6rem; padding-left: 0.8rem; }
+            .sub { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .filter-wrap { flex-direction: column; align-items: stretch; }
+            .filter-group { flex-wrap: wrap; }
+            .filter-group select { flex: 1; min-width: 150px; }
+            .stats { align-self: flex-start; }
+            .program-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>📋 Програма за класен час</h1>
+    <div class="sub">
+        <span>
+            <span class="teacher-info">👨‍🏫 Класен раководител: проф. Решат Маловски</span>
+        </span>
+        <span class="school-year" id="schoolYearDisplay">2025/2026</span>
+    </div>
+
+    <div class="filter-wrap">
+        <div class="filter-group">
+            <select id="hourSelect">
+                <option value="">📌 Сите часови</option>
+            </select>
+            <div class="stats">Прикажани <span id="visibleCount">36</span> од <span id="totalCount">36</span> часа</div>
+        </div>
+    </div>
+
+    <div class="program-grid" id="programGrid">
+        <!-- will be filled by JS -->
+    </div>
+
+    <div class="footer-note">
+        <span>📅 изработено врз основа на Предлог програма на класниот раководител</span>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // --------------------------------------------------------------
+        // 36 ЧАСА – ПРОГРАМА
+        // --------------------------------------------------------------
+        const programData = [
+            // СЕПТЕМВРИ (часови 1–4)
+            {
+                month: 'Септември',
+                title: 'Запознавање и училишен ред',
+                activities: 'Прозивка, куќен ред, дежурства; права и обврски на учениците.',
+                description: 'Запознавање со новите ученици, распределба на дежурства, преглед на Правилникот за учениците. Дискусија за одговорноста и правата во гимназијата.'
+            },
+            {
+                month: 'Септември',
+                title: 'Избор на класна заедница',
+                activities: 'Избор на претседател, заменик, делегат; улога и функции.',
+                description: 'Демократска постапка за избор на ученичко раководство на паралелката. Објаснување на задачите на делегатот во училишниот ученички парламент.'
+            },
+            {
+                month: 'Септември',
+                title: 'Педагошки мерки',
+                activities: 'Причини, начин и постапка за изрекување педагошки мерки.',
+                description: 'Запознавање со педагошките мерки предвидени со закон и училишниот правилник. Превентивно делување и одговорно однесување.'
+            },
+            {
+                month: 'Септември',
+                title: 'Училишен имот – наша грижа',
+                activities: 'Формирање позитивен однос кон училишниот инвентар и простории.',
+                description: 'Разговор за важноста на чувањето на училишниот имот. Иницирање акција за уредување на училницата.'
+            },
+            // ОКТОМВРИ (часови 5–8)
+            {
+                month: 'Октомври',
+                title: 'Адаптација и адолесценција',
+                activities: 'Разговор за адаптација (I год.) и адолесценција (II–IV год.).',
+                description: 'Поттикнување на отворен дијалог за предизвиците на новото опкружување и развојните промени кај адолесцентите.'
+            },
+            {
+                month: 'Октомври',
+                title: '11 Октомври – празник',
+                activities: 'Одбележување на 11 Октомври; историски значај.',
+                description: 'Кратка презентација за настаните поврзани со 11 Октомври. Дискусија за вредноста на слободата и националниот идентитет.'
+            },
+            {
+                month: 'Октомври',
+                title: 'Ден на Обединетите нации',
+                activities: 'Одбележување на Денот на ООН; цели и вредности.',
+                description: 'Запознавање со мисијата на ООН, одржливиот развој и улогата на младите во градењето мир.'
+            },
+            {
+                month: 'Октомври',
+                title: 'Спорт – достигнувања',
+                activities: 'Слободна дискусија за спортски достигнувања и фер-плеј.',
+                description: 'Разговор за значењето на спортот, тимскиот дух и здравствените придобивки. Поттикнување на физичка активност.'
+            },
+            // НОЕМВРИ (часови 9–13)
+            {
+                month: 'Ноември',
+                title: 'Однесување во училиште и надвор',
+                activities: 'Како се однесуваме во училиштето и надвор од него.',
+                description: 'Анализа на примери на културно и некултурно однесување. Градење на личен интегритет и почит кон другите.'
+            },
+            {
+                month: 'Ноември',
+                title: 'Подготовка за наставнички совет',
+                activities: 'Подготовка за Наставнички совет и родителски средби.',
+                description: 'Преглед на успехот и редовноста, идентификување на ученици на кои им е потребна поддршка.'
+            },
+            {
+                month: 'Ноември',
+                title: 'Заклучоци од совети',
+                activities: 'Дискусија по донесените заклучоци од Наставничкиот совет.',
+                description: 'Информирање на учениците за заклучоците и препораките. Заедничко планирање на подобрувања.'
+            },
+            {
+                month: 'Ноември',
+                title: 'Превенција од зависности',
+                activities: 'Алкохол, пушење, дрога – опасни пороци.',
+                description: 'Едукативен разговор за штетните последици од зависностите. Градење на отпорност и здрави животни навики.'
+            },
+            {
+                month: 'Ноември',
+                title: 'Демократија и толеранција',
+                activities: 'Тема: „Демократија, сожителство, толеранција и солидарност“',
+                description: 'Интерактивна дискусија за основните вредности на демократското општество и улогата на поединецот.'
+            },
+            // ДЕКЕМВРИ (часови 14–17)
+            {
+                month: 'Декември',
+                title: 'СИДА – превенција и заштита',
+                activities: 'Превенција од ХИВ/СИДА, безбедно однесување.',
+                description: 'Едукација за начините на пренос, превенција и борба против стигматизацијата на лицата со ХИВ.'
+            },
+            {
+                month: 'Декември',
+                title: 'Културни настани',
+                activities: 'Културно-уметнички збиднувања и нивната посетеност.',
+                description: 'Поттикнување на интересот за театар, музеи, концерти. Разговор за културниот идентитет.'
+            },
+            {
+                month: 'Декември',
+                title: 'Права на децата',
+                activities: 'Конвенција за правата на детето – запознавање.',
+                description: 'Преглед на клучните права од Конвенцијата. Дискусија за нивната примена во секојдневниот живот.'
+            },
+            {
+                month: 'Декември',
+                title: 'Подготовка за I полугодие',
+                activities: 'Увид во успехот и редовноста; подготовка за совети.',
+                description: 'Анализа на досегашниот успех, поттикнување на самокритичност и планирање на поправни активности.'
+            },
+            // ЈАНУАРИ (час 18)
+            {
+                month: 'Јануари',
+                title: 'Анализа на успех и редовност',
+                activities: 'Анализа на постигнатиот успех и редовноста на учениците.',
+                description: 'Преглед на оценките и изостаноците. Индивидуални разговори со ученици кои имаат потешкотии.'
+            },
+            // ФЕВРУАРИ (часови 19–22)
+            {
+                month: 'Февруари',
+                title: 'Насилство на телевизија',
+                activities: 'Слободна дискусија: „Насилството на телевизијата – апел до медиумите“',
+                description: 'Критичко осврт кон медиумските содржини. Влијание на насилството врз младата публика.'
+            },
+            {
+                month: 'Февруари',
+                title: 'Естетски изглед на ученикот',
+                activities: 'Разговор за естетски изглед, хигиена и самопочит.',
+                description: 'Поттикнување на личната нега и уредност како дел од културата на однесување.'
+            },
+            {
+                month: 'Февруари',
+                title: 'Доцнење и изостанување',
+                activities: 'Како да се надмине доцнењето и изостанувањето од часови.',
+                description: 'Анализа на причините и последиците. Заедничко донесување мерки за подобрување на редовноста.'
+            },
+            {
+                month: 'Февруари',
+                title: 'Стимулативни форми',
+                activities: 'Изнаоѓање на стимулативни форми и мерки за поттикнување на подобар успех.',
+                description: 'Креирање на систем на награди и признанија за напредокот, во соработка со учениците.'
+            },
+            // МАРТ (часови 23–26)
+            {
+                month: 'Март',
+                title: 'Потешкотии во учењето',
+                activities: 'Разговор за потешкотиите во совладувањето на наставните содржини.',
+                description: 'Отворен дијалог за предметите кои предизвикуваат проблеми. Договор за дополнителна поддршка.'
+            },
+            {
+                month: 'Март',
+                title: 'Поединецот во групата',
+                activities: 'Откривање на местото и улогата на поединецот во групата.',
+                description: 'Вежби за тимска работа и самоспознавање. Поттикнување на соработка и емпатија.'
+            },
+            {
+                month: 'Март',
+                title: 'Ден на пролетта',
+                activities: 'Активности по повод денот на пролетта.',
+                description: 'Креативни работилници, украсување на училницата, разговор за симболиката на пролетта.'
+            },
+            {
+                month: 'Март',
+                title: 'Училишен двор',
+                activities: 'Како сакам да изгледа училишниот двор – акција во истиот.',
+                description: 'Планирање и реализација на акција за уредување на училишниот двор.'
+            },
+            // АПРИЛ (часови 27–30)
+            {
+                month: 'Април',
+                title: 'Однесување дома, на училиште, на улица',
+                activities: 'Како се однесувам дома, на училиште, на улица.',
+                description: 'Анализа на различните улоги и очекувања во различни средини. Градење на интегритет.'
+            },
+            {
+                month: 'Април',
+                title: 'Подготовка за совет и средби',
+                activities: 'Подготовка за Наставнички совет и родителски средби.',
+                description: 'Преглед на состојбата со успехот и однесувањето, подготовка на извештаи.'
+            },
+            {
+                month: 'Април',
+                title: 'Совет по родителска средба',
+                activities: 'Подготовки за совет на паралелката и Наставнички совет.',
+                description: 'Анализа на заклучоците од родителската средба и планирање на понатамошни чекори.'
+            },
+            {
+                month: 'Април',
+                title: 'Човек и природа',
+                activities: 'Човекот и природата – единствен субјект; иднина.',
+                description: 'Еколошка свест, одржлив развој и одговорност кон животната средина.'
+            },
+            // МАЈ (часови 31–33)
+            {
+                month: 'Мај',
+                title: 'Што не ми се допаѓа во мојот град',
+                activities: 'Што забележувам во последно време во мојот град и што не ми се допаѓа.',
+                description: 'Граѓанска иницијатива – идентификување на проблеми и предлози за подобрување.'
+            },
+            {
+                month: 'Мај',
+                title: 'Кирил и Методиј',
+                activities: 'Кирил и Методиј – првите словенски просветители.',
+                description: 'Одбележување на Денот на словенските просветители. Нивното дело и значење за словенската култура.'
+            },
+            {
+                month: 'Мај',
+                title: 'Младиот човек и демократските промени',
+                activities: 'Местото и улогата на младиот човек во услови на современи демократски промени.',
+                description: 'Активно учество на младите во општеството, граѓански активизам и волонтерство.'
+            },
+            // ЈУНИ (часови 34–36)
+            {
+                month: 'Јуни',
+                title: 'Цели и остварувања',
+                activities: 'Дали го постигнав она што го поставив како цел на почетокот на учебната година?',
+                description: 'Самопроценка и рефлексија за личните цели. Поттикнување на самосвест и планирање за иднината.'
+            },
+            {
+                month: 'Јуни',
+                title: 'Успех и редовност – совет на годината',
+                activities: 'Разгледување на успехот и редовноста – подготовки за совет на годината.',
+                description: 'Финален преглед на успехот и редовноста. Донесување заклучоци за подобрување во следната година.'
+            },
+            {
+                month: 'Јуни',
+                title: 'Завршна евалуација',
+                activities: 'Завршна евалуација на програмата и предлози за следната година.',
+                description: 'Отворена дискусија за квалитетот на часовите, предлози за нови теми и начини на работа.'
+            }
+        ];
+
+        // --------------------------------------------------------------
+        // ДИНАМИЧКА УЧЕБНА ГОДИНА
+        // --------------------------------------------------------------
+        function getSchoolYear() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth(); // 0 = јануари, 11 = декември
+            // ако сме од септември (8) до декември (11) -> year/(year+1)
+            if (month >= 8) {
+                return year + '/' + (year + 1);
+            } else {
+                return (year - 1) + '/' + year;
+            }
+        }
+        document.getElementById('schoolYearDisplay').textContent = getSchoolYear();
+
+        // --------------------------------------------------------------
+        // РЕНДЕРИРАЊЕ СО ФИЛТРИ
+        // --------------------------------------------------------------
+        const grid = document.getElementById('programGrid');
+        const hourSelect = document.getElementById('hourSelect');
+        const visibleSpan = document.getElementById('visibleCount');
+        const totalSpan = document.getElementById('totalCount');
+
+        // Пополни го select со опции за сите часови
+        function populateSelect() {
+            let options = '<option value="">📌 Сите часови</option>';
+            programData.forEach((item, index) => {
+                const num = index + 1;
+                options += `<option value="${index}">Час ${num}: ${item.title}</option>`;
+            });
+            hourSelect.innerHTML = options;
+        }
+        populateSelect();
+
+        totalSpan.textContent = programData.length;
+
+        let selectedHourIndex = null; // null = сите
+
+        function render() {
+            const selectValue = hourSelect.value;
+            // ако е избрана опција од select (вредност != ""), користи го тој индекс
+            if (selectValue !== '') {
+                selectedHourIndex = parseInt(selectValue, 10);
+            } else {
+                selectedHourIndex = null;
+            }
+
+            let visible = 0;
+            let html = '';
+
+            programData.forEach((item, index) => {
+                const hourNum = index + 1;
+                // Дали треба да се прикаже?
+                let show = true;
+                if (selectedHourIndex !== null && selectedHourIndex !== index) {
+                    show = false;
+                }
+
+                if (!show) return;
+
+                visible++;
+                const selectedClass = (selectedHourIndex === index) ? ' selected' : '';
+                html += `
+                    <div class="card${selectedClass}" data-index="${index}">
+                        <div class="card-header">
+                            <span class="hour-badge">Час ${hourNum}</span>
+                            <span class="month-tag">${item.month}</span>
+                        </div>
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-activities"><strong>Активности:</strong> ${item.activities}</div>
+                        <div class="card-desc">${item.description}</div>
+                    </div>
+                `;
+            });
+
+            if (visible === 0) {
+                html = `<div class="no-results">🔍 Нема пронајдено часови</div>`;
+            }
+
+            grid.innerHTML = html;
+            visibleSpan.textContent = visible;
+
+            // Додај клик на картичките за брз избор
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.index, 10);
+                    if (!isNaN(idx)) {
+                        // Постави го select на тој час
+                        hourSelect.value = idx;
+                        // Изврши рендерирање
+                        render();
+                    }
+                });
+            });
+        }
+
+        // иницијално прикажи
+        render();
+
+        // настан
+        hourSelect.addEventListener('change', function() {
+            render();
+        });
+
+    })();
+</script>
+
+</body>
+</html>

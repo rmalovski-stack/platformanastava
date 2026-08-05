@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сумативно Оценување - Математика</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 4px solid #1a237e;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .header .school-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a237e;
+            letter-spacing: 2px;
+        }
+        .header .teacher-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0d47a1;
+            margin-top: 5px;
+        }
+        .header .subject-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a237e;
+            margin-top: 3px;
+        }
+        .header .work-type-display {
+            font-size: 26px;
+            font-weight: 800;
+            color: #c62828;
+            margin-top: 8px;
+            padding: 8px 20px;
+            background: #ffebee;
+            border-radius: 8px;
+            display: inline-block;
+            border: 2px solid #c62828;
+        }
+        .header .work-topic-display {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a237e;
+            margin-top: 5px;
+            padding: 5px 15px;
+            background: #e8eaf6;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: #e8eaf6;
+            padding: 18px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            align-items: end;
+        }
+        .filters label {
+            font-weight: 600;
+            color: #1a237e;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .filters select, .filters input {
+            padding: 7px 12px;
+            border: 1px solid #c5cae9;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+            min-width: 120px;
+        }
+        .filters select[multiple] {
+            min-width: 200px;
+            min-height: 80px;
+            padding: 5px;
+        }
+        .filters select[multiple] option {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        .filters select[multiple] option:checked {
+            background: #1a237e;
+            color: white;
+        }
+        .filters .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .filters .filter-group.wide {
+            min-width: 250px;
+        }
+        .filters button {
+            padding: 7px 18px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+            height: 36px;
+        }
+        .filters button:hover {
+            background: #283593;
+        }
+        .filters .btn-success {
+            background: #2e7d32;
+        }
+        .filters .btn-success:hover {
+            background: #388e3c;
+        }
+        .filters .btn-danger {
+            background: #c62828;
+        }
+        .filters .btn-danger:hover {
+            background: #b71c1c;
+        }
+        .filters .btn-close {
+            background: #4a148c;
+        }
+        .filters .btn-close:hover {
+            background: #6a1b9a;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        th {
+            background: #1a237e;
+            color: white;
+            padding: 6px 4px;
+            text-align: center;
+            border: 1px solid #0d1445;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td {
+            padding: 4px 3px;
+            text-align: center;
+            border: 1px solid #c5cae9;
+            vertical-align: middle;
+        }
+        tr:nth-child(even) {
+            background: #f8f9ff;
+        }
+        tr:hover {
+            background: #e3e8f7;
+        }
+        td input[type="number"] {
+            width: 42px;
+            padding: 3px 2px;
+            text-align: center;
+            border: 1px solid #9fa8da;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        td input[type="number"]:focus {
+            border-color: #1a237e;
+            outline: none;
+            box-shadow: 0 0 5px rgba(26,35,126,0.3);
+        }
+        .student-name {
+            font-weight: 600;
+            color: #1a237e;
+        }
+        .grade-5 { background: #a5d6a7 !important; }
+        .grade-4 { background: #c8e6c9 !important; }
+        .grade-3 { background: #fff9c4 !important; }
+        .grade-2 { background: #ffccbc !important; }
+        .grade-1 { background: #ef9a9a !important; }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .summary-card {
+            background: #e8eaf6;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .summary-card .number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a237e;
+        }
+        .summary-card .label {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .chart-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            border: 1px solid #c5cae9;
+        }
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 4px 0;
+        }
+        .chart-bar .bar-label {
+            width: 100px;
+            font-size: 12px;
+            text-align: right;
+        }
+        .chart-bar .bar-track {
+            flex: 1;
+            height: 22px;
+            background: #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .chart-bar .bar-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.5s;
+        }
+        .chart-bar .bar-value {
+            width: 40px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .upload-area {
+            border: 2px dashed #9fa8da;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 10px 0;
+            background: #fafbff;
+        }
+        .upload-area input[type="file"] {
+            display: none;
+        }
+        .upload-area label {
+            background: #1a237e;
+            color: white;
+            padding: 8px 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-block;
+            font-size: 13px;
+        }
+        .upload-area label:hover {
+            background: #283593;
+        }
+
+        .footer {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #c5cae9;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #777;
+        }
+
+        @media print {
+            .filters, .upload-area, .chart-container, .no-print {
+                display: none !important;
+            }
+            body { background: white; padding: 10px; }
+            .container { box-shadow: none; }
+            th { background: #1a237e !important; color: white !important; }
+            .header .work-type-display { background: #ffebee !important; }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .grade-scale-info {
+            background: #e8eaf6;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 13px;
+        }
+        .grade-scale-info span {
+            margin: 0 8px;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .selected-topics-info {
+            background: #e3f2fd;
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin: 5px 0 10px 0;
+            font-size: 13px;
+            color: #0d47a1;
+            border-left: 4px solid #1a237e;
+        }
+        .selected-topics-info strong {
+            color: #1a237e;
+        }
+
+        /* Modal for close */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+        .modal-box h2 {
+            color: #1a237e;
+            margin-bottom: 10px;
+        }
+        .modal-box p {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .modal-box .btn-yes {
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .modal-box .btn-yes:hover {
+            background: #b71c1c;
+        }
+        .modal-box .btn-no {
+            background: #757575;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .modal-box .btn-no:hover {
+            background: #616161;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Modal for closing -->
+<div class="modal-overlay" id="closeModal">
+    <div class="modal-box">
+        <h2>⚠️ Затвори ја апликацијата</h2>
+        <p>Дали сте сигурни дека сакате да ја затворите апликацијата?<br>
+        Сите податоци ќе бидат зачувани.</p>
+        <button class="btn-yes" onclick="closeApp()">✅ Да, затвори</button>
+        <button class="btn-no" onclick="document.getElementById('closeModal').classList.remove('active')">❌ Откажи</button>
+    </div>
+</div>
+
+<div class="container" id="app">
+    <div class="header">
+        <div class="school-name">СОУ „28 Ноември“ - Дебар</div>
+        <div class="teacher-name">Проф. Решат Маловски</div>
+        <div class="subject-name">Математика</div>
+        <div id="workTypeDisplay" class="work-type-display">📝 Контролна писмена работа</div>
+        <div id="workTopicDisplay" class="work-topic-display">Избрани теми: <span id="selectedTopicsList">-</span></div>
+    </div>
+
+    <!-- Grade Scale Info -->
+    <div class="grade-scale-info">
+        <strong>📊 Скала за оценување:</strong>
+        <span style="background:#ef9a9a;">0-30 = Недоволен (1)</span>
+        <span style="background:#ffccbc;">31-50 = Доволен (2)</span>
+        <span style="background:#fff9c4;">51-70 = Добар (3)</span>
+        <span style="background:#c8e6c9;">71-85 = Многу добар (4)</span>
+        <span style="background:#a5d6a7;">86-100 = Одличен (5)</span>
+    </div>
+
+    <!-- Selected Topics Display -->
+    <div class="selected-topics-info" id="selectedTopicsInfo">
+        <strong>📌 Избрани теми за работа:</strong> 
+        <span id="selectedTopicsDisplay">-</span>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+        <div class="filter-group">
+            <label>📋 Тип на работа</label>
+            <select id="workTypeFilter" onchange="updateHeaderDisplay(); render();">
+                <option value="писмена">Контролна писмена работа</option>
+                <option value="тест">Контролен тест</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>📅 Учебна година</label>
+            <select id="yearFilter">
+                <option value="2026/2027">2026/2027</option>
+                <option value="2027/2028">2027/2028</option>
+                <option value="2028/2029">2028/2029</option>
+                <option value="2029/2030">2029/2030</option>
+                <option value="2030/2031">2030/2031</option>
+                <option value="2031/2032">2031/2032</option>
+                <option value="2032/2033">2032/2033</option>
+                <option value="2033/2034">2033/2034</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>🎓 Година</label>
+            <select id="classYear" onchange="updateTopicOptions(); render();">
+                <option value="I">I година</option>
+                <option value="II">II година</option>
+                <option value="III">III година</option>
+                <option value="IV">IV година</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>📚 Паралелка</label>
+            <select id="classFilter">
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7" selected>7</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>👥 Група</label>
+            <select id="groupFilter">
+                <option value="I">I (прва)</option>
+                <option value="II">II (втора)</option>
+            </select>
+        </div>
+        <div class="filter-group wide">
+            <label>📖 Теми (изберете повеќе со Ctrl+клик)</label>
+            <select id="topicFilter" multiple onchange="updateSelectedTopics(); render();">
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>🔍 Пребарај</label>
+            <input type="text" id="searchInput" placeholder="Име или презиме..." style="width:140px;">
+        </div>
+        <button onclick="addStudent()">➕ Додади</button>
+        <button class="btn-success" onclick="exportExcel()">📥 Excel</button>
+        <button class="btn-danger" onclick="clearAll()">🗑️ Избриши</button>
+        <button class="btn-close" onclick="document.getElementById('closeModal').classList.add('active')">❌ Затвори</button>
+    </div>
+
+    <!-- Upload Excel -->
+    <div class="upload-area no-print">
+        <p><strong>📤 Увези ученици од Excel</strong> (формат: Име, Презиме, бодови за секоја задача)</p>
+        <label for="excelUpload">Избери Excel фајл</label>
+        <input type="file" id="excelUpload" accept=".xlsx,.xls">
+        <span id="uploadStatus" style="margin-left:15px;color:#2e7d32;"></span>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary" id="summaryCards">
+        <div class="summary-card"><div class="number" id="studentCount">0</div><div class="label">👨‍🎓 Вкупно ученици</div></div>
+        <div class="summary-card"><div class="number" id="avgGrade">0.0</div><div class="label">⭐ Просечна оценка</div></div>
+        <div class="summary-card"><div class="number" id="avgPoints">0.0</div><div class="label">📊 Просечни бодови</div></div>
+        <div class="summary-card"><div class="number" id="passRate">0%</div><div class="label">✅ Процент положени</div></div>
+        <div class="summary-card"><div class="number" id="summativeCount">0</div><div class="label">📝 Сумативни оценки</div></div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-container no-print">
+        <h3>📈 Распределба на оценки</h3>
+        <div id="gradeChart"></div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+        <table id="studentTable">
+            <thead>
+                <tr>
+                    <th>Р.б.</th>
+                    <th>Име</th>
+                    <th>Презиме</th>
+                    <th>Уч. година</th>
+                    <th>Год.</th>
+                    <th>Пар.</th>
+                    <th>Гр.</th>
+                    <th>Тема</th>
+                    <th>Тип</th>
+                    <th>З1</th><th>З2</th><th>З3</th><th>З4</th><th>З5</th>
+                    <th>З6</th><th>З7</th><th>З8</th><th>З9</th><th>З10</th>
+                    <th>Д1</th><th>Д2</th><th>Д3</th><th>Д4</th><th>Д5</th>
+                    <th>Зад1</th><th>Зад2</th><th>Зад3</th><th>Зад4</th><th>Зад5</th>
+                    <th>Вкупно</th>
+                    <th>Оценка</th>
+                    <th>✕</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Rows inserted by JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-top:15px;text-align:center;color:#888;font-size:11px;">
+        * Сумативно оценување - конечна оценка за темата според освоените бодови<br>
+        <strong>Скала:</strong> 0-30 = Недоволен (1) | 31-50 = Доволен (2) | 51-70 = Добар (3) | 71-85 = Многу добар (4) | 86-100 = Одличен (5)
+    </div>
+
+    <div class="footer">
+        <span>© 2026 СОУ „28 Ноември“ - Дебар</span>
+        <span>Проф. Решат Маловски</span>
+        <span>Верзија 4.0</span>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+    // ==================== CONFIG ====================
+    const MAX_POINTS = 100;
+    const TASK_NAMES = ['З1','З2','З3','З4','З5','З6','З7','З8','З9','З10','Д1','Д2','Д3','Д4','Д5','Зад1','Зад2','Зад3','Зад4','Зад5'];
+    const TASK_MAX = [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,15,15,14,12,16];
+
+    // Теми по години
+    const TOPICS = {
+        'I': [
+            'Тема 1: Броеви и операции со броеви',
+            'Тема 2: Алгебарски рационални изрази',
+            'Тема 3: Функција, равенка, систем и неравенка',
+            'Тема 4: Геометрија',
+            'Тема 5: Мерење',
+            'Тема 6: Работа со податоци'
+        ],
+        'II': [
+            'Тема 1: Корени и комплексни броеви',
+            'Тема 2: Квадратни равенки и равенки што се сведуваат на квадратни',
+            'Тема 3: Квадратна функција, квадратна неравенка и систем квадратни неравенки',
+            'Тема 4: Елементи од веројатност',
+            'Тема 5: Геометрија',
+            'Тема 6: Мерење'
+        ],
+        'III': [
+            'Тема 1: Експоненцијална и логаритамска функција',
+            'Тема 2: Тригонометрија',
+            'Тема 3: Елементи од комбинаторика и веројатност',
+            'Тема 4: Аналитичка геометрија'
+        ],
+        'IV': [
+            'Тема 1: Низи и прогресии',
+            'Тема 2: Функции и гранични вредности на функции',
+            'Тема 3: Диференцијално сметање (извод на функција)',
+            'Тема 4: Диференцијално сметање (примена на изводите)',
+            'Тема 5: Веројатност',
+            'Тема 6: Статистика'
+        ]
+    };
+
+    let students = [];
+    let nextId = 1;
+
+    // ==================== GRADE CALC ====================
+    function getGrade(points) {
+        if (points >= 86) return 5;
+        if (points >= 71) return 4;
+        if (points >= 51) return 3;
+        if (points >= 31) return 2;
+        return 1;
+    }
+
+    function getGradeText(points) {
+        const g = getGrade(points);
+        const names = ['Недоволен (1)', 'Доволен (2)', 'Добар (3)', 'Многу добар (4)', 'Одличен (5)'];
+        return names[g-1];
+    }
+
+    // ==================== HEADER UPDATE ====================
+    function updateHeaderDisplay() {
+        const workType = document.getElementById('workTypeFilter').value;
+        const typeDisplay = document.getElementById('workTypeDisplay');
+        
+        if (workType === 'писмена') {
+            typeDisplay.textContent = '📝 Контролна писмена работа';
+            typeDisplay.style.color = '#c62828';
+        } else {
+            typeDisplay.textContent = '📋 Контролен тест';
+            typeDisplay.style.color = '#0d47a1';
+        }
+        updateSelectedTopics();
+    }
+
+    function updateSelectedTopics() {
+        const select = document.getElementById('topicFilter');
+        const selected = Array.from(select.selectedOptions).map(opt => opt.value);
+        const display = document.getElementById('selectedTopicsDisplay');
+        const list = document.getElementById('selectedTopicsList');
+        
+        if (selected.length === 0) {
+            display.textContent = '- Нема избрани теми -';
+            list.textContent = '-';
+        } else {
+            display.textContent = selected.join(' | ');
+            list.textContent = selected.join(' | ');
+        }
+    }
+
+    // ==================== STORAGE ====================
+    function saveData() {
+        try {
+            localStorage.setItem('students_data_math_s', JSON.stringify(students));
+            localStorage.setItem('next_id_math_s', nextId);
+        } catch(e) {
+            console.warn('Cannot save to localStorage:', e);
+        }
+    }
+
+    function loadData() {
+        try {
+            const data = localStorage.getItem('students_data_math_s');
+            const id = localStorage.getItem('next_id_math_s');
+            if (data) {
+                students = JSON.parse(data);
+                nextId = id ? parseInt(id) : students.length + 1;
+            } else {
+                // Default demo data
+                const defaultTopics = TOPICS['I'];
+                students = [
+                    { id: 1, name: 'Ана', surname: 'Петрова', year: '2026/2027', classYear: 'I', class: '7', group: 'I', topic: defaultTopics[0], workType: 'писмена', tasks: [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,12,14,10,10,14] },
+                    { id: 2, name: 'Марко', surname: 'Иванов', year: '2026/2027', classYear: 'I', class: '7', group: 'I', topic: defaultTopics[0], workType: 'писмена', tasks: [2,2,0,2,2,2,2,0,2,2,2,0,2,2,2,10,8,12,8,10] },
+                    { id: 3, name: 'Елена', surname: 'Стојанова', year: '2026/2027', classYear: 'I', class: '7', group: 'II', topic: defaultTopics[0], workType: 'тест', tasks: [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,15,15,14,12,16] },
+                    { id: 4, name: 'Никола', surname: 'Димитров', year: '2026/2027', classYear: 'I', class: '7', group: 'II', topic: defaultTopics[0], workType: 'тест', tasks: [2,2,2,2,0,2,0,2,2,2,2,2,2,2,2,10,10,8,10,8] },
+                    { id: 5, name: 'Софија', surname: 'Митрева', year: '2026/2027', classYear: 'I', class: '7', group: 'I', topic: defaultTopics[0], workType: 'писмена', tasks: [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,14,13,12,12,15] },
+                ];
+                nextId = 6;
+                saveData();
+            }
+        } catch(e) {
+            console.warn('Cannot load from localStorage:', e);
+            students = [];
+            nextId = 1;
+        }
+        updateTopicOptions();
+        updateHeaderDisplay();
+        render();
+    }
+
+    // ==================== RENDER ====================
+    function render() {
+        const tbody = document.getElementById('tableBody');
+        const year = document.getElementById('yearFilter').value;
+        const classYear = document.getElementById('classYear').value;
+        const cls = document.getElementById('classFilter').value;
+        const group = document.getElementById('groupFilter').value;
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const workType = document.getElementById('workTypeFilter').value;
+        const select = document.getElementById('topicFilter');
+        const selectedTopics = Array.from(select.selectedOptions).map(opt => opt.value);
+
+        let filtered = students.filter(s => 
+            s.year === year && 
+            s.classYear === classYear &&
+            s.class === cls && 
+            s.group === group &&
+            (s.name.toLowerCase().includes(search) || s.surname.toLowerCase().includes(search))
+        );
+
+        // Filter by work type
+        filtered = filtered.filter(s => s.workType === workType);
+
+        // Filter by selected topics (if any selected)
+        if (selectedTopics.length > 0) {
+            filtered = filtered.filter(s => selectedTopics.includes(s.topic));
+        }
+
+        filtered.sort((a,b) => a.surname.localeCompare(b.surname));
+
+        let totalPoints = 0;
+        let totalStudents = filtered.length;
+        let passed = 0;
+        let gradeCount = {1:0,2:0,3:0,4:0,5:0};
+
+        tbody.innerHTML = '';
+        filtered.forEach((s, idx) => {
+            const points = s.tasks.reduce((a,b) => a + b, 0);
+            const grade = getGrade(points);
+            const gradeText = getGradeText(points);
+            totalPoints += points;
+            if (grade >= 3) passed++;
+            gradeCount[grade] = (gradeCount[grade] || 0) + 1;
+
+            const workTypeLabel = s.workType === 'писмена' ? 'Писмена' : 'Тест';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${idx+1}</td>
+                <td class="student-name">${s.name}</td>
+                <td>${s.surname}</td>
+                <td>${s.year}</td>
+                <td>${s.classYear}</td>
+                <td>${s.class}</td>
+                <td>${s.group}</td>
+                <td style="font-size:10px;max-width:120px;">${s.topic || ''}</td>
+                <td style="font-size:10px;">${workTypeLabel}</td>
+                ${s.tasks.map((val, i) => `
+                    <td><input type="number" min="0" max="${TASK_MAX[i]}" value="${val}" 
+                        onchange="updateTask(${s.id}, ${i}, this.value)" 
+                        onfocus="this.select()"></td>
+                `).join('')}
+                <td><strong>${points}</strong></td>
+                <td class="grade-${grade}"><strong>${grade}</strong> (${gradeText})</td>
+                <td><button onclick="deleteStudent(${s.id})" style="background:#c62828;color:white;border:none;border-radius:4px;padding:3px 7px;cursor:pointer;font-size:11px;">✕</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Summary
+        document.getElementById('studentCount').textContent = totalStudents;
+        const avgP = totalStudents ? (totalPoints / totalStudents) : 0;
+        document.getElementById('avgPoints').textContent = avgP.toFixed(1);
+        const avgG = totalStudents ? (Object.entries(gradeCount).reduce((sum, [g,c]) => sum + parseInt(g)*c, 0) / totalStudents) : 0;
+        document.getElementById('avgGrade').textContent = avgG.toFixed(1);
+        document.getElementById('passRate').textContent = totalStudents ? Math.round((passed/totalStudents)*100) + '%' : '0%';
+        document.getElementById('summativeCount').textContent = totalStudents;
+
+        renderChart(gradeCount);
+        saveData();
+    }
+
+    function updateTopicOptions() {
+        const classYear = document.getElementById('classYear').value;
+        const topicSelect = document.getElementById('topicFilter');
+        const topics = TOPICS[classYear] || TOPICS['I'];
+        const currentSelected = Array.from(topicSelect.selectedOptions).map(opt => opt.value);
+        
+        topicSelect.innerHTML = '';
+        topics.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = t;
+            if (currentSelected.includes(t)) {
+                opt.selected = true;
+            }
+            topicSelect.appendChild(opt);
+        });
+        // If no selection, select first by default
+        if (topicSelect.selectedOptions.length === 0 && topics.length > 0) {
+            topicSelect.options[0].selected = true;
+        }
+        updateSelectedTopics();
+    }
+
+    function renderChart(counts) {
+        const container = document.getElementById('gradeChart');
+        const grades = [5,4,3,2,1];
+        const labels = ['5 (86-100) - Одличен', '4 (71-85) - Многу добар', '3 (51-70) - Добар', '2 (31-50) - Доволен', '1 (0-30) - Недоволен'];
+        const colors = ['#2e7d32','#388e3c','#f9a825','#ef6c00','#c62828'];
+        const maxVal = Math.max(1, ...Object.values(counts));
+
+        container.innerHTML = grades.map((g, i) => {
+            const val = counts[g] || 0;
+            const pct = maxVal ? (val / maxVal) * 100 : 0;
+            return `
+                <div class="chart-bar">
+                    <span class="bar-label">${labels[i]}</span>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="width:${pct}%;background:${colors[i]};"></div>
+                    </div>
+                    <span class="bar-value">${val}</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ==================== CRUD ====================
+    function updateTask(id, taskIdx, value) {
+        const student = students.find(s => s.id === id);
+        if (!student) return;
+        let v = parseFloat(value);
+        if (isNaN(v) || v < 0) v = 0;
+        if (v > TASK_MAX[taskIdx]) v = TASK_MAX[taskIdx];
+        student.tasks[taskIdx] = v;
+        saveData();
+        render();
+    }
+
+    function deleteStudent(id) {
+        if (!confirm('Избриши го ученикот?')) return;
+        students = students.filter(s => s.id !== id);
+        saveData();
+        render();
+    }
+
+    function addStudent() {
+        const name = prompt('Внеси име:');
+        if (!name) return;
+        const surname = prompt('Внеси презиме:');
+        if (!surname) return;
+        const year = document.getElementById('yearFilter').value;
+        const classYear = document.getElementById('classYear').value;
+        const cls = document.getElementById('classFilter').value;
+        const group = document.getElementById('groupFilter').value;
+        const select = document.getElementById('topicFilter');
+        const selectedTopics = Array.from(select.selectedOptions).map(opt => opt.value);
+        const topic = selectedTopics.length > 0 ? selectedTopics[0] : '';
+        const workType = document.getElementById('workTypeFilter').value;
+        const tasks = TASK_MAX.map(() => 0);
+        students.push({ id: nextId++, name, surname, year, classYear, class: cls, group, topic, workType, tasks });
+        saveData();
+        render();
+    }
+
+    function clearAll() {
+        if (!confirm('Избриши ги сите ученици?')) return;
+        students = [];
+        nextId = 1;
+        saveData();
+        render();
+    }
+
+    function closeApp() {
+        document.getElementById('closeModal').classList.remove('active');
+        // Save data before closing
+        saveData();
+        // Try to close the window/tab
+        window.close();
+        // If window.close() doesn't work (browser restriction), show message
+        alert('Апликацијата е зачувана. Можете безбедно да го затворите прелистувачот.');
+    }
+
+    // ==================== EXPORT EXCEL ====================
+    function exportExcel() {
+        const data = students.map(s => {
+            const points = s.tasks.reduce((a,b) => a + b, 0);
+            const row = {
+                'Име': s.name,
+                'Презиме': s.surname,
+                'Учебна година': s.year,
+                'Година': s.classYear,
+                'Паралелка': s.class,
+                'Група': s.group,
+                'Тема': s.topic || '',
+                'Тип на работа': s.workType === 'писмена' ? 'Контролна писмена работа' : 'Контролен тест',
+                'Вкупно бодови': points,
+                'Оценка': getGrade(points),
+                'Описна оценка': getGradeText(points)
+            };
+            TASK_NAMES.forEach((name, i) => {
+                row[name] = s.tasks[i] || 0;
+            });
+            return row;
+        });
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(data);
+        XLSX.utils.book_append_sheet(wb, ws, 'Ученици');
+        const year = document.getElementById('yearFilter').value;
+        const classYear = document.getElementById('classYear').value;
+        XLSX.writeFile(wb, `Сумативно_${year}_${classYear}_${document.getElementById('classFilter').value}.xlsx`);
+    }
+
+    // ==================== IMPORT EXCEL ====================
+    document.getElementById('excelUpload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(loadEvent) {
+            try {
+                const data = new Uint8Array(loadEvent.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(firstSheet);
+
+                let added = 0;
+                const year = document.getElementById('yearFilter').value;
+                const classYear = document.getElementById('classYear').value;
+                const cls = document.getElementById('classFilter').value;
+                const group = document.getElementById('groupFilter').value;
+                const select = document.getElementById('topicFilter');
+                const selectedTopics = Array.from(select.selectedOptions).map(opt => opt.value);
+                const defaultTopic = selectedTopics.length > 0 ? selectedTopics[0] : '';
+                const workType = document.getElementById('workTypeFilter').value;
+
+                json.forEach(row => {
+                    const name = (row['Име'] || '').trim();
+                    const surname = (row['Презиме'] || '').trim();
+                    if (!name && !surname) return;
+
+                    const tasks = TASK_NAMES.map((n, i) => {
+                        const val = parseFloat(row[n]);
+                        return isNaN(val) ? 0 : Math.min(Math.max(0, val), TASK_MAX[i]);
+                    });
+
+                    const wt = row['Тип на работа'] ? 
+                        (row['Тип на работа'].includes('писмена') ? 'писмена' : 'тест') : 
+                        workType;
+
+                    students.push({ 
+                        id: nextId++, 
+                        name: name || 'Непознат', 
+                        surname: surname || 'Ученик', 
+                        year: row['Учебна година'] || year,
+                        classYear: row['Година'] || classYear,
+                        class: row['Паралелка'] || cls,
+                        group: row['Група'] || group,
+                        topic: row['Тема'] || defaultTopic,
+                        workType: wt,
+                        tasks 
+                    });
+                    added++;
+                });
+
+                document.getElementById('uploadStatus').textContent = `✅ Увезени ${added} ученици`;
+                saveData();
+                render();
+                setTimeout(() => document.getElementById('uploadStatus').textContent = '', 3000);
+            } catch(err) {
+                alert('Грешка при читање на Excel фајлот: ' + err.message);
+            }
+        };
+        reader.readAsArrayBuffer(file);
+        this.value = '';
+    });
+
+    // ==================== FILTER EVENTS ====================
+    document.getElementById('yearFilter').addEventListener('change', render);
+    document.getElementById('classYear').addEventListener('change', function() {
+        updateTopicOptions();
+        render();
+    });
+    document.getElementById('classFilter').addEventListener('change', render);
+    document.getElementById('groupFilter').addEventListener('change', render);
+    document.getElementById('searchInput').addEventListener('input', render);
+    document.getElementById('workTypeFilter').addEventListener('change', function() {
+        updateHeaderDisplay();
+        render();
+    });
+    document.getElementById('topicFilter').addEventListener('change', function() {
+        updateSelectedTopics();
+        render();
+    });
+
+    // ==================== INIT ====================
+    loadData();
+    updateHeaderDisplay();
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.getElementById('closeModal').classList.remove('active');
+        }
+    });
+
+    // Close modal on click outside
+    document.getElementById('closeModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('active');
+        }
+    });
+</script>
+</body>
+</html>

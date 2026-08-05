@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>СОУ „28 Ноември“ – Платформа за настава</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231b3a60'/%3E%3Ctext x='50' y='72' font-size='70' text-anchor='middle' fill='white' font-family='serif'%3E%CE%A3%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        body{background:#f4f7fc;padding:0;color:#1e293b;height:100vh;overflow:hidden}
+        .app-container{display:flex;flex-direction:column;height:100vh;background:#f4f7fc}
+        .header{background:linear-gradient(135deg,#0d1b3e,#1a237e 40%,#0d47a1);padding:12px 16px 10px;flex-shrink:0;box-shadow:0 4px 20px rgba(26,35,126,0.3);text-align:center;z-index:5}
+        .header .skola{font-size:14px;font-weight:700;color:rgba(255,255,255,0.9)}
+        .header .profesor{font-size:12px;font-weight:400;color:rgba(255,255,255,0.75)}
+        .header .naslov{font-size:19px;font-weight:800;color:#fff;margin-top:2px;text-shadow:0 2px 8px rgba(0,0,0,0.15)}
+        .header .naslov span{background:rgba(255,255,255,0.12);padding:2px 12px;border-radius:30px;font-size:11px;font-weight:500;margin-left:6px;display:inline-block}
+        .main-content{flex:1;overflow-y:auto;padding:10px 14px 80px;background:#f4f7fc}
+        
+        /* ===== ХОРИЗОНТАЛНО МЕНИ (ПОДКАТЕГОРИИ) ===== */
+        .submenu-wrapper{display:none;gap:8px;flex-wrap:wrap;padding:4px 0 10px;margin:0 0 8px}
+        .submenu-wrapper.open{display:flex}
+        .submenu-item{flex:1 1 calc(50% - 8px);min-width:calc(50% - 8px);max-width:calc(50% - 8px);background:#dcfce7;padding:10px 8px;border-radius:14px;font-size:13px;font-weight:600;color:#166534;cursor:pointer;transition:all .25s;border:3px solid #86efac;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.3;box-shadow:0 2px 6px rgba(0,0,0,0.04);min-height:56px}
+        .submenu-item .sub-line1{display:block;font-size:13px}
+        .submenu-item .sub-line2{display:block;font-size:13px;font-weight:500}
+        .submenu-item.active-sub{background:#1a237e;color:#fff;border-color:#1a237e;box-shadow:0 4px 16px rgba(26,35,126,0.35);transform:scale(1.02)}
+        .submenu-item.active-sub .sub-line1,.submenu-item.active-sub .sub-line2{color:#fff}
+        .submenu-item:hover{background:#bbf7d0;border-color:#4ade80;transform:translateY(-2px)}
+        .submenu-item.active-sub:hover{background:#0d1b5e;border-color:#0d1b5e;transform:scale(1.02) translateY(-2px)}
+        @media(max-width:480px){.submenu-item{flex:1 1 calc(50% - 6px);min-width:calc(50% - 6px);max-width:calc(50% - 6px);padding:8px 4px;min-height:48px;border-radius:12px}.submenu-item .sub-line1,.submenu-item .sub-line2{font-size:11px}}
+        @media(min-width:600px){.submenu-item{flex:1 1 calc(50% - 8px);min-width:calc(50% - 8px);max-width:calc(50% - 8px);padding:12px 10px;min-height:64px;border-radius:16px}.submenu-item .sub-line1,.submenu-item .sub-line2{font-size:15px}}
+        
+        .toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;background:#f8fafc;padding:8px 12px;border-radius:12px;margin-bottom:14px}
+        .btn{padding:6px 16px;border:none;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:.2s;background:#e2e8f0;color:#1e293b;white-space:nowrap}
+        .btn-primary{background:#3b82f6;color:#fff}
+        .btn-primary:hover{background:#2563eb}
+        .btn-success{background:#22c55e;color:#fff}
+        .btn-success:hover{background:#16a34a}
+        .btn-info{background:#8b5cf6;color:#fff}
+        .btn-info:hover{background:#7c3aed}
+        .btn-danger{background:#ef4444;color:#fff}
+        .btn-danger:hover{background:#dc2626}
+        .btn-warning{background:#f59e0b;color:#fff}
+        .btn-warning:hover{background:#d97706}
+        .file-input-hidden{display:none}
+        .file-input-hidden2{display:none}
+        
+        .lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:10px 0 14px}
+        .karticka{background:#fff;padding:12px 14px;border-radius:12px;border:1px solid #e2e8f0;transition:.2s;display:flex;flex-direction:column;gap:4px}
+        .karticka:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.06);border-color:#3b82f6}
+        .karticka .naslov-html{font-weight:700;font-size:15px;color:#0f172a;word-break:break-word;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+        .karticka .naslov-html .tip-badge-sm{font-size:10px;background:#e2e8f0;padding:1px 8px;border-radius:20px;font-weight:400}
+        .karticka .datum-html{font-size:12px;color:#64748b}
+        .karticka .kategorija-badge{font-size:10px;background:#dbeafe;padding:1px 10px;border-radius:20px;color:#1e40af;display:inline-block;width:fit-content;font-weight:500}
+        .karticka .akcii{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+        .karticka .akcii .btn{padding:4px 10px;font-size:12px;flex:1;text-align:center}
+        .prazno{text-align:center;padding:30px 16px;color:#94a3b8;grid-column:1/-1}
+        .prazno span{font-size:36px;display:block;margin-bottom:6px}
+        
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#fff;border-top:2px solid #e2e8f0;padding:6px 4px env(safe-area-inset-bottom)4px;box-shadow:0 -4px 20px rgba(0,0,0,0.08);z-index:1000;height:60px;min-height:60px}
+        .tab-btn{flex:1;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:transparent;border:none;font-size:11px;font-weight:600;color:#94a3b8;cursor:pointer;transition:.25s;border-radius:12px;margin:0 4px;gap:2px;text-align:center;line-height:1.2;height:100%}
+        .tab-btn .tab-icon{font-size:22px}
+        .tab-btn .tab-label{font-size:11px;font-weight:600;white-space:nowrap}
+        .tab-btn.active{color:#1b3a60;background:#eff6ff;box-shadow:0 2px 8px rgba(59,130,246,0.12)}
+        .tab-btn:active{background:#dbeafe;transform:scale(.97)}
+        
+        .toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,0.2);display:none;z-index:2000;max-width:90%;text-align:center}
+        .toast.show{display:block;animation:fadeInUp .3s ease}
+        @keyframes fadeInUp{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+        @media(max-width:480px){.bottom-nav{height:52px;min-height:52px}.tab-btn .tab-icon{font-size:18px}.tab-btn .tab-label{font-size:10px}.header .naslov{font-size:17px}.lista{grid-template-columns:1fr}.main-content{padding:8px 10px 65px}.tab-btn{padding:4px 2px}.toast{bottom:62px}}
+        @media(min-width:600px){.bottom-nav{height:68px;min-height:68px}.tab-btn .tab-icon{font-size:26px}.tab-btn .tab-label{font-size:13px}.tab-btn{padding:10px 8px}.main-content{padding:12px 20px 85px}.toast{bottom:80px}}
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header">
+        <div class="skola">🏫 СОУ "28 Ноември" – Дебар</div>
+        <div class="profesor">👨‍🏫 Проф. Решат Маловски</div>
+        <div class="naslov">📐 Платформа за настава <span>математика</span></div>
+    </div>
+    <div class="main-content" id="mainContent">
+        <!-- ===== ХОРИЗОНТАЛНО МЕНИ (ПОДКАТЕГОРИИ) ===== -->
+        <div id="submenuContainer" class="submenu-wrapper open">
+            <div class="submenu-item active-sub" data-sub="podgotovka" onclick="filterSubcategory('podgotovka',this)">
+                <span class="sub-line1">📝 Подготовка за</span><span class="sub-line2">настава</span>
+            </div>
+            <div class="submenu-item" data-sub="nastavni" onclick="filterSubcategory('nastavni',this)">
+                <span class="sub-line1">📚 Наставни</span><span class="sub-line2">активности</span>
+            </div>
+            <div class="submenu-item" data-sub="vonnastavni" onclick="filterSubcategory('vonnastavni',this)">
+                <span class="sub-line1">🏫 Воннаставни</span><span class="sub-line2">активности</span>
+            </div>
+            <div class="submenu-item" data-sub="drugo" onclick="filterSubcategory('drugo',this)">
+                <span class="sub-line1">📌 Друго</span><span class="sub-line2">&nbsp;</span>
+            </div>
+        </div>
+
+        <!-- ===== TOOLBAR ===== -->
+        <div class="toolbar">
+            <div style="font-weight:600;font-size:14px;">📁 Датотеки</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="document.getElementById('htmlInput').click()">📄 HTML</button>
+                <input type="file" id="htmlInput" accept=".html,.htm" multiple class="file-input-hidden">
+                <button class="btn btn-warning" onclick="document.getElementById('docInput').click()">📎 Документ</button>
+                <input type="file" id="docInput" accept=".pdf,.doc,.docx,.txt,.md" multiple class="file-input-hidden">
+                <button class="btn btn-success" onclick="izveziJSON()">📤 Извези JSON</button>
+                <button class="btn btn-info" onclick="document.getElementById('jsonInput').click()">📂 Увези JSON</button>
+                <input type="file" id="jsonInput" accept=".json" class="file-input-hidden2" onchange="uvoziJSON(event)">
+                <button class="btn btn-danger" onclick="izbrisiSite()">🗑</button>
+            </div>
+        </div>
+
+        <!-- ===== ЛИСТА ===== -->
+        <div id="listaContainer" class="lista"></div>
+    </div>
+
+    <!-- ===== ДОЛНА НАВИГАЦИЈА ===== -->
+    <div class="bottom-nav" id="bottomNav">
+        <button class="tab-btn active" data-category="matematika" onclick="switchTab('matematika',this)">
+            <span class="tab-icon">📐</span><span class="tab-label">Математика</span>
+        </button>
+        <button class="tab-btn" data-category="klasen-cas" onclick="switchTab('klasen-cas',this)">
+            <span class="tab-icon">🧑‍🏫</span><span class="tab-label">Класен час</span>
+        </button>
+    </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// 1. КОНФИГУРАЦИЈА
+// ============================================================
+var STORAGE_KEY = 'edu_70_mesta';
+var activeCategory = 'matematika';
+var activeSub = 'podgotovka';
+
+// ============================================================
+// 2. ПОМОШНИ
+// ============================================================
+function getData() {
+    try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    try {
+        var raw2 = sessionStorage.getItem(STORAGE_KEY);
+        if (raw2) return JSON.parse(raw2);
+    } catch(e) {}
+    return [];
+}
+
+function setData(data) {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch(e) {
+        try {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch(e2) {}
+    }
+}
+
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+}
+
+function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+function formatDate(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    return d.toLocaleDateString('mk-MK', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function getLabel(kategorija, subkategorija) {
+    var map = {
+        podgotovka: '📝 Подготовка за настава',
+        nastavni: '📚 Наставни активности',
+        vonnastavni: '🏫 Воннаставни активности',
+        drugo: '📌 Друго',
+        klasen: '📋 Општи активности'
+    };
+    return map[subkategorija] || subkategorija;
+}
+
+function getTargetCategory() {
+    if (activeCategory === 'matematika') {
+        return { kategorija: 'matematika', subkategorija: activeSub || 'podgotovka' };
+    } else if (activeCategory === 'klasen-cas') {
+        return { kategorija: 'klasen-cas', subkategorija: 'klasen' };
+    } else {
+        return { kategorija: 'matematika', subkategorija: 'podgotovka' };
+    }
+}
+
+// ============================================================
+// 3. ПРЕФРЛУВАЊЕ ПО ТАБОВИ
+// ============================================================
+function switchTab(category, el) {
+    activeCategory = category;
+    var btns = document.querySelectorAll('.tab-btn');
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].classList.remove('active');
+    }
+    if (el) el.classList.add('active');
+
+    var submenu = document.getElementById('submenuContainer');
+    if (category === 'matematika') {
+        submenu.classList.add('open');
+        if (!activeSub) activeSub = 'podgotovka';
+        var items = document.querySelectorAll('.submenu-item');
+        for (var j = 0; j < items.length; j++) {
+            items[j].classList.remove('active-sub');
+            if (items[j].dataset.sub === activeSub) {
+                items[j].classList.add('active-sub');
+            }
+        }
+    } else {
+        submenu.classList.remove('open');
+        activeSub = 'klasen';
+    }
+
+    renderLista();
+    document.getElementById('mainContent').scrollTop = 0;
+}
+
+function filterSubcategory(sub, el) {
+    if (activeCategory !== 'matematika') return;
+    activeSub = sub;
+    var items = document.querySelectorAll('.submenu-item');
+    for (var i = 0; i < items.length; i++) {
+        items[i].classList.remove('active-sub');
+        if (items[i].dataset.sub === sub) {
+            items[i].classList.add('active-sub');
+        }
+    }
+    renderLista();
+}
+
+// ============================================================
+// 4. ПРИКАЖИ ЛИСТА
+// ============================================================
+function renderLista() {
+    var data = getData();
+    var container = document.getElementById('listaContainer');
+
+    var filtered = data;
+    if (activeCategory === 'matematika') {
+        filtered = filtered.filter(function(item) {
+            return item.kategorija === 'matematika' && item.subkategorija === activeSub;
+        });
+    } else if (activeCategory === 'klasen-cas') {
+        filtered = filtered.filter(function(item) {
+            return item.kategorija === 'klasen-cas';
+        });
+    }
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="prazno"><span>📭</span>Нема документи.<br>Кликни <strong>"HTML"</strong> или <strong>"Документ"</strong> за увоз.</div>';
+        return;
+    }
+
+    filtered.sort(function(a, b) {
+        return new Date(b.datum) - new Date(a.datum);
+    });
+
+    var html = '';
+    for (var i = 0; i < filtered.length; i++) {
+        var item = filtered[i];
+        var isHtml = !!item.htmlContent;
+        var tipLabel = isHtml ? 'HTML' : 'Документ';
+        var subLabel = item.subkategorija ? getLabel(item.kategorija, item.subkategorija) : '';
+        html += '<div class="karticka">';
+        html += '<div class="naslov-html">' + escHtml(item.naslov) + ' <span class="tip-badge-sm">' + tipLabel + '</span></div>';
+        html += '<div class="datum-html">📅 ' + formatDate(item.datum) + '</div>';
+        if (subLabel) html += '<div class="kategorija-badge">' + subLabel + '</div>';
+        html += '<div class="akcii">';
+        html += '<button class="btn btn-primary" onclick="previewItem(\'' + item.id + '\')">👁 Преглед</button>';
+        html += '<button class="btn btn-danger" onclick="izbrisiEdna(\'' + item.id + '\')">🗑</button>';
+        html += '</div></div>';
+    }
+    container.innerHTML = html;
+}
+
+// ============================================================
+// 5. УВОЗ HTML (СО КОПЧЕ ЗА ВРАЌАЊЕ)
+// ============================================================
+function uvoziHTML(event) {
+    var files = event.target.files;
+    if (!files || files.length === 0) {
+        showToast('⚠️ Нема избрани датотеки');
+        return;
+    }
+
+    var target = getTargetCategory();
+    var kategorija = target.kategorija;
+    var subkategorija = target.subkategorija;
+    var data = getData();
+    var uvezeni = 0;
+    var vkupno = files.length;
+
+    var backBtn = `
+    <div style="position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:999;text-align:center;width:100%;pointer-events:none;">
+        <button style="pointer-events:auto;background:linear-gradient(135deg,#1a237e,#0d47a1);color:white;border:none;padding:12px 30px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(26,35,126,0.4);border:2px solid rgba(255,255,255,0.2);transition:all 0.3s ease;" 
+                onclick="if(window.opener){window.close();}else{window.history.back();}">
+            🏠 Врати се на платформата
+        </button>
+    </div>
+    <style>
+        .back-btn-container button:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(26,35,126,0.5);}
+        .back-btn-container button:active{transform:scale(0.96);}
+        body{padding-bottom:80px;}
+        @media(max-width:480px){.back-btn-container button{padding:10px 20px;font-size:14px;}.back-btn-container{bottom:70px;}body{padding-bottom:70px;}}
+    </style>`;
+
+    for (var i = 0; i < vkupno; i++) {
+        (function(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var html = e.target.result;
+                    
+                    if (html.indexOf('</body>') !== -1) {
+                        html = html.replace('</body>', backBtn + '</body>');
+                    } else if (html.indexOf('</html>') !== -1) {
+                        html = html.replace('</html>', backBtn + '</html>');
+                    } else {
+                        html = html + backBtn;
+                    }
+
+                    var naslov = file.name.replace(/\.html$/i, '') || file.name;
+                    var titleMatch = html.match(/<title>(.*?)<\/title>/i);
+                    if (titleMatch && titleMatch[1]) {
+                        naslov = titleMatch[1].trim();
+                    }
+
+                    data.push({
+                        id: generateId(),
+                        naslov: naslov,
+                        htmlContent: html,
+                        datum: new Date().toISOString(),
+                        kategorija: kategorija,
+                        subkategorija: subkategorija
+                    });
+
+                    uvezeni++;
+                    if (uvezeni === vkupno) {
+                        setData(data);
+                        renderLista();
+                        var katLabel = getLabel(kategorija, subkategorija) || kategorija;
+                        showToast('✅ Увезени ' + uvezeni + ' HTML датотеки во "' + katLabel + '"');
+                    }
+                } catch(err) {
+                    showToast('❌ Грешка при увоз на ' + file.name);
+                }
+            };
+            reader.onerror = function() {
+                showToast('❌ Грешка при читање на ' + file.name);
+            };
+            reader.readAsText(file);
+        })(files[i]);
+    }
+
+    event.target.value = '';
+}
+
+// ============================================================
+// 6. УВОЗ ДОКУМЕНТ
+// ============================================================
+function uvoziDokument(event) {
+    var files = event.target.files;
+    if (!files || files.length === 0) {
+        showToast('⚠️ Нема избрани датотеки');
+        return;
+    }
+
+    var target = getTargetCategory();
+    var kategorija = target.kategorija;
+    var subkategorija = target.subkategorija;
+    var data = getData();
+    var uvezeni = 0;
+    var vkupno = files.length;
+
+    for (var i = 0; i < vkupno; i++) {
+        (function(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var content = e.target.result;
+                    var base64 = '';
+                    try {
+                        base64 = btoa(content);
+                    } catch(err) {
+                        base64 = btoa(unescape(encodeURIComponent(content)));
+                    }
+
+                    data.push({
+                        id: generateId(),
+                        naslov: file.name,
+                        htmlContent: null,
+                        datum: new Date().toISOString(),
+                        kategorija: kategorija,
+                        subkategorija: subkategorija,
+                        fileType: file.type || 'application/octet-stream',
+                        fileData: base64,
+                        fileName: file.name
+                    });
+
+                    uvezeni++;
+                    if (uvezeni === vkupno) {
+                        setData(data);
+                        renderLista();
+                        var katLabel = getLabel(kategorija, subkategorija) || kategorija;
+                        showToast('✅ Увезени ' + uvezeni + ' документи во "' + katLabel + '"');
+                    }
+                } catch(err) {
+                    showToast('❌ Грешка при увоз на ' + file.name);
+                }
+            };
+            reader.onerror = function() {
+                showToast('❌ Грешка при читање на ' + file.name);
+            };
+            reader.readAsBinaryString(file);
+        })(files[i]);
+    }
+
+    event.target.value = '';
+}
+
+document.getElementById('htmlInput').addEventListener('change', uvoziHTML);
+document.getElementById('docInput').addEventListener('change', uvoziDokument);
+
+// ============================================================
+// 7. ПРЕГЛЕД
+// ============================================================
+function previewItem(id) {
+    var data = getData();
+    var item = null;
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].id === id) { item = data[i]; break; }
+    }
+    if (!item) { showToast('Датотеката не е пронајдена'); return; }
+
+    if (item.htmlContent) {
+        var blob = new Blob([item.htmlContent], { type: 'text/html' });
+        var url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+    } else if (item.fileData) {
+        try {
+            var binaryString = atob(item.fileData);
+            var bytes = new Uint8Array(binaryString.length);
+            for (var j = 0; j < binaryString.length; j++) {
+                bytes[j] = binaryString.charCodeAt(j);
+            }
+            var blob2 = new Blob([bytes], { type: item.fileType || 'application/octet-stream' });
+            var url2 = URL.createObjectURL(blob2);
+            if (item.fileType === 'application/pdf') {
+                window.open(url2, '_blank');
+            } else {
+                var a = document.createElement('a');
+                a.href = url2;
+                a.download = item.fileName || 'document';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+            setTimeout(function() { URL.revokeObjectURL(url2); }, 60000);
+        } catch(err) {
+            showToast('❌ Грешка при отворање на документот');
+        }
+    } else {
+        showToast('Нема содржина за преглед');
+    }
+}
+
+// ============================================================
+// 8. БРИШЕЊЕ
+// ============================================================
+function izbrisiEdna(id) {
+    if (!confirm('Да ја избришеме оваа датотека?')) return;
+    var data = getData();
+    var newData = [];
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].id !== id) newData.push(data[i]);
+    }
+    setData(newData);
+    renderLista();
+    showToast('🗑 Избришано');
+}
+
+function izbrisiSite() {
+    if (!confirm('Избриши ги СИТЕ датотеки?')) return;
+    setData([]);
+    renderLista();
+    showToast('🗑 Сите избришани');
+}
+
+// ============================================================
+// 9. ИЗВОЗ JSON
+// ============================================================
+function izveziJSON() {
+    var data = getData();
+    if (data.length === 0) {
+        showToast('⚠️ Нема податоци за извоз');
+        return;
+    }
+
+    var totalSize = 0;
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].htmlContent) totalSize += data[i].htmlContent.length;
+        if (data[i].fileData) totalSize += data[i].fileData.length;
+    }
+    var sizeMB = (totalSize / (1024 * 1024)).toFixed(1);
+    
+    if (sizeMB > 5) {
+        if (!confirm('⚠️ Датотеката е голема (~' + sizeMB + ' MB). Дали сакате да продолжите?')) {
+            return;
+        }
+    }
+
+    var exportData = data.map(function(item) {
+        return {
+            id: item.id,
+            naslov: item.naslov,
+            datum: item.datum,
+            kategorija: item.kategorija,
+            subkategorija: item.subkategorija,
+            fileType: item.fileType || null,
+            fileName: item.fileName || null,
+            htmlContent: item.htmlContent || null,
+            fileData: item.fileData || null
+        };
+    });
+
+    var blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'platforma_podatoci_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+    showToast('📤 Извезени ' + data.length + ' датотеки (' + sizeMB + ' MB)');
+}
+
+// ============================================================
+// 10. УВОЗ JSON
+// ============================================================
+function uvoziJSON(event) {
+    var file = event.target.files[0];
+    if (!file) {
+        showToast('⚠️ Нема избрана датотека');
+        return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+        showToast('⚠️ Датотеката е преголема (>50MB)');
+        return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            var importedData = JSON.parse(e.target.result);
+            if (!Array.isArray(importedData)) {
+                showToast('❌ Невалиден JSON формат');
+                return;
+            }
+
+            if (importedData.length === 0) {
+                showToast('⚠️ Датотеката е празна');
+                return;
+            }
+
+            if (!confirm('Дали сакате да ги ЗАМЕНИТЕ постоечките податоци со увезените?')) {
+                return;
+            }
+
+            var data = [];
+            var uvezeni = 0;
+
+            for (var i = 0; i < importedData.length; i++) {
+                var item = importedData[i];
+                if (!item.naslov) continue;
+                
+                data.push({
+                    id: item.id || generateId(),
+                    naslov: item.naslov || 'Неименуван',
+                    htmlContent: item.htmlContent || null,
+                    fileData: item.fileData || null,
+                    datum: item.datum || new Date().toISOString(),
+                    kategorija: item.kategorija || 'matematika',
+                    subkategorija: item.subkategorija || 'podgotovka',
+                    fileType: item.fileType || null,
+                    fileName: item.fileName || null
+                });
+                uvezeni++;
+            }
+
+            if (uvezeni === 0) {
+                showToast('⚠️ Нема валидни податоци за увоз');
+                return;
+            }
+
+            setData(data);
+            renderLista();
+            showToast('✅ Увезени ' + uvezeni + ' документи од JSON');
+        } catch(err) {
+            showToast('❌ Грешка при читање на JSON: ' + err.message);
+        }
+    };
+    reader.onerror = function() {
+        showToast('❌ Грешка при читање на датотеката');
+    };
+    reader.readAsText(file);
+    
+    event.target.value = '';
+}
+
+// ============================================================
+// 11. СТАРТ
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    var btns = document.querySelectorAll('.tab-btn');
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].classList.remove('active');
+    }
+    document.querySelector('.tab-btn[data-category="matematika"]').classList.add('active');
+    activeCategory = 'matematika';
+    activeSub = 'podgotovka';
+    
+    var items = document.querySelectorAll('.submenu-item');
+    for (var j = 0; j < items.length; j++) {
+        items[j].classList.remove('active-sub');
+        if (items[j].dataset.sub === 'podgotovka') {
+            items[j].classList.add('active-sub');
+        }
+    }
+    
+    renderLista();
+    showToast('🚀 Платформата е активна!');
+});
+</script>
+</body>
+</html>

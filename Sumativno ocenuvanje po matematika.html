@@ -1,0 +1,2881 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сумативно оценување - Блумова таксономија</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js">
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #f0f4f8;
+            padding: 20px;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #1a3a5c;
+            font-size: 28px;
+            border-bottom: 3px solid #2c7fb8;
+            padding-bottom: 15px;
+            margin-bottom: 10px;
+        }
+        .teacher-info {
+            text-align: center;
+            font-size: 16px;
+            color: #2a4365;
+            margin-bottom: 25px;
+            padding: 8px;
+            background: #ebf8ff;
+            border-radius: 8px;
+            border: 1px solid #bee3f8;
+        }
+        .teacher-info strong {
+            font-weight: 700;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .period-section {
+            background: #ebf8ff;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 20px;
+            border: 2px solid #bee3f8;
+        }
+        .period-section .period-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        .period-section .period-row .field-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            flex: 1;
+            min-width: 160px;
+        }
+        .period-section label {
+            font-weight: 600;
+            color: #2a4365;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .period-section select,
+        .period-section input {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 2px solid #bee3f8;
+            font-size: 14px;
+            background: white;
+            flex: 1;
+            min-width: 100px;
+        }
+        .period-section select:focus,
+        .period-section input:focus {
+            border-color: #2c7fb8;
+            outline: none;
+        }
+        .period-section .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            background: #2c7fb8;
+            color: white;
+        }
+        .period-section .btn:hover {
+            background: #1a5a8c;
+        }
+        .period-help {
+            font-size: 12px;
+            color: #4a5568;
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: #f7fafc;
+            border-radius: 6px;
+        }
+        .period-help strong {
+            color: #2a4365;
+        }
+
+        .assessment-section {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #e2e8f0;
+        }
+        .assessment-section .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .assessment-section .row-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            background: #edf2f7;
+            padding: 10px 15px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 280px;
+        }
+        .assessment-section label {
+            font-weight: 600;
+            color: #1a3a5c;
+            font-size: 14px;
+        }
+        .assessment-section input[type="text"],
+        .assessment-section input[type="number"] {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e0;
+            font-size: 14px;
+            flex: 1;
+            min-width: 80px;
+        }
+        .assessment-section input[type="text"]:focus,
+        .assessment-section input[type="number"]:focus {
+            border-color: #2c7fb8;
+            outline: none;
+        }
+        .assessment-section select {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e0;
+            font-size: 14px;
+            flex: 1;
+            min-width: 120px;
+            background: white;
+        }
+        .assessment-section select:focus {
+            border-color: #2c7fb8;
+            outline: none;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: #2c7fb8;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1a5a8c;
+        }
+        .btn-success {
+            background: #38a169;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #2f855a;
+        }
+        .btn-danger {
+            background: #e53e3e;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c53030;
+        }
+        .btn-purple {
+            background: #805ad5;
+            color: white;
+        }
+        .btn-purple:hover {
+            background: #6b46c1;
+        }
+        .btn-pink {
+            background: #d53f8c;
+            color: white;
+        }
+        .btn-pink:hover {
+            background: #b83280;
+        }
+        .btn-teal {
+            background: #319795;
+            color: white;
+        }
+        .btn-teal:hover {
+            background: #2c7a7a;
+        }
+        .btn-orange {
+            background: #dd6b20;
+            color: white;
+        }
+        .btn-orange:hover {
+            background: #c05621;
+        }
+        .btn-excel {
+            background: #217346;
+            color: white;
+        }
+        .btn-excel:hover {
+            background: #1a5c38;
+        }
+        .btn-indigo {
+            background: #4c51bf;
+            color: white;
+        }
+        .btn-indigo:hover {
+            background: #3c4099;
+        }
+        .btn-gray {
+            background: #718096;
+            color: white;
+        }
+        .btn-gray:hover {
+            background: #4a5568;
+        }
+        .btn-upload {
+            background: #d69e2e;
+            color: white;
+        }
+        .btn-upload:hover {
+            background: #b7791f;
+        }
+
+        .class-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .class-tag {
+            background: #e9d8fd;
+            color: #44337a;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .class-tag:hover {
+            background: #d6bcfa;
+        }
+        .class-tag.active {
+            border-color: #805ad5;
+            background: #805ad5;
+            color: white;
+        }
+        .class-tag .delete-class {
+            cursor: pointer;
+            font-weight: 700;
+            color: #e53e3e;
+            font-size: 16px;
+            line-height: 1;
+        }
+        .class-tag .delete-class:hover {
+            color: #c53030;
+        }
+        .class-tag .class-count {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 0 8px;
+            border-radius: 10px;
+        }
+
+        .student-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            min-height: 40px;
+        }
+        .student-tag {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .student-tag:hover {
+            transform: scale(1.03);
+        }
+        .student-tag.active {
+            border-color: #2c7fb8;
+            box-shadow: 0 0 0 2px #2c7fb8;
+        }
+        .student-tag .delete-student {
+            cursor: pointer;
+            font-weight: 700;
+            color: #e53e3e;
+            font-size: 14px;
+            line-height: 1;
+        }
+        .student-tag .delete-student:hover {
+            color: #c53030;
+        }
+        .student-tag.active .delete-student {
+            color: #fed7d7;
+        }
+        .student-tag.active .delete-student:hover {
+            color: white;
+        }
+
+        .status-grade-5-tag {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .status-grade-4-tag {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .status-grade-3-tag {
+            background: #fefcbf;
+            color: #975a16;
+        }
+        .status-grade-2-tag {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .status-grade-1-tag {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .status-empty-tag {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .student-status-icon {
+            font-size: 14px;
+        }
+        .student-status-label {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-left: 2px;
+        }
+
+        .student-info {
+            font-size: 14px;
+            color: #4a5568;
+            padding: 10px 15px;
+            background: #edf2f7;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bloom-section {
+            margin: 20px 0;
+            padding: 15px 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        .bloom-section .section-title {
+            font-weight: 700;
+            color: #1a3a5c;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        .bloom-levels {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .bloom-level-card {
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-align: center;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #cbd5e0;
+        }
+        .bloom-level-card .level-name {
+            font-size: 12px;
+            color: #4a5568;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .bloom-level-card .level-score {
+            font-size: 22px;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+        .bloom-level-card .level-desc {
+            font-size: 11px;
+            color: #718096;
+            margin-top: 2px;
+        }
+        .bloom-level-card.level-remember {
+            border-left-color: #805ad5;
+            background: #faf5ff;
+        }
+        .bloom-level-card.level-understand {
+            border-left-color: #2b6cb0;
+            background: #ebf8ff;
+        }
+        .bloom-level-card.level-apply {
+            border-left-color: #38a169;
+            background: #f0fff4;
+        }
+        .bloom-level-card.level-analyze {
+            border-left-color: #d69e2e;
+            background: #fffff0;
+        }
+        .bloom-level-card.level-evaluate {
+            border-left-color: #dd6b20;
+            background: #fffaf0;
+        }
+        .bloom-level-card.level-create {
+            border-left-color: #e53e3e;
+            background: #fff5f5;
+        }
+
+        .grade-input-section {
+            margin: 20px 0;
+            padding: 15px 20px;
+            background: #f0fff4;
+            border-radius: 10px;
+            border: 2px solid #c6f6d5;
+        }
+        .grade-input-section .section-title {
+            font-weight: 700;
+            color: #22543d;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        .grade-input-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .grade-input-row .grade-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            flex: 1;
+            min-width: 150px;
+        }
+        .grade-input-row label {
+            font-weight: 600;
+            color: #22543d;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .grade-input-row input[type="number"] {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 2px solid #c6f6d5;
+            font-size: 14px;
+            width: 65px;
+            background: white;
+        }
+        .grade-input-row input[type="number"]:focus {
+            border-color: #38a169;
+            outline: none;
+        }
+        .grade-input-row .btn {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .final-grade-section {
+            margin: 20px 0;
+            padding: 20px 25px;
+            background: #ebf8ff;
+            border-radius: 10px;
+            border: 2px solid #bee3f8;
+        }
+        .final-grade-section .section-title {
+            font-weight: 700;
+            color: #2a4365;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .final-grade-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        .final-grade-number {
+            font-size: 64px;
+            font-weight: 900;
+            padding: 10px 40px;
+            border-radius: 16px;
+            text-align: center;
+            min-width: 150px;
+        }
+        .final-grade-number.grade-5 {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .final-grade-number.grade-4 {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .final-grade-number.grade-3 {
+            background: #fefcbf;
+            color: #975a16;
+        }
+        .final-grade-number.grade-2 {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .final-grade-number.grade-1 {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .final-grade-number.grade-empty {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        .final-grade-details {
+            font-size: 14px;
+            color: #4a5568;
+            text-align: left;
+        }
+        .final-grade-details span {
+            display: block;
+            padding: 3px 0;
+        }
+        .final-grade-details strong {
+            color: #2a4365;
+        }
+
+        .success-section {
+            margin: 25px 0 20px 0;
+            border: 2px solid #4c51bf;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .success-header {
+            background: #4c51bf;
+            color: white;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .success-header small {
+            font-weight: 400;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .success-table-wrap {
+            overflow-x: auto;
+            padding: 5px;
+        }
+        .success-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .success-table th {
+            background: #edf2f7;
+            color: #1a3a5c;
+            padding: 10px 12px;
+            text-align: center;
+            font-weight: 700;
+            border-bottom: 2px solid #cbd5e0;
+        }
+        .success-table td {
+            padding: 8px 10px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        .success-table tr:hover td {
+            background: #f7fafc;
+        }
+        .grade-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .grade-5 {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .grade-4 {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .grade-3 {
+            background: #fefcbf;
+            color: #975a16;
+        }
+        .grade-2 {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .grade-1 {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .grade-empty {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 30px 10px;
+        }
+        .modal-overlay.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            max-width: 1200px;
+            width: 100%;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            margin: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .modal-close {
+            position: sticky;
+            top: 0;
+            float: right;
+            background: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 22px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            z-index: 10;
+        }
+        .modal-close:hover {
+            background: #c53030;
+            transform: scale(1.05);
+        }
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a3a5c;
+            margin-bottom: 5px;
+        }
+        .modal-subtitle {
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+        .modal-table-wrap {
+            overflow-x: auto;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .modal-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 800px;
+        }
+        .modal-table th {
+            background: #1a3a5c;
+            color: white;
+            padding: 8px 10px;
+            text-align: center;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .modal-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .modal-table tr:nth-child(even) {
+            background: #f7fafc;
+        }
+        .modal-table .bloom-cell {
+            font-size: 12px;
+            padding: 4px 6px;
+        }
+        .modal-table .grade-cell {
+            font-weight: 700;
+        }
+        .modal-print-btn {
+            margin-top: 15px;
+            padding: 10px 25px;
+            background: #2c7fb8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-print-btn:hover {
+            background: #1a5a8c;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            align-items: center;
+        }
+        .filters select,
+        .filters input {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            font-size: 14px;
+            background: white;
+        }
+        .filters button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            background: #2c7fb8;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .filters button:hover {
+            background: #1a5a8c;
+        }
+        .filters .btn-reset {
+            background: #718096;
+        }
+        .filters .btn-reset:hover {
+            background: #4a5568;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a3a5c;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            animation: slideUp 0.5s ease;
+            max-width: 90%;
+            text-align: center;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: #1a3a5c;
+            font-size: 15px;
+            margin: 5px 0 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title small {
+            font-weight: 400;
+            color: #718096;
+            font-size: 13px;
+        }
+
+        .selected-student-info {
+            background: #edf2f7;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #2a4365;
+            margin-bottom: 10px;
+        }
+        .selected-student-info strong {
+            color: #1a3a5c;
+        }
+
+        .file-input-wrapper {
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .modal-overlay {
+                position: static !important;
+                background: white !important;
+                padding: 0 !important;
+            }
+            .modal-content {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                border-radius: 0 !important;
+            }
+            .modal-close {
+                display: none !important;
+            }
+            .modal-table th {
+                background: #1a3a5c !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .grade-badge,
+            .grade-5,
+            .grade-4,
+            .grade-3,
+            .grade-2,
+            .grade-1,
+            .grade-empty {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .bloom-levels {
+                grid-template-columns: 1fr 1fr;
+            }
+            .grade-input-row .grade-group {
+                min-width: 100%;
+            }
+            .final-grade-number {
+                font-size: 40px;
+                padding: 10px 20px;
+                min-width: 100px;
+            }
+            .final-grade-display {
+                flex-direction: column;
+                text-align: center;
+            }
+            .final-grade-details {
+                text-align: center;
+            }
+            .modal-content {
+                padding: 15px;
+            }
+            .modal-table {
+                font-size: 11px;
+                min-width: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📊 Сумативно оценување - Блумова таксономија</h1>
+    <div class="teacher-info">
+        👨‍🏫 <strong>Наставник:</strong> проф. Решат Маловски &nbsp;|&nbsp; 📚 <strong>Предмет:</strong> Математика
+    </div>
+
+    <div class="container">
+
+        <!-- ===== ПЕРИОД / ТЕМА ===== -->
+        <div class="period-section">
+            <div class="period-row">
+                <div class="field-group">
+                    <label for="yearSelect">📅 Година:</label>
+                    <select id="yearSelect" onchange="onYearSelect()">
+                        <option value="I">I година</option>
+                        <option value="II">II година</option>
+                        <option value="III">III година</option>
+                        <option value="IV">IV година</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label for="periodSelect">📅 Период:</label>
+                    <select id="periodSelect">
+                        <option value="I период">I период</option>
+                        <option value="II период">II период</option>
+                        <option value="III период">III период</option>
+                        <option value="Годишен">Годишен</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label for="topicSelect">📚 Тема:</label>
+                    <select id="topicSelect" onchange="onTopicSelect()" style="flex:1.5;">
+                        <option value="">-- Избери тема --</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="savePeriodInfo()" style="background:#2c7fb8;">💾 Зачувај</button>
+            </div>
+            <div class="period-help">
+                💡 <strong>Како работи:</strong> Изберете <strong>година</strong>, <strong>период</strong> и <strong>тема</strong>. Потоа кликнете <strong>"Зачувај"</strong>.
+            </div>
+        </div>
+
+        <!-- ===== ПАРАЛЕЛКА И УЧЕНИЦИ ===== -->
+        <div class="assessment-section">
+            <div class="row">
+                <div class="row-group">
+                    <label for="className">🏫 Паралелка:</label>
+                    <input type="text" id="className" placeholder="На пр. VIII-1, IX-3" style="flex:0.7;min-width:120px;" />
+                    <button class="btn btn-purple" onclick="addClass()">➕ Додади паралелка</button>
+                    <label for="classSelect" style="margin-left:5px;">Избери:</label>
+                    <select id="classSelect" onchange="onClassSelect()" style="flex:0.5;min-width:120px;">
+                        <option value="">-- Паралелка --</option>
+                    </select>
+                    <button class="btn btn-danger" onclick="deleteClass()">🗑️ Избриши паралелка</button>
+                    <!-- Копче за увоз на Excel -->
+                    <div class="file-input-wrapper">
+                        <button class="btn btn-upload">📤 Увези ученици</button>
+                        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="importStudentsFromFile(event)" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="class-list" id="classList"></div>
+
+            <div class="row" style="margin-top:12px;border-top:1px solid #e2e8f0;padding-top:12px;">
+                <div class="row-group">
+                    <label for="studentName">👤 Ученик:</label>
+                    <input type="text" id="studentName" placeholder="На пр. Анета Стојановска" />
+                    <button class="btn btn-success" onclick="addStudent()">➕ Додади ученик</button>
+                    <label for="studentSelect" style="margin-left:5px;">Или изберете:</label>
+                    <select id="studentSelect" onchange="onStudentSelect()" style="flex:0.5;min-width:140px;">
+                        <option value="">-- Ученик --</option>
+                    </select>
+                    <button class="btn btn-danger" onclick="deleteStudent()">🗑️ Избриши избран</button>
+                </div>
+            </div>
+
+            <div class="section-title">
+                📋 Ученици во паралелката: <span id="currentClassNameDisplay">(изберете паралелка)</span>
+                <small id="studentCountDisplay"></small>
+            </div>
+            <div class="student-list" id="studentList">
+                <span class="empty-message">Нема ученици во оваа паралелка.</span>
+            </div>
+
+            <div id="studentInfo" class="student-info" style="display:none;">
+                <span>📌 Тековен ученик: <strong id="currentStudentName">—</strong></span>
+                <span>📅 Последно ажурирање: <span id="lastUpdated">—</span></span>
+                <span>🏫 Паралелка: <strong id="currentStudentClass">—</strong></span>
+                <span>🏆 Просечна оценка: <strong id="currentStudentAvg">—</strong></span>
+            </div>
+        </div>
+
+        <!-- ===== БЛУМОВИ НИВОА ===== -->
+        <div class="bloom-section">
+            <div class="section-title">🧠 Оценување по нивоа на Блумовата таксономија</div>
+            <div id="selectedStudentDisplay" class="selected-student-info" style="display:none;">
+                👤 Избран ученик: <strong id="selectedStudentName">—</strong> &nbsp;|&nbsp; 🏫 <strong id="selectedStudentClass">—</strong> &nbsp;|&nbsp; 📚 <strong id="selectedStudentTopic">—</strong>
+            </div>
+            <div class="bloom-levels" id="bloomLevels">
+                <span style="color:#a0aec0;font-size:14px;grid-column:1/-1;text-align:center;padding:20px;">Изберете ученик и тема за да го видите оценувањето по нивоа.</span>
+            </div>
+        </div>
+
+        <!-- ===== ВНЕС НА ОЦЕНКИ ===== -->
+        <div class="grade-input-section">
+            <div class="section-title">📝 Внес на оценки</div>
+            <div id="gradeInputDisplay" class="selected-student-info" style="display:none;">
+                👤 <strong id="gradeStudentName">—</strong> &nbsp;|&nbsp; 🏫 <strong id="gradeStudentClass">—</strong> &nbsp;|&nbsp; 📚 <strong id="gradeStudentTopic">—</strong>
+            </div>
+            <div class="grade-input-row">
+                <div class="grade-group">
+                    <label for="writtenGrade">📄 Писмена:</label>
+                    <input type="number" id="writtenGrade" min="1" max="5" step="0.5" placeholder="1-5" />
+                    <button class="btn btn-primary" onclick="saveWrittenGrade()">💾</button>
+                </div>
+                <div class="grade-group">
+                    <label for="testGrade">📝 Тест:</label>
+                    <input type="number" id="testGrade" min="1" max="5" step="0.5" placeholder="1-5" />
+                    <button class="btn btn-primary" onclick="saveTestGrade()">💾</button>
+                </div>
+                <div class="grade-group">
+                    <label for="projectGrade">📁 Проект:</label>
+                    <input type="number" id="projectGrade" min="1" max="5" step="0.5" placeholder="1-5" />
+                    <button class="btn btn-primary" onclick="saveProjectGrade()">💾</button>
+                </div>
+                <div class="grade-group">
+                    <label for="homeworkGrade">🏠 Домашна:</label>
+                    <input type="number" id="homeworkGrade" min="1" max="5" step="0.5" placeholder="1-5" />
+                    <button class="btn btn-primary" onclick="saveHomeworkGrade()">💾</button>
+                </div>
+                <div class="grade-group">
+                    <label for="activityGrade">💪 Активност:</label>
+                    <input type="number" id="activityGrade" min="1" max="5" step="0.5" placeholder="1-5" />
+                    <button class="btn btn-primary" onclick="saveActivityGrade()">💾</button>
+                </div>
+            </div>
+            <div style="margin-top:10px;font-size:12px;color:#4a5568;">
+                📌 Оценките се зачувуваат <strong>само за избраната тема</strong>.
+            </div>
+        </div>
+
+        <!-- ===== КОНЕЧНА ОЦЕНКА ===== -->
+        <div class="final-grade-section">
+            <div class="section-title">🏆 Конечна оценка за периодот</div>
+            <div id="finalGradeDisplay" class="selected-student-info" style="display:none;">
+                👤 <strong id="finalStudentName">—</strong> &nbsp;|&nbsp; 🏫 <strong id="finalStudentClass">—</strong> &nbsp;|&nbsp; 📅 <strong id="finalStudentPeriod">—</strong>
+            </div>
+            <div class="final-grade-display">
+                <div id="finalGradeNumber" class="final-grade-number grade-empty">❓</div>
+                <div class="final-grade-details">
+                    <span><strong>📊 Блум просек:</strong> <span id="finalAvgStandards">—</span></span>
+                    <span><strong>📄 Писмени:</strong> <span id="finalAvgWritten">—</span></span>
+                    <span><strong>📝 Тестови:</strong> <span id="finalAvgTests">—</span></span>
+                    <span><strong>📁 Проекти:</strong> <span id="finalAvgProjects">—</span></span>
+                    <span><strong>🏠 Домашни:</strong> <span id="finalAvgHomework">—</span></span>
+                    <span><strong>💪 Активност:</strong> <span id="finalAvgActivity">—</span></span>
+                    <span><strong>📊 Вкупен просек:</strong> <span id="finalTotalAvg">—</span></span>
+                    <span><strong>🏆 Конечна оценка:</strong> <span id="finalGradeText">—</span></span>
+                </div>
+            </div>
+            <div style="text-align:center;margin-top:10px;">
+                <button class="btn btn-indigo" onclick="calculateFinalGrade()">🔄 Пресметај конечна оценка</button>
+                <button class="btn btn-success" onclick="saveFinalGrade()">💾 Зачувај конечна оценка</button>
+            </div>
+        </div>
+
+        <!-- ===== ПРЕГЛЕД НА УСПЕХ ПО ТЕМИ ===== -->
+        <div class="success-section">
+            <div class="success-header">
+                <span>📈 УСПЕХ ПО ТЕМИ</span>
+                <small id="successClassInfo">(изберете паралелка и тема)</small>
+            </div>
+            <div class="success-table-wrap">
+                <table class="success-table" id="successTable">
+                    <thead>
+                        <tr>
+                            <th>Р.б.</th>
+                            <th>Ученик</th>
+                            <th>Период</th>
+                            <th>Тема</th>
+                            <th>Блум</th>
+                            <th>Писмени</th>
+                            <th>Тестови</th>
+                            <th>Проекти</th>
+                            <th>Домашни</th>
+                            <th>Активност</th>
+                            <th>Вкупен просек</th>
+                            <th>Конечна оценка</th>
+                        </tr>
+                    </thead>
+                    <tbody id="successBody">
+                        <tr>
+                            <td colspan="12" style="text-align:center;color:#a0aec0;padding:30px;">Изберете паралелка и тема за да ги видите резултатите.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== КОПЧИЊА ===== -->
+        <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+            <button onclick="window.print()" class="btn btn-primary">🖨️ Печати / PDF</button>
+            <button onclick="showStudentOverview()" class="btn btn-indigo">📊 Целосен преглед (ученик)</button>
+            <button onclick="showClassOverview()" class="btn btn-purple">📊 Целосен преглед (паралелка)</button>
+            <button onclick="exportExcel()" class="btn btn-excel">📊 Excel - сите податоци</button>
+            <button onclick="exportCSV()" class="btn btn-success">📥 CSV</button>
+            <button onclick="resetAll()" class="btn btn-danger">🗑️ Избриши ги сите податоци</button>
+        </div>
+    </div>
+
+    <!-- ===== МОДАЛ ===== -->
+    <div class="modal-overlay" id="overviewModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-title" id="modalTitle">Целосен преглед</div>
+            <div class="modal-subtitle" id="modalSubtitle"></div>
+            <div class="modal-table-wrap" id="modalTableWrap"></div>
+            <div style="text-align:center;margin-top:15px;">
+                <button class="modal-print-btn" onclick="printModal()">🖨️ Печати</button>
+                <button class="modal-print-btn" style="background:#38a169;" onclick="closeModal()">Затвори</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        // 1. НИВОА НА БЛУМОВА ТАКСОНОМИЈА
+        // ================================================================
+        const bloomLevels = [
+            { id: 'remember', name: 'Запомни', desc: 'Повикување на факти, дефиниции, формули', maxScore: 5 },
+            { id: 'understand', name: 'Разбери', desc: 'Објаснување на концепти со свои зборови', maxScore: 5 },
+            { id: 'apply', name: 'Примени', desc: 'Користење на знаење во стандардни ситуации', maxScore: 5 },
+            { id: 'analyze', name: 'Анализирај', desc: 'Разложување, споредување, разликување', maxScore: 5 },
+            { id: 'evaluate', name: 'Евалуирај', desc: 'Проценка, аргументирање, заклучување', maxScore: 5 },
+            { id: 'create', name: 'Креирај', desc: 'Создавање нови модели, генерализации', maxScore: 5 }
+        ];
+
+        // ================================================================
+        // 2. ПОДАТОЦИ ЗА ТЕМИ ПО ГОДИНИ
+        // ================================================================
+        const topicsData = {
+            "I": [
+                "Броеви и операции со броеви",
+                "Алгебарски рационални изрази",
+                "Функција, равенка, систем од две равенки и неравенка",
+                "Геометрија",
+                "Мерење",
+                "Работа со податоци"
+            ],
+            "II": [
+                "Корени и комплексни броеви",
+                "Квадратни равенки и равенки што се сведуваат на квадратни",
+                "Квадратна функција, квадратна неравенка и систем од квадратни неравенки со една непозната",
+                "Елементи од веројатност",
+                "Геометрија (II)",
+                "Мерење (II)"
+            ],
+            "III": [
+                "Тригонометрија",
+                "Експоненцијални и логаритамски функции",
+                "Низни и прогресии",
+                "Аналитичка геометрија"
+            ],
+            "IV": [
+                "Низи и прогресии (IV)",
+                "Функции и гранични вредности на функции",
+                "Диференцијално сметање (извод на функција)",
+                "Диференцијално сметање (примена на изводите)",
+                "Веројатност (IV)",
+                "Статистика"
+            ]
+        };
+
+        // ================================================================
+        // 3. ГЛОБАЛНА СОСТОЈБА
+        // ================================================================
+        let allData = {};
+        let currentClass = '';
+        let currentStudent = '';
+        let currentYear = 'I';
+        let currentPeriod = 'I период';
+        let currentTopic = '';
+        let state = {};
+
+        // ================================================================
+        // 4. localStorage
+        // ================================================================
+        function saveAllData() {
+            try {
+                const fullData = {
+                    classes: allData,
+                    year: currentYear,
+                    period: currentPeriod,
+                    topic: currentTopic
+                };
+                localStorage.setItem('bloomSummativeData', JSON.stringify(fullData));
+                console.log('💾 Податоците се зачувани!');
+            } catch (e) {
+                console.error('❌ Грешка при зачувување:', e);
+            }
+        }
+
+        function loadAllData() {
+            const saved = localStorage.getItem('bloomSummativeData');
+            if (saved) {
+                try {
+                    const fullData = JSON.parse(saved);
+                    allData = fullData.classes || {};
+                    currentYear = fullData.year || 'I';
+                    currentPeriod = fullData.period || 'I период';
+                    currentTopic = fullData.topic || '';
+
+                    console.log('📂 Вчитани податоци:', Object.keys(allData).length, 'паралелки');
+
+                    for (const className in allData) {
+                        if (!allData[className].students) allData[className].students = {};
+                        for (const studentName in allData[className].students) {
+                            const student = allData[className].students[studentName];
+                            if (!student.topics) student.topics = {};
+                            if (!student.finalGrades) student.finalGrades = {};
+                            if (!student.lastUpdated) student.lastUpdated = new Date().toISOString();
+
+                            const topics = getTopicNames(currentYear);
+                            for (const topic of topics) {
+                                if (!student.topics[topic]) {
+                                    student.topics[topic] = {
+                                        bloom: {},
+                                        writtenGrades: [],
+                                        testGrades: [],
+                                        projectGrades: [],
+                                        homeworkGrades: [],
+                                        activityGrades: []
+                                    };
+                                    for (const level of bloomLevels) {
+                                        student.topics[topic].bloom[level.id] = null;
+                                    }
+                                } else {
+                                    if (!student.topics[topic].writtenGrades) student.topics[topic].writtenGrades = [];
+                                    if (!student.topics[topic].testGrades) student.topics[topic].testGrades = [];
+                                    if (!student.topics[topic].projectGrades) student.topics[topic].projectGrades = [];
+                                    if (!student.topics[topic].homeworkGrades) student.topics[topic].homeworkGrades = [];
+                                    if (!student.topics[topic].activityGrades) student.topics[topic].activityGrades = [];
+                                    if (!student.topics[topic].bloom) {
+                                        const oldBloom = student.topics[topic];
+                                        student.topics[topic].bloom = oldBloom;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return;
+                } catch (e) {
+                    console.error('❌ Грешка при вчитување:', e);
+                }
+            }
+            allData = {};
+            currentYear = 'I';
+            currentPeriod = 'I период';
+            currentTopic = '';
+            console.log('📂 Нема зачувани податоци, креирано празно.');
+        }
+
+        function saveStudentData(className, studentName) {
+            if (!className || !studentName) return;
+            if (!allData[className]) allData[className] = { students: {} };
+            if (!allData[className].students[studentName]) {
+                allData[className].students[studentName] = {
+                    topics: {},
+                    finalGrades: {},
+                    lastUpdated: new Date().toISOString()
+                };
+            }
+            allData[className].students[studentName].lastUpdated = new Date().toISOString();
+            saveAllData();
+        }
+
+        function syncStateToStorage() {
+            if (currentClass && currentStudent && currentTopic) {
+                saveStudentData(currentClass, currentStudent);
+                const student = allData[currentClass].students[currentStudent];
+                if (!student.topics[currentTopic]) {
+                    student.topics[currentTopic] = {
+                        bloom: {},
+                        writtenGrades: [],
+                        testGrades: [],
+                        projectGrades: [],
+                        homeworkGrades: [],
+                        activityGrades: []
+                    };
+                    for (const level of bloomLevels) {
+                        student.topics[currentTopic].bloom[level.id] = null;
+                    }
+                }
+                for (const level of bloomLevels) {
+                    student.topics[currentTopic].bloom[level.id] = state[level.id] || null;
+                }
+                saveAllData();
+            }
+            updateAllUI();
+        }
+
+        // ================================================================
+        // 5. КАЛКУЛАЦИЈА НА ОЦЕНКИ (ПО ТЕМА)
+        // ================================================================
+        function getTopicData(studentData, topic) {
+            if (!studentData || !studentData.topics || !studentData.topics[topic]) return null;
+            return studentData.topics[topic];
+        }
+
+        function calculateTopicBloomAverage(studentData, topic) {
+            const topicData = getTopicData(studentData, topic);
+            if (!topicData || !topicData.bloom) return null;
+            let total = 0,
+                count = 0;
+            for (const level of bloomLevels) {
+                const score = topicData.bloom[level.id];
+                if (score !== null && score !== undefined && score > 0) {
+                    total += score;
+                    count++;
+                }
+            }
+            return count > 0 ? Math.round((total / count) * 10) / 10 : null;
+        }
+
+        function getWrittenAverageForTopic(studentData, topic) {
+            const topicData = getTopicData(studentData, topic);
+            if (!topicData || !topicData.writtenGrades || topicData.writtenGrades.length === 0) return null;
+            const sum = topicData.writtenGrades.reduce((a, b) => a + b, 0);
+            return Math.round((sum / topicData.writtenGrades.length) * 10) / 10;
+        }
+
+        function getTestAverageForTopic(studentData, topic) {
+            const topicData = getTopicData(studentData, topic);
+            if (!topicData || !topicData.testGrades || topicData.testGrades.length === 0) return null;
+            const sum = topicData.testGrades.reduce((a, b) => a + b, 0);
+            return Math.round((sum / topicData.testGrades.length) * 10) / 10;
+        }
+
+        function getProjectAverageForTopic(studentData, topic) {
+            const topicData = getTopicData(studentData, topic);
+            if (!topicData || !topicData.projectGrades || topicData.projectGrades.length === 0) return null;
+            const sum = topicData.projectGrades.reduce((a, b) => a + b, 0);
+            return Math.round((sum / topicData.projectGrades.length) * 10) / 10;
+        }
+
+        function getHomeworkAverageForTopic(studentData, topic) {
+            const topicData = getTopicData(studentData, topic);
+            if (!topicData || !topicData.homeworkGrades || topicData.homeworkGrades.length === 0) return null;
+            const sum = topicData.homeworkGrades.reduce((a, b) => a + b, 0);
+            return Math.round((sum / topicData.homeworkGrades.length) * 10) / 10;
+        }
+
+        function getActivityAverageForTopic(studentData, topic) {
+            const topicData = getTopicData(studentData, topic);
+            if (!topicData || !topicData.activityGrades || topicData.activityGrades.length === 0) return null;
+            const sum = topicData.activityGrades.reduce((a, b) => a + b, 0);
+            return Math.round((sum / topicData.activityGrades.length) * 10) / 10;
+        }
+
+        function getFinalGradeForTopic(studentData, topic) {
+            if (!studentData) return null;
+
+            const bloomAvg = calculateTopicBloomAverage(studentData, topic);
+            const writtenAvg = getWrittenAverageForTopic(studentData, topic);
+            const testAvg = getTestAverageForTopic(studentData, topic);
+            const projectAvg = getProjectAverageForTopic(studentData, topic);
+            const homeworkAvg = getHomeworkAverageForTopic(studentData, topic);
+            const activityAvg = getActivityAverageForTopic(studentData, topic);
+
+            let grades = [];
+            if (bloomAvg !== null) grades.push(bloomAvg);
+            if (writtenAvg !== null) grades.push(writtenAvg);
+            if (testAvg !== null) grades.push(testAvg);
+            if (projectAvg !== null) grades.push(projectAvg);
+            if (homeworkAvg !== null) grades.push(homeworkAvg);
+            if (activityAvg !== null) grades.push(activityAvg);
+
+            if (grades.length === 0) return null;
+
+            const total = grades.reduce((a, b) => a + b, 0);
+            const avg = Math.round((total / grades.length) * 10) / 10;
+
+            if (avg >= 4.5) return 5;
+            if (avg >= 3.5) return 4;
+            if (avg >= 2.5) return 3;
+            if (avg >= 1.5) return 2;
+            return 1;
+        }
+
+        function getStudentAvgGrade(className, studentName) {
+            if (!className || !allData[className] || !allData[className].students[studentName]) return null;
+            const student = allData[className].students[studentName];
+            const topics = getTopicNames(currentYear);
+            let allGrades = [];
+            for (const topic of topics) {
+                const g = getFinalGradeForTopic(student, topic);
+                if (g !== null) allGrades.push(g);
+            }
+            if (allGrades.length === 0) return null;
+            const total = allGrades.reduce((a, b) => a + b, 0);
+            return Math.round((total / allGrades.length) * 10) / 10;
+        }
+
+        function getFinalGradeForPeriod(studentData, period) {
+            if (!studentData || !studentData.finalGrades) return null;
+            return studentData.finalGrades[period] || null;
+        }
+
+        // ================================================================
+        // 6. UI ЗА ТЕМИ
+        // ================================================================
+        function getTopicNames(year) {
+            return topicsData[year] || [];
+        }
+
+        function updateTopicUI() {
+            const year = document.getElementById('yearSelect').value;
+            const topicSelect = document.getElementById('topicSelect');
+            const topics = getTopicNames(year);
+            const currentValue = topicSelect.value;
+            topicSelect.innerHTML = '<option value="">-- Избери тема --</option>';
+            for (const name of topics) {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                topicSelect.appendChild(opt);
+            }
+            if (currentValue && topics.includes(currentValue)) {
+                topicSelect.value = currentValue;
+                currentTopic = currentValue;
+            } else if (topics.length > 0) {
+                topicSelect.value = topics[0];
+                currentTopic = topics[0];
+            } else {
+                currentTopic = '';
+            }
+            saveAllData();
+        }
+
+        function onYearSelect() {
+            const year = document.getElementById('yearSelect').value;
+            currentYear = year;
+            currentTopic = '';
+            updateTopicUI();
+            saveAllData();
+            updateAllUI();
+        }
+
+        function onTopicSelect() {
+            const select = document.getElementById('topicSelect');
+            currentTopic = select.value;
+            saveAllData();
+            updateAllUI();
+        }
+
+        function savePeriodInfo() {
+            if (!currentTopic) { showToast('⚠️ Изберете тема!'); return; }
+            currentPeriod = document.getElementById('periodSelect').value;
+            saveAllData();
+            showToast('✅ Зачувано: ' + currentYear + ' → ' + currentPeriod + ' → ' + currentTopic);
+            updateAllUI();
+        }
+
+        function getCurrentPeriodInfo() {
+            return { year: currentYear || 'I', period: currentPeriod || 'I период', topic: currentTopic || '' };
+        }
+
+        // ================================================================
+        // 7. УПРАВУВАЊЕ СО ПАРАЛЕЛКИ
+        // ================================================================
+        function addClass() {
+            console.log('➡️ addClass() повикана');
+            const input = document.getElementById('className');
+            const name = input.value.trim();
+            if (!name) { showToast('⚠️ Внесете име на паралелка!'); return; }
+            if (allData[name]) { showToast('⚠️ Паралелката "' + name + '" веќе постои!'); return; }
+
+            allData[name] = { students: {} };
+            saveAllData();
+            input.value = '';
+            currentClass = name;
+            currentStudent = '';
+            state = {};
+            for (const level of bloomLevels) { state[level.id] = null; }
+
+            console.log('✅ Додадена паралелка:', name);
+            updateAllUI();
+
+            document.getElementById('classSelect').value = name;
+            showToast('✅ Паралелката "' + name + '" е додадена!');
+        }
+
+        function deleteClass() {
+            const select = document.getElementById('classSelect');
+            const name = select.value;
+            if (!name) { showToast('⚠️ Изберете паралелка!'); return; }
+            if (!confirm('Дали сте сигурни?')) return;
+            delete allData[name];
+            saveAllData();
+            if (currentClass === name) {
+                currentClass = '';
+                currentStudent = '';
+                state = {};
+                for (const level of bloomLevels) { state[level.id] = null; }
+            }
+            updateAllUI();
+            document.getElementById('classSelect').value = '';
+            showToast('🗑️ Паралелката е избришана.');
+        }
+
+        function onClassSelect() {
+            const name = document.getElementById('classSelect').value;
+            if (!name) {
+                currentClass = '';
+                currentStudent = '';
+                state = {};
+                for (const level of bloomLevels) { state[level.id] = null; }
+                updateAllUI();
+                return;
+            }
+            currentClass = name;
+            currentStudent = '';
+            state = {};
+            for (const level of bloomLevels) { state[level.id] = null; }
+            updateAllUI();
+        }
+
+        function switchToClass(name) {
+            if (!allData[name]) return;
+            currentClass = name;
+            currentStudent = '';
+            state = {};
+            for (const level of bloomLevels) { state[level.id] = null; }
+            updateAllUI();
+            document.getElementById('classSelect').value = name;
+        }
+
+        function getClassStudentCount(className) {
+            if (!allData[className]) return 0;
+            return Object.keys(allData[className].students).length;
+        }
+
+        function deleteClassByName(name) {
+            if (!confirm('Дали сте сигурни?')) return;
+            delete allData[name];
+            saveAllData();
+            if (currentClass === name) {
+                currentClass = '';
+                currentStudent = '';
+                state = {};
+                for (const level of bloomLevels) { state[level.id] = null; }
+            }
+            updateAllUI();
+            document.getElementById('classSelect').value = '';
+        }
+
+        // ================================================================
+        // 8. УПРАВУВАЊЕ СО УЧЕНИЦИ
+        // ================================================================
+        function addStudent() {
+            console.log('➡️ addStudent() повикана');
+            if (!currentClass) { showToast('⚠️ Прво изберете паралелка!'); return; }
+
+            const input = document.getElementById('studentName');
+            const name = input.value.trim();
+            if (!name) { showToast('⚠️ Внесете име!'); return; }
+
+            if (allData[currentClass].students[name]) {
+                showToast('⚠️ Ученикот "' + name + '" веќе постои!');
+                return;
+            }
+
+            // Креирај го ученикот
+            allData[currentClass].students[name] = {
+                topics: {},
+                finalGrades: {},
+                lastUpdated: new Date().toISOString()
+            };
+
+            // Иницијализирај ги темите
+            const topics = getTopicNames(currentYear);
+            for (const topic of topics) {
+                allData[currentClass].students[name].topics[topic] = {
+                    bloom: {},
+                    writtenGrades: [],
+                    testGrades: [],
+                    projectGrades: [],
+                    homeworkGrades: [],
+                    activityGrades: []
+                };
+                for (const level of bloomLevels) {
+                    allData[currentClass].students[name].topics[topic].bloom[level.id] = null;
+                }
+            }
+
+            saveAllData();
+            input.value = '';
+            currentStudent = name;
+
+            if (currentTopic && allData[currentClass].students[name].topics[currentTopic]) {
+                state = {};
+                for (const level of bloomLevels) {
+                    state[level.id] = allData[currentClass].students[name].topics[currentTopic].bloom[level.id] || null;
+                }
+            } else {
+                state = {};
+                for (const level of bloomLevels) { state[level.id] = null; }
+            }
+
+            console.log('✅ Додаден ученик:', name);
+            updateAllUI();
+
+            document.getElementById('studentSelect').value = name;
+            showToast('✅ Ученикот "' + name + '" е додаден!');
+        }
+
+        function deleteStudent() {
+            if (!currentClass) { showToast('⚠️ Прво изберете паралелка!'); return; }
+            const select = document.getElementById('studentSelect');
+            const name = select.value;
+            if (!name) { showToast('⚠️ Изберете ученик!'); return; }
+            if (!confirm('Дали сте сигурни?')) return;
+            delete allData[currentClass].students[name];
+            saveAllData();
+            if (currentStudent === name) {
+                currentStudent = '';
+                state = {};
+                for (const level of bloomLevels) { state[level.id] = null; }
+            }
+            updateAllUI();
+            document.getElementById('studentSelect').value = '';
+            showToast('🗑️ Ученикот е избришан.');
+        }
+
+        function onStudentSelect() {
+            if (!currentClass) { showToast('⚠️ Прво изберете паралелка!'); return; }
+            const name = document.getElementById('studentSelect').value;
+            if (!name) {
+                currentStudent = '';
+                state = {};
+                for (const level of bloomLevels) { state[level.id] = null; }
+                updateAllUI();
+                return;
+            }
+            currentStudent = name;
+            if (currentTopic && allData[currentClass].students[name].topics[currentTopic]) {
+                state = {};
+                for (const level of bloomLevels) {
+                    state[level.id] = allData[currentClass].students[name].topics[currentTopic].bloom[level.id] || null;
+                }
+            } else {
+                state = {};
+                for (const level of bloomLevels) { state[level.id] = null; }
+            }
+            updateAllUI();
+        }
+
+        function switchToStudent(name) {
+            if (!currentClass || !allData[currentClass] || !allData[currentClass].students[name]) return;
+            currentStudent = name;
+            if (currentTopic && allData[currentClass].students[name].topics[currentTopic]) {
+                state = {};
+                for (const level of bloomLevels) {
+                    state[level.id] = allData[currentClass].students[name].topics[currentTopic].bloom[level.id] || null;
+                }
+            } else {
+                state = {};
+                for (const level of bloomLevels) { state[level.id] = null; }
+            }
+            updateAllUI();
+            document.getElementById('studentSelect').value = name;
+        }
+
+        function deleteStudentByName(name) {
+            if (!currentClass) return;
+            if (!confirm('Дали сте сигурни?')) return;
+            delete allData[currentClass].students[name];
+            saveAllData();
+            if (currentStudent === name) {
+                currentStudent = '';
+                state = {};
+                for (const level of bloomLevels) { state[level.id] = null; }
+            }
+            updateAllUI();
+            document.getElementById('studentSelect').value = '';
+        }
+
+        // ================================================================
+        // 9. УВОЗ НА УЧЕНИЦИ ОД EXCEL / CSV
+        // ================================================================
+        function importStudentsFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!currentClass) {
+                showToast('⚠️ Прво изберете или додадете паралелка!');
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let students = [];
+                    const data = e.target.result;
+
+                    // Определи го типот на датотеката
+                    if (file.name.endsWith('.csv')) {
+                        // CSV parsing
+                        const lines = data.split('\n');
+                        for (const line of lines) {
+                            const cols = line.split(',').map(c => c.trim());
+                            if (cols.length > 0 && cols[0] && cols[0] !== '') {
+                                // Провери дали е заглавје (првата колона да не е "Име", "Ученик" итн.)
+                                const firstCol = cols[0].toLowerCase();
+                                if (!['име', 'ученик', 'student', 'name', 'ученици'].includes(firstCol)) {
+                                    students.push(cols[0]);
+                                }
+                            }
+                        }
+                    } else {
+                        // Excel parsing (.xlsx, .xls)
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+                        for (const row of jsonData) {
+                            if (row.length > 0 && row[0] && row[0] !== '') {
+                                const firstCol = String(row[0]).trim();
+                                // Провери дали е заглавје
+                                const lower = firstCol.toLowerCase();
+                                if (!['име', 'ученик', 'student', 'name', 'ученици', 'бр', 'р.б', 'р.б.', 'реден број']
+                                    .includes(lower)) {
+                                    students.push(firstCol);
+                                }
+                            }
+                        }
+                    }
+
+                    if (students.length === 0) {
+                        showToast('⚠️ Нема пронајдени ученици во датотеката!');
+                        event.target.value = '';
+                        return;
+                    }
+
+                    // Додај ги учениците
+                    let addedCount = 0;
+                    const topics = getTopicNames(currentYear);
+
+                    for (const name of students) {
+                        if (name && name !== '' && !allData[currentClass].students[name]) {
+                            allData[currentClass].students[name] = {
+                                topics: {},
+                                finalGrades: {},
+                                lastUpdated: new Date().toISOString()
+                            };
+
+                            for (const topic of topics) {
+                                allData[currentClass].students[name].topics[topic] = {
+                                    bloom: {},
+                                    writtenGrades: [],
+                                    testGrades: [],
+                                    projectGrades: [],
+                                    homeworkGrades: [],
+                                    activityGrades: []
+                                };
+                                for (const level of bloomLevels) {
+                                    allData[currentClass].students[name].topics[topic].bloom[level.id] = null;
+                                }
+                            }
+                            addedCount++;
+                        }
+                    }
+
+                    saveAllData();
+
+                    // Ако немаше избран ученик, избери го првиот додаден
+                    if (!currentStudent && addedCount > 0) {
+                        currentStudent = students[0];
+                        if (currentTopic && allData[currentClass].students[currentStudent].topics[currentTopic]) {
+                            state = {};
+                            for (const level of bloomLevels) {
+                                state[level.id] = allData[currentClass].students[currentStudent].topics[currentTopic]
+                                    .bloom[level.id] || null;
+                            }
+                        }
+                    }
+
+                    updateAllUI();
+                    showToast('✅ Увезени ' + addedCount + ' ученици!');
+                    event.target.value = '';
+
+                } catch (error) {
+                    console.error('Грешка при увоз:', error);
+                    showToast('❌ Грешка при увоз на датотеката!');
+                    event.target.value = '';
+                }
+            };
+
+            if (file.name.endsWith('.csv')) {
+                reader.readAsText(file);
+            } else {
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        // ================================================================
+        // 10. ВНЕС НА ОЦЕНКИ ЗА СТАНДАРДИ (БЛУМ)
+        // ================================================================
+        function setBloomScore(levelId, score) {
+            state[levelId] = parseFloat(score);
+            syncStateToStorage();
+            updateBloomLevels();
+            updateSuccessTable();
+            updateFinalGradeDisplay();
+        }
+
+        // ================================================================
+        // 11. ВНЕС НА ОЦЕНКИ
+        // ================================================================
+        function saveGenericGrade(inputId, gradeArrayName, label) {
+            if (!currentStudent || !currentClass) { showToast('⚠️ Изберете ученик!'); return; }
+            if (!currentTopic) { showToast('⚠️ Изберете тема!'); return; }
+            const input = document.getElementById(inputId);
+            const grade = parseFloat(input.value);
+            if (isNaN(grade) || grade < 1 || grade > 5) {
+                showToast('⚠️ Внесете валидна оценка (1-5)!');
+                return;
+            }
+            const student = allData[currentClass].students[currentStudent];
+            if (!student.topics[currentTopic]) {
+                student.topics[currentTopic] = {
+                    bloom: {},
+                    writtenGrades: [],
+                    testGrades: [],
+                    projectGrades: [],
+                    homeworkGrades: [],
+                    activityGrades: []
+                };
+                for (const level of bloomLevels) {
+                    student.topics[currentTopic].bloom[level.id] = null;
+                }
+            }
+            if (!student.topics[currentTopic][gradeArrayName]) {
+                student.topics[currentTopic][gradeArrayName] = [];
+            }
+            student.topics[currentTopic][gradeArrayName].push(grade);
+            saveAllData();
+            input.value = '';
+            showToast('✅ Оценката од ' + label + ' за тема "' + currentTopic + '" е зачувана!');
+            updateAllUI();
+        }
+
+        function saveWrittenGrade() { saveGenericGrade('writtenGrade', 'writtenGrades', 'писмена работа'); }
+
+        function saveTestGrade() { saveGenericGrade('testGrade', 'testGrades', 'контролен тест'); }
+
+        function saveProjectGrade() { saveGenericGrade('projectGrade', 'projectGrades', 'проект'); }
+
+        function saveHomeworkGrade() { saveGenericGrade('homeworkGrade', 'homeworkGrades', 'домашна работа'); }
+
+        function saveActivityGrade() { saveGenericGrade('activityGrade', 'activityGrades', 'активност на часовите'); }
+
+        // ================================================================
+        // 12. КОНЕЧНА ОЦЕНКА
+        // ================================================================
+        function calculateFinalGrade() {
+            if (!currentStudent || !currentClass) { showToast('⚠️ Изберете ученик!'); return; }
+            if (!currentTopic) { showToast('⚠️ Изберете тема!'); return; }
+
+            const student = allData[currentClass].students[currentStudent];
+            const bloomAvg = calculateTopicBloomAverage(student, currentTopic);
+            const writtenAvg = getWrittenAverageForTopic(student, currentTopic);
+            const testAvg = getTestAverageForTopic(student, currentTopic);
+            const projectAvg = getProjectAverageForTopic(student, currentTopic);
+            const homeworkAvg = getHomeworkAverageForTopic(student, currentTopic);
+            const activityAvg = getActivityAverageForTopic(student, currentTopic);
+
+            let grades = [];
+            if (bloomAvg !== null) grades.push(bloomAvg);
+            if (writtenAvg !== null) grades.push(writtenAvg);
+            if (testAvg !== null) grades.push(testAvg);
+            if (projectAvg !== null) grades.push(projectAvg);
+            if (homeworkAvg !== null) grades.push(homeworkAvg);
+            if (activityAvg !== null) grades.push(activityAvg);
+
+            if (grades.length === 0) {
+                showToast('⚠️ Нема доволно податоци за пресметка!');
+                return;
+            }
+
+            const total = grades.reduce((a, b) => a + b, 0);
+            const avg = Math.round((total / grades.length) * 10) / 10;
+
+            let finalGrade = 1;
+            if (avg >= 4.5) finalGrade = 5;
+            else if (avg >= 3.5) finalGrade = 4;
+            else if (avg >= 2.5) finalGrade = 3;
+            else if (avg >= 1.5) finalGrade = 2;
+            else finalGrade = 1;
+
+            showToast('📊 Пресметана конечна оценка за тема "' + currentTopic + '": ' + finalGrade + ' (просек: ' + avg +
+                ')');
+
+            document.getElementById('finalAvgStandards').textContent = bloomAvg !== null ? bloomAvg : '—';
+            document.getElementById('finalAvgWritten').textContent = writtenAvg !== null ? writtenAvg : '—';
+            document.getElementById('finalAvgTests').textContent = testAvg !== null ? testAvg : '—';
+            document.getElementById('finalAvgProjects').textContent = projectAvg !== null ? projectAvg : '—';
+            document.getElementById('finalAvgHomework').textContent = homeworkAvg !== null ? homeworkAvg : '—';
+            document.getElementById('finalAvgActivity').textContent = activityAvg !== null ? activityAvg : '—';
+            document.getElementById('finalTotalAvg').textContent = avg;
+            document.getElementById('finalGradeText').textContent = finalGrade;
+
+            const gradeEl = document.getElementById('finalGradeNumber');
+            gradeEl.textContent = finalGrade;
+            gradeEl.className = 'final-grade-number grade-' + finalGrade;
+
+            return { avg, finalGrade };
+        }
+
+        function saveFinalGrade() {
+            if (!currentStudent || !currentClass) { showToast('⚠️ Изберете ученик!'); return; }
+            if (!currentPeriod) { showToast('⚠️ Изберете период!'); return; }
+            if (!currentTopic) { showToast('⚠️ Изберете тема!'); return; }
+
+            const result = calculateFinalGrade();
+            if (!result) return;
+
+            if (!allData[currentClass].students[currentStudent].finalGrades) {
+                allData[currentClass].students[currentStudent].finalGrades = {};
+            }
+            allData[currentClass].students[currentStudent].finalGrades[currentPeriod] = result.finalGrade;
+            saveAllData();
+            showToast('✅ Конечната оценка за периодот е зачувана!');
+            updateAllUI();
+        }
+
+        // ================================================================
+        // 13. UI АЖУРИРАЊЕ
+        // ================================================================
+        function updateAllUI() {
+            console.log('🔄 updateAllUI() повикана');
+            try { updateClassList(); } catch (e) { console.error('❌ updateClassList грешка:', e); }
+            try { updateClassSelect(); } catch (e) { console.error('❌ updateClassSelect грешка:', e); }
+            try { updateStudentList(); } catch (e) { console.error('❌ updateStudentList грешка:', e); }
+            try { updateStudentSelect(); } catch (e) { console.error('❌ updateStudentSelect грешка:', e); }
+            try { updateStudentInfo(); } catch (e) { console.error('❌ updateStudentInfo грешка:', e); }
+            try { updateBloomLevels(); } catch (e) { console.error('❌ updateBloomLevels грешка:', e); }
+            try { updateGradeInputDisplay(); } catch (e) { console.error('❌ updateGradeInputDisplay грешка:', e); }
+            try { updateFinalGradeDisplay(); } catch (e) { console.error('❌ updateFinalGradeDisplay грешка:', e); }
+            try { updateSuccessTable(); } catch (e) { console.error('❌ updateSuccessTable грешка:', e); }
+            try { updateSelectedStudentDisplay(); } catch (e) { console.error('❌ updateSelectedStudentDisplay грешка:', e); }
+            console.log('✅ updateAllUI() завршена');
+        }
+
+        function updateClassList() {
+            const container = document.getElementById('classList');
+            const names = Object.keys(allData).sort();
+            if (names.length === 0) {
+                container.innerHTML = '<span class="empty-message">Нема додадени паралелки.</span>';
+                return;
+            }
+            let html = '';
+            for (const name of names) {
+                const active = name === currentClass ? 'active' : '';
+                const count = getClassStudentCount(name);
+                html += `<span class="class-tag ${active}" onclick="switchToClass('${name}')">
+                    🏫 ${name} <span class="class-count">${count} ученици</span>
+                    <span class="delete-class" onclick="event.stopPropagation();deleteClassByName('${name}')">×</span>
+                </span>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function updateClassSelect() {
+            const select = document.getElementById('classSelect');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">-- Паралелка --</option>';
+            const names = Object.keys(allData).sort();
+            for (const name of names) {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name + ' (' + getClassStudentCount(name) + ' уч.)';
+                select.appendChild(opt);
+            }
+            if (currentValue && allData[currentValue]) select.value = currentValue;
+            else if (currentClass && allData[currentClass]) select.value = currentClass;
+        }
+
+        function updateStudentList() {
+            const container = document.getElementById('studentList');
+            const display = document.getElementById('currentClassNameDisplay');
+            const countDisplay = document.getElementById('studentCountDisplay');
+            if (!currentClass || !allData[currentClass]) {
+                container.innerHTML = '<span class="empty-message">Изберете паралелка.</span>';
+                display.textContent = '(изберете паралелка)';
+                countDisplay.textContent = '';
+                return;
+            }
+            display.textContent = currentClass;
+            const students = Object.keys(allData[currentClass].students).sort();
+            countDisplay.textContent = ' (' + students.length + ' ученици)';
+            if (students.length === 0) {
+                container.innerHTML = '<span class="empty-message">Нема ученици.</span>';
+                return;
+            }
+            let html = '';
+            for (const name of students) {
+                const active = name === currentStudent ? 'active' : '';
+                const avg = getStudentAvgGrade(currentClass, name);
+                let statusClass = 'status-empty-tag',
+                    statusIcon = '❓';
+                if (avg !== null) {
+                    if (avg >= 4.5) { statusClass = 'status-grade-5-tag';
+                        statusIcon = '🌟'; } else if (avg >= 3.5) { statusClass = 'status-grade-4-tag';
+                        statusIcon = '⭐'; } else if (avg >= 2.5) { statusClass = 'status-grade-3-tag';
+                        statusIcon = '🔶'; } else if (avg >= 1.5) { statusClass = 'status-grade-2-tag';
+                        statusIcon = '🟡'; } else { statusClass = 'status-grade-1-tag';
+                        statusIcon = '🔴'; }
+                }
+                const lastUpd = allData[currentClass].students[name].lastUpdated ?
+                    new Date(allData[currentClass].students[name].lastUpdated).toLocaleDateString() : '';
+                html += `<span class="student-tag ${active} ${statusClass}" onclick="switchToStudent('${name}')" title="Последно ажурирано: ${lastUpd}">
+                    <span class="student-status-icon">${statusIcon}</span> ${name}
+                    <span class="student-status-label">${avg !== null ? 'Ø' + avg : '❓'}</span>
+                    <span class="delete-student" onclick="event.stopPropagation();deleteStudentByName('${name}')">×</span>
+                </span>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function updateStudentSelect() {
+            const select = document.getElementById('studentSelect');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">-- Ученик --</option>';
+            if (currentClass && allData[currentClass]) {
+                const names = Object.keys(allData[currentClass].students).sort();
+                for (const name of names) {
+                    const opt = document.createElement('option');
+                    opt.value = name;
+                    const avg = getStudentAvgGrade(currentClass, name);
+                    opt.textContent = name + (avg !== null ? ' (Ø' + avg + ')' : '');
+                    select.appendChild(opt);
+                }
+            }
+            if (currentValue && currentClass && allData[currentClass] && allData[currentClass].students[currentValue])
+                select.value = currentValue;
+            else if (currentStudent && currentClass && allData[currentClass] && allData[currentClass].students[
+                    currentStudent]) select.value = currentStudent;
+        }
+
+        function updateStudentInfo() {
+            const info = document.getElementById('studentInfo');
+            if (currentClass && currentStudent && allData[currentClass] && allData[currentClass].students[currentStudent]) {
+                info.style.display = 'flex';
+                document.getElementById('currentStudentName').textContent = currentStudent;
+                document.getElementById('currentStudentClass').textContent = currentClass;
+                const avg = getStudentAvgGrade(currentClass, currentStudent);
+                document.getElementById('currentStudentAvg').textContent = avg !== null ? 'Ø' + avg : '❓ Нема оценки';
+                const date = allData[currentClass].students[currentStudent].lastUpdated ?
+                    new Date(allData[currentClass].students[currentStudent].lastUpdated) : new Date();
+                document.getElementById('lastUpdated').textContent = date.toLocaleString('mk-MK');
+            } else { info.style.display = 'none'; }
+        }
+
+        function updateSelectedStudentDisplay() {
+            const display = document.getElementById('selectedStudentDisplay');
+            if (currentStudent && currentClass && currentTopic) {
+                display.style.display = 'block';
+                document.getElementById('selectedStudentName').textContent = currentStudent;
+                document.getElementById('selectedStudentClass').textContent = currentClass;
+                document.getElementById('selectedStudentTopic').textContent = currentTopic;
+            } else {
+                display.style.display = 'none';
+            }
+        }
+
+        function updateGradeInputDisplay() {
+            const display = document.getElementById('gradeInputDisplay');
+            if (currentStudent && currentClass && currentTopic) {
+                display.style.display = 'block';
+                document.getElementById('gradeStudentName').textContent = currentStudent;
+                document.getElementById('gradeStudentClass').textContent = currentClass;
+                document.getElementById('gradeStudentTopic').textContent = currentTopic;
+            } else {
+                display.style.display = 'none';
+            }
+        }
+
+        function updateFinalGradeDisplay() {
+            const display = document.getElementById('finalGradeDisplay');
+            if (currentStudent && currentClass) {
+                display.style.display = 'block';
+                document.getElementById('finalStudentName').textContent = currentStudent;
+                document.getElementById('finalStudentClass').textContent = currentClass;
+                document.getElementById('finalStudentPeriod').textContent = currentPeriod;
+
+                const student = allData[currentClass].students[currentStudent];
+                const finalGrade = getFinalGradeForPeriod(student, currentPeriod);
+
+                if (finalGrade !== null) {
+                    const gradeEl = document.getElementById('finalGradeNumber');
+                    gradeEl.textContent = finalGrade;
+                    gradeEl.className = 'final-grade-number grade-' + finalGrade;
+                    document.getElementById('finalGradeText').textContent = finalGrade;
+
+                    const bloomAvg = calculateTopicBloomAverage(student, currentTopic);
+                    const writtenAvg = getWrittenAverageForTopic(student, currentTopic);
+                    const testAvg = getTestAverageForTopic(student, currentTopic);
+                    const projectAvg = getProjectAverageForTopic(student, currentTopic);
+                    const homeworkAvg = getHomeworkAverageForTopic(student, currentTopic);
+                    const activityAvg = getActivityAverageForTopic(student, currentTopic);
+
+                    document.getElementById('finalAvgStandards').textContent = bloomAvg !== null ? bloomAvg : '—';
+                    document.getElementById('finalAvgWritten').textContent = writtenAvg !== null ? writtenAvg : '—';
+                    document.getElementById('finalAvgTests').textContent = testAvg !== null ? testAvg : '—';
+                    document.getElementById('finalAvgProjects').textContent = projectAvg !== null ? projectAvg : '—';
+                    document.getElementById('finalAvgHomework').textContent = homeworkAvg !== null ? homeworkAvg : '—';
+                    document.getElementById('finalAvgActivity').textContent = activityAvg !== null ? activityAvg : '—';
+
+                    let grades = [];
+                    if (bloomAvg !== null) grades.push(bloomAvg);
+                    if (writtenAvg !== null) grades.push(writtenAvg);
+                    if (testAvg !== null) grades.push(testAvg);
+                    if (projectAvg !== null) grades.push(projectAvg);
+                    if (homeworkAvg !== null) grades.push(homeworkAvg);
+                    if (activityAvg !== null) grades.push(activityAvg);
+                    const avg = grades.length > 0 ? Math.round((grades.reduce((a, b) => a + b, 0) / grades.length) * 10) /
+                        10 : 0;
+                    document.getElementById('finalTotalAvg').textContent = avg;
+
+                } else {
+                    const gradeEl = document.getElementById('finalGradeNumber');
+                    gradeEl.textContent = '❓';
+                    gradeEl.className = 'final-grade-number grade-empty';
+                    document.getElementById('finalAvgStandards').textContent = '—';
+                    document.getElementById('finalAvgWritten').textContent = '—';
+                    document.getElementById('finalAvgTests').textContent = '—';
+                    document.getElementById('finalAvgProjects').textContent = '—';
+                    document.getElementById('finalAvgHomework').textContent = '—';
+                    document.getElementById('finalAvgActivity').textContent = '—';
+                    document.getElementById('finalTotalAvg').textContent = '—';
+                    document.getElementById('finalGradeText').textContent = 'Нема зачувана оценка';
+                }
+            } else {
+                display.style.display = 'none';
+            }
+        }
+
+        // ================================================================
+        // 14. ПРИКАЗ НА БЛУМОВИ НИВОА
+        // ================================================================
+        function updateBloomLevels() {
+            const container = document.getElementById('bloomLevels');
+            if (!currentStudent || !currentClass || !currentTopic) {
+                container.innerHTML =
+                    '<span style="color:#a0aec0;font-size:14px;grid-column:1/-1;text-align:center;padding:20px;">Изберете ученик и тема за да го видите оценувањето по нивоа.</span>';
+                return;
+            }
+            let html = '';
+            for (const level of bloomLevels) {
+                const score = state[level.id] !== undefined && state[level.id] !== null ? state[level.id] : '';
+                const levelClass = 'level-' + level.id;
+                let color = '#a0aec0';
+                if (score >= 4.5) color = '#276749';
+                else if (score >= 3.5) color = '#2b6cb0';
+                else if (score >= 2.5) color = '#975a16';
+                else if (score >= 1.5) color = '#d69e2e';
+                else if (score > 0) color = '#9b2c2c';
+                html += `
+                    <div class="bloom-level-card ${levelClass}">
+                        <div class="level-name">${level.name}</div>
+                        <div class="level-score" style="color:${color};">${score || '—'}</div>
+                        <div class="level-desc">${level.desc}</div>
+                        <div style="margin-top:6px;">
+                            <input type="range" min="0" max="5" step="0.5" value="${score || 0}" 
+                                   onchange="setBloomScore('${level.id}', this.value)" 
+                                   style="width:100%;accent-color:#2c7fb8;" />
+                            <div style="display:flex;justify-content:space-between;font-size:10px;color:#a0aec0;">
+                                <span>0</span>
+                                <span>5</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        // ================================================================
+        // 15. ПРЕГЛЕД НА УСПЕХ - САМО ЗА ИЗБРАНАТА ТЕМА
+        // ================================================================
+        function updateSuccessTable() {
+            const tbody = document.getElementById('successBody');
+            const infoEl = document.getElementById('successClassInfo');
+
+            if (!currentClass || !allData[currentClass]) {
+                infoEl.textContent = '(изберете паралелка и тема)';
+                tbody.innerHTML =
+                    '<tr><td colspan="12" style="text-align:center;color:#a0aec0;padding:30px;">Изберете паралелка и тема.</td></tr>';
+                return;
+            }
+            if (!currentTopic) {
+                infoEl.textContent = 'Паралелка: ' + currentClass + ' | Изберете тема од паѓачкото мени.';
+                tbody.innerHTML =
+                    '<tr><td colspan="12" style="text-align:center;color:#a0aec0;padding:30px;">Изберете тема за да ги видите резултатите.</td></tr>';
+                return;
+            }
+
+            infoEl.textContent = 'Паралелка: ' + currentClass + ' | Тема: ' + currentTopic;
+            const students = Object.keys(allData[currentClass].students).sort();
+            if (students.length === 0) {
+                tbody.innerHTML =
+                    '<tr><td colspan="12" style="text-align:center;color:#a0aec0;padding:30px;">Нема ученици.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            let rowNum = 1;
+            for (const name of students) {
+                const student = allData[currentClass].students[name];
+                const bloomAvg = calculateTopicBloomAverage(student, currentTopic);
+                const writtenAvg = getWrittenAverageForTopic(student, currentTopic);
+                const testAvg = getTestAverageForTopic(student, currentTopic);
+                const projectAvg = getProjectAverageForTopic(student, currentTopic);
+                const homeworkAvg = getHomeworkAverageForTopic(student, currentTopic);
+                const activityAvg = getActivityAverageForTopic(student, currentTopic);
+                const finalGrade = getFinalGradeForTopic(student, currentTopic);
+
+                let grades = [];
+                if (bloomAvg !== null) grades.push(bloomAvg);
+                if (writtenAvg !== null) grades.push(writtenAvg);
+                if (testAvg !== null) grades.push(testAvg);
+                if (projectAvg !== null) grades.push(projectAvg);
+                if (homeworkAvg !== null) grades.push(homeworkAvg);
+                if (activityAvg !== null) grades.push(activityAvg);
+                const totalAvg = grades.length > 0 ? Math.round((grades.reduce((a, b) => a + b, 0) / grades.length) * 10) /
+                    10 : null;
+
+                let gradeClass = 'grade-empty';
+                let gradeText = '❓';
+                if (finalGrade !== null) {
+                    gradeClass = 'grade-' + finalGrade;
+                    gradeText = finalGrade;
+                }
+
+                html += `<tr>
+                    <td>${rowNum}</td>
+                    <td style="text-align:left;font-weight:600;">${name}</td>
+                    <td>${currentPeriod}</td>
+                    <td style="text-align:left;font-size:12px;">${currentTopic.length > 30 ? currentTopic.substring(0,27)+'…' : currentTopic}</td>
+                    <td>${bloomAvg !== null ? bloomAvg : '—'}</td>
+                    <td>${writtenAvg !== null ? writtenAvg : '—'}</td>
+                    <td>${testAvg !== null ? testAvg : '—'}</td>
+                    <td>${projectAvg !== null ? projectAvg : '—'}</td>
+                    <td>${homeworkAvg !== null ? homeworkAvg : '—'}</td>
+                    <td>${activityAvg !== null ? activityAvg : '—'}</td>
+                    <td>${totalAvg !== null ? totalAvg : '—'}</td>
+                    <td><span class="grade-badge ${gradeClass}">${gradeText}</span></td>
+                </tr>`;
+                rowNum++;
+            }
+            if (html === '') {
+                tbody.innerHTML =
+                    '<tr><td colspan="12" style="text-align:center;color:#a0aec0;padding:30px;">Нема податоци за приказ.</td></tr>';
+            } else {
+                tbody.innerHTML = html;
+            }
+        }
+
+        // ================================================================
+        // 16. ЦЕЛОСЕН ПРЕГЛЕД - УЧЕНИК
+        // ================================================================
+        function showStudentOverview() {
+            if (!currentStudent || !currentClass) { showToast('⚠️ Изберете ученик!'); return; }
+            const student = allData[currentClass].students[currentStudent];
+            if (!student) { showToast('⚠️ Ученикот не постои!'); return; }
+            const topics = getTopicNames(currentYear);
+            if (topics.length === 0) { showToast('⚠️ Нема теми за избраната година!'); return; }
+
+            const modalTitle = document.getElementById('modalTitle');
+            const modalSubtitle = document.getElementById('modalSubtitle');
+            modalTitle.textContent = '📊 Целосен преглед за ученик: ' + currentStudent;
+            modalSubtitle.textContent = 'Паралелка: ' + currentClass + ' | Период: ' + currentPeriod + ' | Година: ' +
+                currentYear;
+
+            let html = `<table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Тема</th>`;
+            for (const level of bloomLevels) { html += `<th>${level.name}</th>`; }
+            html += `<th>Блум</th>
+                        <th>Писмени</th><th>Тестови</th><th>Проекти</th><th>Домашни</th><th>Активност</th>
+                        <th>Вкупен<br>просек</th>
+                        <th>Конечна<br>оценка</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            for (const topic of topics) {
+                const topicData = student.topics[topic] || { bloom: {}, writtenGrades: [], testGrades: [], projectGrades: [],
+                    homeworkGrades: [], activityGrades: [] };
+                let bloomScores = [];
+                let bloomTotal = 0,
+                    bloomCount = 0;
+                for (const level of bloomLevels) {
+                    const score = topicData.bloom[level.id] !== undefined ? topicData.bloom[level.id] : null;
+                    bloomScores.push(score);
+                    if (score !== null && score > 0) { bloomTotal += score;
+                        bloomCount++; }
+                }
+                const bloomAvg = bloomCount > 0 ? Math.round((bloomTotal / bloomCount) * 10) / 10 : null;
+                const writtenAvg = getWrittenAverageForTopic(student, topic);
+                const testAvg = getTestAverageForTopic(student, topic);
+                const projectAvg = getProjectAverageForTopic(student, topic);
+                const homeworkAvg = getHomeworkAverageForTopic(student, topic);
+                const activityAvg = getActivityAverageForTopic(student, topic);
+
+                let grades = [];
+                if (bloomAvg !== null) grades.push(bloomAvg);
+                if (writtenAvg !== null) grades.push(writtenAvg);
+                if (testAvg !== null) grades.push(testAvg);
+                if (projectAvg !== null) grades.push(projectAvg);
+                if (homeworkAvg !== null) grades.push(homeworkAvg);
+                if (activityAvg !== null) grades.push(activityAvg);
+                const totalAvg = grades.length > 0 ? Math.round((grades.reduce((a, b) => a + b, 0) / grades.length) * 10) /
+                    10 : null;
+                const finalGrade = getFinalGradeForTopic(student, topic);
+
+                const writtenList = topicData.writtenGrades && topicData.writtenGrades.length > 0 ? topicData.writtenGrades
+                    .join(', ') : '—';
+                const testList = topicData.testGrades && topicData.testGrades.length > 0 ? topicData.testGrades.join(
+                    ', ') : '—';
+                const projectList = topicData.projectGrades && topicData.projectGrades.length > 0 ? topicData.projectGrades
+                    .join(', ') : '—';
+                const homeworkList = topicData.homeworkGrades && topicData.homeworkGrades.length > 0 ? topicData
+                    .homeworkGrades.join(', ') : '—';
+                const activityList = topicData.activityGrades && topicData.activityGrades.length > 0 ? topicData
+                    .activityGrades.join(', ') : '—';
+
+                html += `<tr>
+                    <td style="text-align:left;font-weight:600;">${topic}</td>`;
+                for (const score of bloomScores) {
+                    const color = score !== null && score > 0 ? (score >= 4.5 ? '#276749' : score >= 3.5 ? '#2b6cb0' :
+                        score >= 2.5 ? '#975a16' : score >= 1.5 ? '#d69e2e' : '#9b2c2c') : '#a0aec0';
+                    html += `<td class="bloom-cell" style="font-weight:700;color:${color};">${score !== null ? score : '—'}</td>`;
+                }
+                html += `<td>${bloomAvg !== null ? bloomAvg : '—'}</td>
+                        <td>${writtenAvg !== null ? writtenAvg + ' ('+writtenList+')' : '—'}</td>
+                        <td>${testAvg !== null ? testAvg + ' ('+testList+')' : '—'}</td>
+                        <td>${projectAvg !== null ? projectAvg + ' ('+projectList+')' : '—'}</td>
+                        <td>${homeworkAvg !== null ? homeworkAvg + ' ('+homeworkList+')' : '—'}</td>
+                        <td>${activityAvg !== null ? activityAvg + ' ('+activityList+')' : '—'}</td>
+                        <td>${totalAvg !== null ? totalAvg : '—'}</td>
+                        <td class="grade-cell"><span class="grade-badge ${finalGrade !== null ? 'grade-'+finalGrade : 'grade-empty'}">${finalGrade !== null ? finalGrade : '❓'}</span></td>
+                    </tr>`;
+            }
+
+            // ВКУПНО
+            let allGrades = [];
+            let allBloomAvg = 0,
+                allBloomCount = 0;
+            for (const topic of topics) {
+                const topicData = student.topics[topic] || { bloom: {} };
+                for (const level of bloomLevels) {
+                    const score = topicData.bloom[level.id];
+                    if (score !== null && score > 0) { allBloomAvg += score;
+                        allBloomCount++; }
+                }
+                const fg = getFinalGradeForTopic(student, topic);
+                if (fg !== null) allGrades.push(fg);
+            }
+            const overallBloomAvg = allBloomCount > 0 ? Math.round((allBloomAvg / allBloomCount) * 10) / 10 : null;
+            const overallWritten = getWrittenAverageForTopic(student, currentTopic);
+            const overallTest = getTestAverageForTopic(student, currentTopic);
+            const overallProject = getProjectAverageForTopic(student, currentTopic);
+            const overallHomework = getHomeworkAverageForTopic(student, currentTopic);
+            const overallActivity = getActivityAverageForTopic(student, currentTopic);
+            let totalAll = [];
+            if (overallBloomAvg !== null) totalAll.push(overallBloomAvg);
+            if (overallWritten !== null) totalAll.push(overallWritten);
+            if (overallTest !== null) totalAll.push(overallTest);
+            if (overallProject !== null) totalAll.push(overallProject);
+            if (overallHomework !== null) totalAll.push(overallHomework);
+            if (overallActivity !== null) totalAll.push(overallActivity);
+            const overallTotal = totalAll.length > 0 ? Math.round((totalAll.reduce((a, b) => a + b, 0) / totalAll.length) *
+                10) / 10 : null;
+            const overallFinal = allGrades.length > 0 ? Math.round(allGrades.reduce((a, b) => a + b, 0) / allGrades.length) :
+                null;
+
+            html += `<tr style="background:#dbeafe;font-weight:700;">
+                    <td style="text-align:left;">📊 ВКУПНО</td>`;
+            for (const level of bloomLevels) {
+                let totalLevel = 0,
+                    countLevel = 0;
+                for (const topic of topics) {
+                    const topicData = student.topics[topic] || { bloom: {} };
+                    const score = topicData.bloom[level.id];
+                    if (score !== null && score > 0) { totalLevel += score;
+                        countLevel++; }
+                }
+                const avgLevel = countLevel > 0 ? Math.round((totalLevel / countLevel) * 10) / 10 : null;
+                html +=
+                    `<td class="bloom-cell" style="font-weight:700;color:${avgLevel !== null ? (avgLevel >= 4.5 ? '#276749' : avgLevel >= 3.5 ? '#2b6cb0' : avgLevel >= 2.5 ? '#975a16' : avgLevel >= 1.5 ? '#d69e2e' : '#9b2c2c') : '#a0aec0'};">${avgLevel !== null ? avgLevel : '—'}</td>`;
+            }
+            html += `<td>${overallBloomAvg !== null ? overallBloomAvg : '—'}</td>
+                    <td>${overallWritten !== null ? overallWritten : '—'}</td>
+                    <td>${overallTest !== null ? overallTest : '—'}</td>
+                    <td>${overallProject !== null ? overallProject : '—'}</td>
+                    <td>${overallHomework !== null ? overallHomework : '—'}</td>
+                    <td>${overallActivity !== null ? overallActivity : '—'}</td>
+                    <td>${overallTotal !== null ? overallTotal : '—'}</td>
+                    <td class="grade-cell"><span class="grade-badge ${overallFinal !== null ? 'grade-'+Math.round(overallFinal) : 'grade-empty'}">${overallFinal !== null ? Math.round(overallFinal) : '❓'}</span></td>
+                </tr>`;
+
+            html += `</tbody></table>`;
+            document.getElementById('modalTableWrap').innerHTML = html;
+            document.getElementById('overviewModal').classList.add('active');
+        }
+
+        // ================================================================
+        // 17. ЦЕЛОСЕН ПРЕГЛЕД - ПАРАЛЕЛКА (САМО ЗА ИЗБРАНАТА ТЕМА)
+        // ================================================================
+        function showClassOverview() {
+            if (!currentClass || !allData[currentClass]) { showToast('⚠️ Изберете паралелка!'); return; }
+            if (!currentTopic) { showToast('⚠️ Изберете тема!'); return; }
+            const students = Object.keys(allData[currentClass].students).sort();
+            if (students.length === 0) { showToast('⚠️ Нема ученици во паралелката!'); return; }
+
+            const modalTitle = document.getElementById('modalTitle');
+            const modalSubtitle = document.getElementById('modalSubtitle');
+            modalTitle.textContent = '📊 Целосен преглед за паралелка: ' + currentClass + ' - Тема: ' + currentTopic;
+            modalSubtitle.textContent = 'Период: ' + currentPeriod + ' | Година: ' + currentYear + ' | Вкупно ученици: ' +
+                students.length;
+
+            let html = `<table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Ученик</th>`;
+            for (const level of bloomLevels) { html += `<th>${level.name}</th>`; }
+            html += `<th>Блум</th>
+                        <th>Писмени</th><th>Тестови</th><th>Проекти</th><th>Домашни</th><th>Активност</th>
+                        <th>Вкупен<br>просек</th>
+                        <th>Конечна<br>оценка</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            for (const studentName of students) {
+                const student = allData[currentClass].students[studentName];
+                const topicData = student.topics[currentTopic] || { bloom: {}, writtenGrades: [], testGrades: [],
+                    projectGrades: [], homeworkGrades: [], activityGrades: [] };
+                let bloomScores = [];
+                let bloomTotal = 0,
+                    bloomCount = 0;
+                for (const level of bloomLevels) {
+                    const score = topicData.bloom[level.id] !== undefined ? topicData.bloom[level.id] : null;
+                    bloomScores.push(score);
+                    if (score !== null && score > 0) { bloomTotal += score;
+                        bloomCount++; }
+                }
+                const bloomAvg = bloomCount > 0 ? Math.round((bloomTotal / bloomCount) * 10) / 10 : null;
+                const writtenAvg = getWrittenAverageForTopic(student, currentTopic);
+                const testAvg = getTestAverageForTopic(student, currentTopic);
+                const projectAvg = getProjectAverageForTopic(student, currentTopic);
+                const homeworkAvg = getHomeworkAverageForTopic(student, currentTopic);
+                const activityAvg = getActivityAverageForTopic(student, currentTopic);
+
+                let grades = [];
+                if (bloomAvg !== null) grades.push(bloomAvg);
+                if (writtenAvg !== null) grades.push(writtenAvg);
+                if (testAvg !== null) grades.push(testAvg);
+                if (projectAvg !== null) grades.push(projectAvg);
+                if (homeworkAvg !== null) grades.push(homeworkAvg);
+                if (activityAvg !== null) grades.push(activityAvg);
+                const totalAvg = grades.length > 0 ? Math.round((grades.reduce((a, b) => a + b, 0) / grades.length) * 10) /
+                    10 : null;
+                const finalGrade = getFinalGradeForTopic(student, currentTopic);
+
+                html += `<tr>
+                    <td style="font-weight:600;">${studentName}</td>`;
+                for (const score of bloomScores) {
+                    const color = score !== null && score > 0 ? (score >= 4.5 ? '#276749' : score >= 3.5 ? '#2b6cb0' :
+                        score >= 2.5 ? '#975a16' : score >= 1.5 ? '#d69e2e' : '#9b2c2c') : '#a0aec0';
+                    html +=
+                        `<td class="bloom-cell" style="font-weight:700;color:${color};">${score !== null ? score : '—'}</td>`;
+                }
+                html += `<td>${bloomAvg !== null ? bloomAvg : '—'}</td>
+                        <td>${writtenAvg !== null ? writtenAvg : '—'}</td>
+                        <td>${testAvg !== null ? testAvg : '—'}</td>
+                        <td>${projectAvg !== null ? projectAvg : '—'}</td>
+                        <td>${homeworkAvg !== null ? homeworkAvg : '—'}</td>
+                        <td>${activityAvg !== null ? activityAvg : '—'}</td>
+                        <td>${totalAvg !== null ? totalAvg : '—'}</td>
+                        <td class="grade-cell"><span class="grade-badge ${finalGrade !== null ? 'grade-'+finalGrade : 'grade-empty'}">${finalGrade !== null ? finalGrade : '❓'}</span></td>
+                    </tr>`;
+            }
+
+            html += `</tbody></table>`;
+            document.getElementById('modalTableWrap').innerHTML = html;
+            document.getElementById('overviewModal').classList.add('active');
+        }
+
+        // ================================================================
+        // 18. МОДАЛ - ЗАТВОРАЊЕ И ПЕЧАТЕЊЕ
+        // ================================================================
+        function closeModal() { document.getElementById('overviewModal').classList.remove('active'); }
+
+        function printModal() {
+            const modalContent = document.querySelector('.modal-content').cloneNode(true);
+            modalContent.querySelector('.modal-close')?.remove();
+            modalContent.querySelector('.modal-print-btn')?.remove();
+            const printWindow = window.open('', '_blank', 'width=1000,height=800');
+            if (!printWindow) { showToast('⚠️ Овозможете скокачки прозорци за печатење!'); return; }
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head><meta charset="UTF-8"><title>Целосен преглед</title>
+                <style>
+                    * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+                    body { padding: 20px; }
+                    .modal-title { font-size: 24px; font-weight: 700; color: #1a3a5c; }
+                    .modal-subtitle { font-size: 16px; color: #4a5568; margin-bottom: 20px; }
+                    .modal-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+                    .modal-table th { background: #1a3a5c; color: white; padding: 8px 10px; text-align: center; }
+                    .modal-table td { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; text-align: center; }
+                    .modal-table tr:nth-child(even) { background: #f7fafc; }
+                    .grade-badge { display: inline-block; padding: 2px 12px; border-radius: 20px; font-weight: 700; }
+                    .grade-5 { background: #c6f6d5; color: #276749; }
+                    .grade-4 { background: #c6f6d5; color: #276749; }
+                    .grade-3 { background: #fefcbf; color: #975a16; }
+                    .grade-2 { background: #fed7d7; color: #9b2c2c; }
+                    .grade-1 { background: #fed7d7; color: #9b2c2c; }
+                    .grade-empty { background: #e2e8f0; color: #4a5568; }
+                    .bloom-cell { font-weight: 700; }
+                    @media print { body { padding: 10px; } }
+                </style>
+                </head>
+                <body>
+                    ${modalContent.innerHTML}
+                    <script>
+                        window.onload = function() { window.print(); setTimeout(() => window.close(), 3000); };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        // ================================================================
+        // 19. ЕКСПОРТ ВО EXCEL
+        // ================================================================
+        function exportExcel() {
+            try {
+                const data = [];
+                const info = getCurrentPeriodInfo();
+                data.push(['СУМАТИВНО ОЦЕНУВАЊЕ - БЛУМОВА ТАКСОНОМИЈА']);
+                data.push(['Математика']);
+                data.push(['Наставник: проф. Решат Маловски']);
+                data.push(['Година:', info.year + ' година']);
+                data.push(['Период:', info.period]);
+                data.push(['Датум:', new Date().toLocaleString('mk-MK')]);
+                data.push([]);
+
+                const headers = ['Р.б.', 'Ученик', 'Паралелка', 'Период', 'Тема'];
+                for (const level of bloomLevels) headers.push(level.name);
+                headers.push('Блум просек', 'Писмени', 'Тестови', 'Проекти', 'Домашни', 'Активност', 'Вкупен просек',
+                    'Конечна оценка');
+                data.push(headers);
+
+                const classes = Object.keys(allData).sort();
+                let rowNum = 1;
+                for (const className of classes) {
+                    const students = Object.keys(allData[className].students).sort();
+                    for (const studentName of students) {
+                        const student = allData[className].students[studentName];
+                        const topics = getTopicNames(currentYear);
+                        for (const topic of topics) {
+                            const topicData = student.topics[topic] || { bloom: {}, writtenGrades: [],
+                                testGrades: [], projectGrades: [], homeworkGrades: [], activityGrades: [] };
+                            const row = [rowNum, studentName, className, currentPeriod, topic];
+                            let bloomTotal = 0,
+                                bloomCount = 0;
+                            for (const level of bloomLevels) {
+                                const score = topicData.bloom[level.id] || null;
+                                row.push(score !== null ? score : '');
+                                if (score !== null && score > 0) { bloomTotal += score;
+                                    bloomCount++; }
+                            }
+                            const bloomAvg = bloomCount > 0 ? Math.round((bloomTotal / bloomCount) * 10) / 10 : null;
+                            const writtenAvg = getWrittenAverageForTopic(student, topic);
+                            const testAvg = getTestAverageForTopic(student, topic);
+                            const projectAvg = getProjectAverageForTopic(student, topic);
+                            const homeworkAvg = getHomeworkAverageForTopic(student, topic);
+                            const activityAvg = getActivityAverageForTopic(student, topic);
+
+                            let grades = [];
+                            if (bloomAvg !== null) grades.push(bloomAvg);
+                            if (writtenAvg !== null) grades.push(writtenAvg);
+                            if (testAvg !== null) grades.push(testAvg);
+                            if (projectAvg !== null) grades.push(projectAvg);
+                            if (homeworkAvg !== null) grades.push(homeworkAvg);
+                            if (activityAvg !== null) grades.push(activityAvg);
+                            const totalAvg = grades.length > 0 ? Math.round((grades.reduce((a, b) => a + b, 0) / grades
+                                .length) * 10) / 10 : null;
+                            const finalGrade = getFinalGradeForTopic(student, topic);
+
+                            row.push(bloomAvg !== null ? bloomAvg : '');
+                            row.push(writtenAvg !== null ? writtenAvg : '');
+                            row.push(testAvg !== null ? testAvg : '');
+                            row.push(projectAvg !== null ? projectAvg : '');
+                            row.push(homeworkAvg !== null ? homeworkAvg : '');
+                            row.push(activityAvg !== null ? activityAvg : '');
+                            row.push(totalAvg !== null ? totalAvg : '');
+                            row.push(finalGrade !== null ? finalGrade : '');
+                            data.push(row);
+                            rowNum++;
+                        }
+                    }
+                }
+
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                ws['!cols'] = [
+                    { wch: 6 }, { wch: 20 }, { wch: 12 }, { wch: 12 }, { wch: 35 },
+                    { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
+                    { wch: 14 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 14 },
+                    { wch: 16 }
+                ];
+                XLSX.utils.book_append_sheet(wb, ws, 'Оценување');
+                const fileName = 'summative_bloom_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+                XLSX.writeFile(wb, fileName);
+                showToast('✅ Експортирано во Excel!');
+            } catch (e) { showToast('❌ Грешка: ' + e.message); }
+        }
+
+        // ================================================================
+        // 20. CSV ЕКСПОРТ
+        // ================================================================
+        function exportCSV() {
+            try {
+                const delimiter = '\t';
+                let csv = '\uFEFF';
+                const info = getCurrentPeriodInfo();
+                csv += 'СУМАТИВНО ОЦЕНУВАЊЕ - БЛУМОВА ТАКСОНОМИЈА\n';
+                csv += 'Математика\n';
+                csv += 'Наставник: проф. Решат Маловски\n';
+                csv += 'Година:' + delimiter + info.year + ' година\n';
+                csv += 'Период:' + delimiter + info.period + '\n';
+                csv += 'Датум:' + delimiter + new Date().toLocaleString('mk-MK') + '\n\n';
+
+                const headers = ['Р.б.', 'Ученик', 'Паралелка', 'Период', 'Тема'];
+                for (const level of bloomLevels) headers.push(level.name);
+                headers.push('Блум просек', 'Писмени', 'Тестови', 'Проекти', 'Домашни', 'Активност', 'Вкупен просек',
+                    'Конечна оценка');
+                csv += headers.join(delimiter) + '\n';
+
+                const classes = Object.keys(allData).sort();
+                let rowNum = 1;
+                for (const className of classes) {
+                    const students = Object.keys(allData[className].students).sort();
+                    for (const studentName of students) {
+                        const student = allData[className].students[studentName];
+                        const topics = getTopicNames(currentYear);
+                        for (const topic of topics) {
+                            const topicData = student.topics[topic] || { bloom: {}, writtenGrades: [],
+                                testGrades: [], projectGrades: [], homeworkGrades: [], activityGrades: [] };
+                            const row = [rowNum, studentName, className, currentPeriod, topic];
+                            let bloomTotal = 0,
+                                bloomCount = 0;
+                            for (const level of bloomLevels) {
+                                const score = topicData.bloom[level.id] || null;
+                                row.push(score !== null ? score : '');
+                                if (score !== null && score > 0) { bloomTotal += score;
+                                    bloomCount++; }
+                            }
+                            const bloomAvg = bloomCount > 0 ? Math.round((bloomTotal / bloomCount) * 10) / 10 : null;
+                            const writtenAvg = getWrittenAverageForTopic(student, topic);
+                            const testAvg = getTestAverageForTopic(student, topic);
+                            const projectAvg = getProjectAverageForTopic(student, topic);
+                            const homeworkAvg = getHomeworkAverageForTopic(student, topic);
+                            const activityAvg = getActivityAverageForTopic(student, topic);
+
+                            let grades = [];
+                            if (bloomAvg !== null) grades.push(bloomAvg);
+                            if (writtenAvg !== null) grades.push(writtenAvg);
+                            if (testAvg !== null) grades.push(testAvg);
+                            if (projectAvg !== null) grades.push(projectAvg);
+                            if (homeworkAvg !== null) grades.push(homeworkAvg);
+                            if (activityAvg !== null) grades.push(activityAvg);
+                            const totalAvg = grades.length > 0 ? Math.round((grades.reduce((a, b) => a + b, 0) / grades
+                                .length) * 10) / 10 : null;
+                            const finalGrade = getFinalGradeForTopic(student, topic);
+
+                            row.push(bloomAvg !== null ? bloomAvg : '');
+                            row.push(writtenAvg !== null ? writtenAvg : '');
+                            row.push(testAvg !== null ? testAvg : '');
+                            row.push(projectAvg !== null ? projectAvg : '');
+                            row.push(homeworkAvg !== null ? homeworkAvg : '');
+                            row.push(activityAvg !== null ? activityAvg : '');
+                            row.push(totalAvg !== null ? totalAvg : '');
+                            row.push(finalGrade !== null ? finalGrade : '');
+                            csv += row.join(delimiter) + '\n';
+                            rowNum++;
+                        }
+                    }
+                }
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'summative_bloom_' + new Date().toISOString().slice(0, 10) + '.csv';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('✅ CSV експортиран!');
+            } catch (e) { showToast('❌ Грешка: ' + e.message); }
+        }
+
+        // ================================================================
+        // 21. РЕСЕТ
+        // ================================================================
+        function resetAll() {
+            if (!confirm('Дали сте сигурни дека сакате да ги избришете сите податоци?')) return;
+            localStorage.removeItem('bloomSummativeData');
+            allData = {};
+            currentClass = '';
+            currentStudent = '';
+            state = {};
+            for (const level of bloomLevels) { state[level.id] = null; }
+            updateAllUI();
+            showToast('🔄 Сите податоци се избришани.');
+        }
+
+        // ================================================================
+        // 22. TOAST
+        // ================================================================
+        function showToast(message) {
+            const old = document.querySelector('.toast');
+            if (old) old.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // ================================================================
+        // 23. ПОКРЕНУВАЊЕ
+        // ================================================================
+        loadAllData();
+
+        document.getElementById('yearSelect').value = currentYear;
+        document.getElementById('periodSelect').value = currentPeriod;
+
+        const classNames = Object.keys(allData).sort();
+        if (classNames.length > 0) {
+            currentClass = classNames[0];
+            const students = Object.keys(allData[currentClass].students).sort();
+            if (students.length > 0) {
+                currentStudent = students[0];
+                if (currentTopic && allData[currentClass].students[currentStudent].topics[currentTopic]) {
+                    state = {};
+                    for (const level of bloomLevels) {
+                        state[level.id] = allData[currentClass].students[currentStudent].topics[currentTopic].bloom[
+                            level.id] || null;
+                    }
+                } else {
+                    state = {};
+                    for (const level of bloomLevels) { state[level.id] = null; }
+                }
+            } else {
+                state = {};
+                for (const level of bloomLevels) { state[level.id] = null; }
+            }
+        } else {
+            state = {};
+            for (const level of bloomLevels) { state[level.id] = null; }
+        }
+
+        updateTopicUI();
+        updateAllUI();
+
+        if (currentClass) document.getElementById('classSelect').value = currentClass;
+        if (currentStudent) document.getElementById('studentSelect').value = currentStudent;
+        if (currentTopic) document.getElementById('topicSelect').value = currentTopic;
+
+        document.getElementById('className').addEventListener('keypress', function(e) { if (e.key === 'Enter') addClass(); });
+        document.getElementById('studentName').addEventListener('keypress', function(e) { if (e.key === 'Enter')
+            addStudent(); });
+        document.getElementById('writtenGrade').addEventListener('keypress', function(e) { if (e.key === 'Enter')
+            saveWrittenGrade(); });
+        document.getElementById('testGrade').addEventListener('keypress', function(e) { if (e.key === 'Enter')
+            saveTestGrade(); });
+        document.getElementById('projectGrade').addEventListener('keypress', function(e) { if (e.key === 'Enter')
+            saveProjectGrade(); });
+        document.getElementById('homeworkGrade').addEventListener('keypress', function(e) { if (e.key === 'Enter')
+            saveHomeworkGrade(); });
+        document.getElementById('activityGrade').addEventListener('keypress', function(e) { if (e.key === 'Enter')
+            saveActivityGrade(); });
+
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+        document.getElementById('overviewModal').addEventListener('click', function(e) { if (e.target === this)
+            closeModal(); });
+
+        console.log('✅ Системот за сумативно оценување според Блумовата таксономија е подготвен!');
+        console.log('📚 Вкупно паралелки:', Object.keys(allData).length);
+        console.log('📅 Година:', currentYear);
+        console.log('👤 Ученик:', currentStudent || 'Нема');
+        console.log('💡 За увоз на ученици: кликнете "📤 Увези ученици" и изберете Excel/CSV датотека');
+    </script>
+
+</body>
+</html>

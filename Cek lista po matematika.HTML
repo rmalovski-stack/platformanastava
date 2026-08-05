@@ -1,0 +1,3001 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чек-листа за следење на ученици - Математика</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js">
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #f0f4f8;
+            padding: 20px;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #1a3a5c;
+            font-size: 28px;
+            border-bottom: 3px solid #2c7fb8;
+            padding-bottom: 15px;
+            margin-bottom: 10px;
+        }
+        .teacher-info {
+            text-align: center;
+            font-size: 16px;
+            color: #2a4365;
+            margin-bottom: 25px;
+            padding: 8px;
+            background: #ebf8ff;
+            border-radius: 8px;
+            border: 1px solid #bee3f8;
+        }
+        .teacher-info strong {
+            font-weight: 700;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .topic-section {
+            background: #ebf8ff;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 20px;
+            border: 2px solid #bee3f8;
+        }
+        .topic-section .topic-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        .topic-section .topic-row .field-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            flex: 1;
+            min-width: 180px;
+        }
+        .topic-section label {
+            font-weight: 600;
+            color: #2a4365;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .topic-section select {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 2px solid #bee3f8;
+            font-size: 14px;
+            background: white;
+            flex: 1;
+            min-width: 120px;
+        }
+        .topic-section select:focus {
+            border-color: #2c7fb8;
+            outline: none;
+        }
+        .topic-section input {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 2px solid #bee3f8;
+            font-size: 14px;
+            background: white;
+            flex: 1;
+            min-width: 80px;
+        }
+        .topic-section input:focus {
+            border-color: #2c7fb8;
+            outline: none;
+        }
+        .topic-section .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            background: #2c7fb8;
+            color: white;
+        }
+        .topic-section .btn:hover {
+            background: #1a5a8c;
+        }
+
+        .topic-help {
+            font-size: 12px;
+            color: #4a5568;
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: #f7fafc;
+            border-radius: 6px;
+        }
+        .topic-help strong {
+            color: #2a4365;
+        }
+
+        .student-section {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #e2e8f0;
+        }
+        .student-section .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .student-section .row-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            background: #edf2f7;
+            padding: 10px 15px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 280px;
+        }
+        .student-section label {
+            font-weight: 600;
+            color: #1a3a5c;
+            font-size: 14px;
+        }
+        .student-section input[type="text"] {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e0;
+            font-size: 14px;
+            flex: 1;
+            min-width: 140px;
+        }
+        .student-section input[type="text"]:focus {
+            border-color: #2c7fb8;
+            outline: none;
+        }
+        .student-section select {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e0;
+            font-size: 14px;
+            flex: 1;
+            min-width: 140px;
+            background: white;
+        }
+        .student-section select:focus {
+            border-color: #2c7fb8;
+            outline: none;
+        }
+
+        /* Стил за увоз на Excel */
+        .import-section {
+            background: #f0fff4;
+            border: 2px solid #38a169;
+            border-radius: 8px;
+            padding: 12px 18px;
+            margin: 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .import-section label {
+            font-weight: 600;
+            color: #22543d;
+            font-size: 14px;
+        }
+        .import-section input[type="file"] {
+            padding: 6px 10px;
+            border: 2px solid #38a169;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+            flex: 1;
+            min-width: 200px;
+        }
+        .import-section input[type="file"]:focus {
+            outline: none;
+            border-color: #2f855a;
+        }
+        .import-section .btn-import {
+            background: #38a169;
+            color: white;
+            padding: 8px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .import-section .btn-import:hover {
+            background: #2f855a;
+        }
+        .import-section .btn-import:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+        .import-section .import-help {
+            font-size: 11px;
+            color: #4a5568;
+            margin-left: 5px;
+        }
+        .import-section .import-help strong {
+            color: #22543d;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: #2c7fb8;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1a5a8c;
+        }
+        .btn-success {
+            background: #38a169;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #2f855a;
+        }
+        .btn-danger {
+            background: #e53e3e;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c53030;
+        }
+        .btn-purple {
+            background: #805ad5;
+            color: white;
+        }
+        .btn-purple:hover {
+            background: #6b46c1;
+        }
+        .btn-pink {
+            background: #d53f8c;
+            color: white;
+        }
+        .btn-pink:hover {
+            background: #b83280;
+        }
+        .btn-teal {
+            background: #319795;
+            color: white;
+        }
+        .btn-teal:hover {
+            background: #2c7a7a;
+        }
+        .btn-orange {
+            background: #dd6b20;
+            color: white;
+        }
+        .btn-orange:hover {
+            background: #c05621;
+        }
+        .btn-excel {
+            background: #217346;
+            color: white;
+        }
+        .btn-excel:hover {
+            background: #1a5c38;
+        }
+
+        .class-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .class-tag {
+            background: #e9d8fd;
+            color: #44337a;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .class-tag:hover {
+            background: #d6bcfa;
+        }
+        .class-tag.active {
+            border-color: #805ad5;
+            background: #805ad5;
+            color: white;
+        }
+        .class-tag .delete-class {
+            cursor: pointer;
+            font-weight: 700;
+            color: #e53e3e;
+            font-size: 16px;
+            line-height: 1;
+        }
+        .class-tag .delete-class:hover {
+            color: #c53030;
+        }
+        .class-tag .class-count {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 0 8px;
+            border-radius: 10px;
+        }
+
+        .student-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            min-height: 40px;
+        }
+        .student-tag {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .student-tag:hover {
+            transform: scale(1.03);
+        }
+        .student-tag.active {
+            border-color: #2c7fb8;
+            box-shadow: 0 0 0 2px #2c7fb8;
+        }
+        .student-tag .delete-student {
+            cursor: pointer;
+            font-weight: 700;
+            color: #e53e3e;
+            font-size: 14px;
+            line-height: 1;
+        }
+        .student-tag .delete-student:hover {
+            color: #c53030;
+        }
+        .student-tag.active .delete-student {
+            color: #fed7d7;
+        }
+        .student-tag.active .delete-student:hover {
+            color: white;
+        }
+
+        .status-excellent-tag {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .status-good-tag {
+            background: #fefcbf;
+            color: #975a16;
+        }
+        .status-needs-tag {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .status-empty-tag {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        .status-excellent-tag.active {
+            border-color: #276749;
+            background: #276749;
+            color: white;
+        }
+        .status-good-tag.active {
+            border-color: #975a16;
+            background: #975a16;
+            color: white;
+        }
+        .status-needs-tag.active {
+            border-color: #9b2c2c;
+            background: #9b2c2c;
+            color: white;
+        }
+        .status-empty-tag.active {
+            border-color: #4a5568;
+            background: #4a5568;
+            color: white;
+        }
+
+        .student-status-icon {
+            font-size: 14px;
+        }
+        .student-status-label {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-left: 2px;
+        }
+
+        .student-info {
+            font-size: 14px;
+            color: #4a5568;
+            padding: 10px 15px;
+            background: #edf2f7;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .overview-section {
+            margin: 25px 0 20px 0;
+            border: 2px solid #2c7fb8;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .overview-header {
+            background: #1a3a5c;
+            color: white;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .overview-header small {
+            font-weight: 400;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .overview-table-wrap {
+            overflow-x: auto;
+            padding: 5px;
+        }
+        .overview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .overview-table th {
+            background: #edf2f7;
+            color: #1a3a5c;
+            padding: 10px 12px;
+            text-align: center;
+            font-weight: 700;
+            border-bottom: 2px solid #cbd5e0;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .overview-table td {
+            padding: 8px 10px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        .overview-table tr:hover td {
+            background: #f7fafc;
+        }
+
+        .overview-status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .overview-status-excellent {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .overview-status-good {
+            background: #fefcbf;
+            color: #975a16;
+        }
+        .overview-status-needs {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .overview-status-empty {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .overview-score {
+            font-weight: 700;
+            font-size: 15px;
+        }
+        .overview-score-excellent {
+            color: #276749;
+        }
+        .overview-score-good {
+            color: #975a16;
+        }
+        .overview-score-needs {
+            color: #9b2c2c;
+        }
+        .overview-score-empty {
+            color: #a0aec0;
+        }
+
+        .overview-topic-info {
+            font-size: 14px;
+            color: #4a5568;
+            padding: 8px 15px;
+            background: #edf2f7;
+            border-radius: 6px;
+            margin: 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+        .overview-topic-info strong {
+            color: #1a3a5c;
+        }
+
+        .category-status-section {
+            margin: 20px 0;
+            padding: 15px 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        .category-status-section .section-title {
+            font-weight: 700;
+            color: #1a3a5c;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        .category-status-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+        }
+        .category-status-card {
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-align: center;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #cbd5e0;
+        }
+        .category-status-card .cat-name {
+            font-size: 11px;
+            color: #4a5568;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .category-status-card .cat-status {
+            font-size: 15px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+        .category-status-card .cat-score {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 2px;
+        }
+        .category-status-card .cat-count {
+            font-size: 11px;
+            color: #a0aec0;
+            margin-top: 2px;
+        }
+        .category-status-card.cat-excellent {
+            border-left-color: #276749;
+            background: #f0fff4;
+        }
+        .category-status-card.cat-excellent .cat-status {
+            color: #276749;
+        }
+        .category-status-card.cat-good {
+            border-left-color: #975a16;
+            background: #fffff0;
+        }
+        .category-status-card.cat-good .cat-status {
+            color: #975a16;
+        }
+        .category-status-card.cat-needs {
+            border-left-color: #9b2c2c;
+            background: #fff5f5;
+        }
+        .category-status-card.cat-needs .cat-status {
+            color: #9b2c2c;
+        }
+        .category-status-card.cat-empty {
+            border-left-color: #a0aec0;
+            background: #f7fafc;
+        }
+        .category-status-card.cat-empty .cat-status {
+            color: #a0aec0;
+        }
+
+        .topic-status-section {
+            margin: 20px 0;
+            padding: 15px 20px;
+            background: #ebf8ff;
+            border-radius: 10px;
+            border: 2px solid #bee3f8;
+        }
+        .topic-status-section .section-title {
+            font-weight: 700;
+            color: #2a4365;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        .topic-status-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .topic-status-card {
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-align: center;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #bee3f8;
+        }
+        .topic-status-card .topic-name {
+            font-size: 12px;
+            color: #2a4365;
+            font-weight: 700;
+        }
+        .topic-status-card .topic-status {
+            font-size: 14px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+        .topic-status-card .topic-score {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 2px;
+        }
+        .topic-status-card .topic-count {
+            font-size: 11px;
+            color: #a0aec0;
+            margin-top: 2px;
+        }
+        .topic-status-card.topic-excellent {
+            border-left-color: #276749;
+            background: #f0fff4;
+        }
+        .topic-status-card.topic-excellent .topic-status {
+            color: #276749;
+        }
+        .topic-status-card.topic-good {
+            border-left-color: #975a16;
+            background: #fffff0;
+        }
+        .topic-status-card.topic-good .topic-status {
+            color: #975a16;
+        }
+        .topic-status-card.topic-needs {
+            border-left-color: #9b2c2c;
+            background: #fff5f5;
+        }
+        .topic-status-card.topic-needs .topic-status {
+            color: #9b2c2c;
+        }
+        .topic-status-card.topic-empty {
+            border-left-color: #a0aec0;
+            background: #f7fafc;
+        }
+        .topic-status-card.topic-empty .topic-status {
+            color: #a0aec0;
+        }
+
+        .status-cards {
+            display: none;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 20px;
+        }
+        .status-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px 30px;
+            min-width: 200px;
+            text-align: center;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .status-card .card-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a3a5c;
+        }
+        .status-card .card-class {
+            font-size: 13px;
+            color: #4a5568;
+            margin-top: 2px;
+        }
+        .status-card .card-status {
+            font-size: 22px;
+            font-weight: 800;
+            margin-top: 8px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .status-card .card-score {
+            font-size: 14px;
+            color: #4a5568;
+            margin-top: 5px;
+        }
+        .status-card.card-excellent {
+            border-color: #276749;
+            background: #f0fff4;
+        }
+        .status-card.card-excellent .card-status {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .status-card.card-good {
+            border-color: #975a16;
+            background: #fffff0;
+        }
+        .status-card.card-good .card-status {
+            background: #fefcbf;
+            color: #975a16;
+        }
+        .status-card.card-needs {
+            border-color: #9b2c2c;
+            background: #fff5f5;
+        }
+        .status-card.card-needs .card-status {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .status-card.card-empty {
+            border-color: #a0aec0;
+            background: #f7fafc;
+        }
+        .status-card.card-empty .card-status {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .print-status-section {
+            display: none;
+            padding: 20px;
+            background: white;
+        }
+        .print-status-section .print-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a3a5c;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #1a3a5c;
+            padding-bottom: 10px;
+        }
+        .print-status-section .print-subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            align-items: center;
+        }
+        .filters select,
+        .filters input {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            font-size: 14px;
+            background: white;
+        }
+        .filters button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            background: #2c7fb8;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .filters button:hover {
+            background: #1a5a8c;
+        }
+        .filters .btn-reset {
+            background: #718096;
+        }
+        .filters .btn-reset:hover {
+            background: #4a5568;
+        }
+
+        .note-input {
+            width: 100%;
+            min-width: 80px;
+            border: none;
+            border-bottom: 1px dashed #cbd5e0;
+            background: transparent;
+            font-size: 13px;
+            padding: 4px;
+            text-align: center;
+        }
+        .note-input:focus {
+            outline: none;
+            border-bottom: 2px solid #2c7fb8;
+            background: #f7fafc;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .cat-Ангажман_и_мотивација {
+            background: #bee3f8;
+            color: #2a4365;
+        }
+        .cat-Подготвеност_и_организација {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        .cat-Самостојност_и_перзистентност {
+            background: #fefcbf;
+            color: #744210;
+        }
+        .cat-Комуникација_и_соработка {
+            background: #e9d8fd;
+            color: #44337a;
+        }
+        .cat-Дисциплина_и_почитување {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        .cat-Управување_со_време {
+            background: #fbd38d;
+            color: #7b341e;
+        }
+        .cat-Социјални_вештини {
+            background: #fbb6ce;
+            color: #702459;
+        }
+        .cat-Критичко_размислување {
+            background: #9ae6b4;
+            color: #22543d;
+        }
+        .cat-Емоционална_регулација {
+            background: #f6ad55;
+            color: #7b341e;
+        }
+        .cat-Негативни_однесувања {
+            background: #fc8181;
+            color: #742a2a;
+        }
+
+        .hidden-row {
+            display: none !important;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a3a5c;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            animation: slideUp 0.5s ease;
+            max-width: 90%;
+            text-align: center;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 10px;
+            }
+            .container {
+                box-shadow: none;
+                padding: 10px;
+            }
+            .filters {
+                display: none !important;
+            }
+            .student-section .row {
+                display: none !important;
+            }
+            .student-section .class-list {
+                display: none !important;
+            }
+            .student-section .student-list {
+                display: none !important;
+            }
+            .student-info {
+                display: none !important;
+            }
+            .topic-section {
+                display: none !important;
+            }
+            .summary {
+                break-inside: avoid;
+                display: none !important;
+            }
+            .btn {
+                display: none !important;
+            }
+            .overview-section {
+                border: 2px solid #1a3a5c !important;
+                page-break-after: avoid;
+            }
+            .overview-table th {
+                background: #1a3a5c !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .overview-status-badge {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .category-badge {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .score-cell {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .overview-table-wrap {
+                overflow-x: visible !important;
+            }
+            #checklistContainer,
+            .category-group,
+            #checklistContainer .category-group,
+            #checklistContainer .indicator-row,
+            .category-group .indicator-row,
+            .detail-table,
+            table.detail-table,
+            .filters + .category-group,
+            #checklistContainer .category-group .indicator-row,
+            .category-group .group-title,
+            .category-group .indicator-row .ind-text,
+            .category-group .indicator-row .ind-radio,
+            .category-group .indicator-row .ind-score,
+            .category-group .indicator-row .ind-note {
+                display: none !important;
+            }
+            .status-cards {
+                display: flex !important;
+            }
+            .print-status-section {
+                display: block !important;
+            }
+            .status-card {
+                border: 2px solid #e2e8f0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .status-card.card-excellent {
+                border-color: #276749 !important;
+                background: #f0fff4 !important;
+            }
+            .status-card.card-good {
+                border-color: #975a16 !important;
+                background: #fffff0 !important;
+            }
+            .status-card.card-needs {
+                border-color: #9b2c2c !important;
+                background: #fff5f5 !important;
+            }
+            .status-card.card-empty {
+                border-color: #a0aec0 !important;
+                background: #f7fafc !important;
+            }
+            .status-card .card-status {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .category-status-cards {
+                display: grid !important;
+                break-inside: avoid;
+            }
+            .topic-status-cards {
+                display: grid !important;
+                break-inside: avoid;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .summary {
+                grid-template-columns: 1fr 1fr;
+            }
+            .student-section .row-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .overview-table {
+                font-size: 12px;
+            }
+            .overview-table th,
+            .overview-table td {
+                padding: 6px 8px;
+            }
+            .topic-section .topic-row .field-group {
+                min-width: 100%;
+            }
+            .category-status-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+            .topic-status-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+            .import-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .import-section input[type="file"] {
+                min-width: unset;
+            }
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: #1a3a5c;
+            font-size: 15px;
+            margin: 5px 0 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title small {
+            font-weight: 400;
+            color: #718096;
+            font-size: 13px;
+        }
+        .selected-student-info {
+            background: #edf2f7;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #2a4365;
+            margin-bottom: 10px;
+        }
+        .selected-student-info strong {
+            color: #1a3a5c;
+        }
+        .final-status-large {
+            font-size: 32px;
+            font-weight: 800;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .final-status-large.excellent {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .final-status-large.good {
+            background: #fefcbf;
+            color: #975a16;
+        }
+        .final-status-large.needs {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .final-status-large.empty {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        .final-status-details {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            color: #4a5568;
+            margin-top: 5px;
+        }
+        .final-status-details span {
+            font-weight: 700;
+        }
+
+        .category-group {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2c7fb8;
+        }
+        .category-group .group-title {
+            font-weight: 700;
+            color: #1a3a5c;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .category-group .group-title .badge {
+            font-size: 11px;
+            background: #edf2f7;
+            padding: 1px 10px;
+            border-radius: 12px;
+            color: #4a5568;
+        }
+        .category-group .indicator-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px solid #edf2f7;
+            gap: 8px;
+        }
+        .category-group .indicator-row:last-child {
+            border-bottom: none;
+        }
+        .category-group .indicator-row .ind-num {
+            font-weight: 600;
+            color: #2c7fb8;
+            font-size: 12px;
+            min-width: 28px;
+        }
+        .category-group .indicator-row .ind-text {
+            flex: 1;
+            font-size: 13px;
+            color: #2a4365;
+            min-width: 200px;
+        }
+        .category-group .indicator-row .ind-radio {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .category-group .indicator-row .ind-radio label {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .category-group .indicator-row .ind-radio label:hover {
+            background: #edf2f7;
+        }
+        .category-group .indicator-row .ind-radio input[type="radio"] {
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+            accent-color: #2c7fb8;
+        }
+        .category-group .indicator-row .ind-score {
+            font-weight: 700;
+            font-size: 14px;
+            min-width: 30px;
+            text-align: center;
+        }
+        .category-group .indicator-row .ind-note {
+            min-width: 100px;
+        }
+        .category-group .indicator-row .ind-note input {
+            width: 100%;
+            border: none;
+            border-bottom: 1px dashed #cbd5e0;
+            background: transparent;
+            font-size: 12px;
+            padding: 2px 4px;
+        }
+        .category-group .indicator-row .ind-note input:focus {
+            outline: none;
+            border-bottom: 2px solid #2c7fb8;
+            background: #f7fafc;
+        }
+        
+        .score-2 {
+            color: #276749;
+            background: #f0fff4;
+        }
+        .score-1 {
+            color: #975a16;
+            background: #fffff0;
+        }
+        .score-0 {
+            color: #9b2c2c;
+            background: #fff5f5;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .status-excellent {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .status-good {
+            background: #fefcbf;
+            color: #975a16;
+        }
+        .status-needs {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📊 Чек-листа за следење на ученици</h1>
+    <div class="teacher-info">
+        👨‍🏫 <strong>Наставник:</strong> проф. Решат Маловски &nbsp;|&nbsp; 📚 <strong>Предмет:</strong> Математика
+    </div>
+
+    <div class="container">
+
+        <!-- ============================================================ -->
+        <!-- ТЕМА, НАСТАВНА ЕДИНИЦА И ЧАС -->
+        <!-- ============================================================ -->
+        <div class="topic-section">
+            <div class="topic-row">
+                <div class="field-group">
+                    <label for="yearSelect">📅 Година:</label>
+                    <select id="yearSelect" onchange="onYearSelect()" style="flex:0.4;min-width:100px;">
+                        <option value="I">I година</option>
+                        <option value="II">II година</option>
+                        <option value="III">III година</option>
+                        <option value="IV">IV година</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label for="topicSelect">📚 Тема:</label>
+                    <select id="topicSelect" onchange="onTopicSelect()" style="flex:1.5;min-width:150px;">
+                        <option value="">-- Избери тема --</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label for="unitSelect">📖 Наставна единица:</label>
+                    <select id="unitSelect" onchange="onUnitSelect()" style="flex:1.5;min-width:150px;">
+                        <option value="">-- Избери единица --</option>
+                    </select>
+                </div>
+                <div class="field-group" style="flex:0.3;min-width:80px;">
+                    <label for="lessonNumber">📌 Час:</label>
+                    <input type="number" id="lessonNumber" value="1" min="1" style="flex:0.5;min-width:50px;" />
+                </div>
+                <button class="btn" onclick="saveTopicInfo()" style="background:#2c7fb8;">💾 Зачувај</button>
+            </div>
+
+            <div class="topic-help">
+                💡 <strong>Како работи:</strong> Изберете <strong>година</strong>, па <strong>тема</strong>, па <strong>наставна единица</strong> (стандард за оценување). Потоа кликнете <strong>"Зачувај"</strong>.
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- СЕКЦИЈА ЗА ПАРАЛЕЛКА И УЧЕНИЦИ -->
+        <!-- ============================================================ -->
+        <div class="student-section">
+            <div class="row">
+                <div class="row-group">
+                    <label for="className">🏫 Паралелка:</label>
+                    <input type="text" id="className" placeholder="На пр. VIII-1, IX-3" style="flex:0.7;min-width:120px;" />
+                    <button class="btn btn-purple" onclick="addClass()">➕ Додади паралелка</button>
+                    <label for="classSelect" style="margin-left:5px;">Избери:</label>
+                    <select id="classSelect" onchange="onClassSelect()" style="flex:0.5;min-width:120px;">
+                        <option value="">-- Паралелка --</option>
+                    </select>
+                    <button class="btn btn-danger" onclick="deleteClass()">🗑️ Избриши паралелка</button>
+                </div>
+            </div>
+
+            <div class="class-list" id="classList"></div>
+
+            <!-- ============================================================ -->
+            <!-- УВОЗ НА УЧЕНИЦИ ОД EXCEL -->
+            <!-- ============================================================ -->
+            <div class="import-section">
+                <label for="excelImport">📂 Увоз од Excel:</label>
+                <input type="file" id="excelImport" accept=".xlsx,.xls" />
+                <button class="btn-import" onclick="importStudentsFromExcel()" id="importBtn">⬆️ Увези ученици</button>
+                <span class="import-help">📌 <strong>Формат:</strong> Една колона со имиња на ученици (без наслов)</span>
+            </div>
+
+            <div class="row" style="margin-top:12px;border-top:1px solid #e2e8f0;padding-top:12px;">
+                <div class="row-group">
+                    <label for="studentName">👤 Ученик:</label>
+                    <input type="text" id="studentName" placeholder="На пр. Анета Стојановска" />
+                    <button class="btn btn-success" onclick="addStudent()">➕ Додади ученик</button>
+                    <label for="studentSelect" style="margin-left:5px;">Или изберете:</label>
+                    <select id="studentSelect" onchange="onStudentSelect()" style="flex:0.5;min-width:140px;">
+                        <option value="">-- Ученик --</option>
+                    </select>
+                    <button class="btn btn-danger" onclick="deleteStudent()">🗑️ Избриши избран</button>
+                </div>
+            </div>
+
+            <div class="section-title">
+                📋 Ученици во паралелката: <span id="currentClassNameDisplay">(изберете паралелка)</span>
+                <small id="studentCountDisplay"></small>
+            </div>
+            <div class="student-list" id="studentList">
+                <span class="empty-message">Нема ученици во оваа паралелка.</span>
+            </div>
+
+            <div id="studentInfo" class="student-info" style="display:none;">
+                <span>📌 Тековен ученик: <strong id="currentStudentName">—</strong></span>
+                <span>📅 Последно ажурирање: <span id="lastUpdated">—</span></span>
+                <span>🏫 Паралелка: <strong id="currentStudentClass">—</strong></span>
+                <span>🏆 Статус: <strong id="currentStudentStatus">—</strong></span>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- КОНЕЧЕН СТАТУС -->
+        <!-- ============================================================ -->
+        <div id="finalStatusContainer" style="margin:20px 0;padding:15px 20px;background:#f7fafc;border-radius:10px;border:2px solid #e2e8f0;">
+            <div style="font-weight:700;color:#1a3a5c;font-size:16px;margin-bottom:10px;">🏆 КОНЕЧЕН СТАТУС НА УЧЕНИКОТ</div>
+            <div id="finalStatusDisplay" class="final-status-large empty">❓ Изберете ученик</div>
+            <div id="finalStatusDetails" class="final-status-details">
+                <span>Бодови: <span id="finalTotal">0</span> / <span id="finalMax">70</span></span>
+                <span>Процент: <span id="finalPercent">0%</span></span>
+                <span>Одговорени: <span id="finalAnswered">0</span> / <span id="finalIndicators">51</span></span>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ПРЕГЛЕД -->
+        <!-- ============================================================ -->
+        <div class="overview-section">
+            <div class="overview-header">
+                <span>📊 ПРЕГЛЕД НА СИТЕ УЧЕНИЦИ</span>
+                <small id="overviewClassInfo">(изберете паралелка)</small>
+            </div>
+            <div id="overviewTopicInfo" class="overview-topic-info" style="display:none;">
+                <span>📅 <strong>Година:</strong> <span id="overviewYear">—</span></span>
+                <span>📚 <strong>Тема:</strong> <span id="overviewTopicName">—</span></span>
+                <span>📖 <strong>Наставна единица:</strong> <span id="overviewUnitName">—</span></span>
+                <span>📌 <strong>Час:</strong> <span id="overviewLessonNum">—</span></span>
+            </div>
+            <div class="overview-table-wrap">
+                <table class="overview-table" id="overviewTable">
+                    <thead>
+                        <tr>
+                            <th>Р.б.</th>
+                            <th>Ученик</th>
+                            <th>Статус</th>
+                            <th>Бодови</th>
+                            <th>Процент</th>
+                            <th>Одговорени</th>
+                            <th>Последно ажурирање</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overviewBody">
+                        <tr>
+                            <td colspan="7" style="text-align:center;color:#a0aec0;padding:30px;">Нема ученици</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- СТАТУС ПО КАТЕГОРИИ -->
+        <!-- ============================================================ -->
+        <div class="category-status-section">
+            <div class="section-title">📊 Статус по категории</div>
+            <div id="selectedStudentDisplay" class="selected-student-info" style="display:none;">
+                👤 Избран ученик: <strong id="selectedStudentName">—</strong> &nbsp;|&nbsp; 🏫 <strong id="selectedStudentClass">—</strong>
+            </div>
+            <div class="category-status-cards" id="categoryStatusCards">
+                <span style="color:#a0aec0;font-size:14px;grid-column:1/-1;text-align:center;padding:20px;">Изберете ученик за да ги видите статусите по категории.</span>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- СТАТУС ПО НАСТАВНИ ТЕМИ -->
+        <!-- ============================================================ -->
+        <div class="topic-status-section">
+            <div class="section-title">📚 Статус по наставни теми</div>
+            <div id="topicStatusDisplay" class="selected-student-info" style="display:none;">
+                👤 Избран ученик: <strong id="topicStudentName">—</strong> &nbsp;|&nbsp; 📅 <strong id="topicStudentYear">—</strong>
+            </div>
+            <div class="topic-status-cards" id="topicStatusCards">
+                <span style="color:#a0aec0;font-size:14px;grid-column:1/-1;text-align:center;padding:20px;">Изберете ученик за да ги видите статусите по наставни теми.</span>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- СТАТУС КАРТИЧКИ ЗА ПЕЧАТЕЊЕ -->
+        <!-- ============================================================ -->
+        <div class="print-status-section" id="printStatusSection">
+            <div class="print-title" id="printTitle">СТАТУС НА УЧЕНИЦИТЕ</div>
+            <div class="print-subtitle" id="printSubtitle">Математика</div>
+            <div id="printStatusCardsContainer" class="status-cards"></div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ДЕТАЛНА ЧЕК-ЛИСТА - ПРЕГРУПИРАНА ПО КАТЕГОРИИ -->
+        <!-- ============================================================ -->
+        <h3 style="margin:25px 0 10px 0;color:#1a3a5c;">📋 Детална чек-листа</h3>
+
+        <div class="filters">
+            <span style="font-weight:600;color:#1a3a5c;">🔍 Филтри:</span>
+            <select id="filterCategory" onchange="applyFilters()">
+                <option value="all">Сите категории</option>
+                <option value="Ангажман и мотивација">Ангажман и мотивација</option>
+                <option value="Подготвеност и организација">Подготвеност и организација</option>
+                <option value="Самостојност и перзистентност">Самостојност и перзистентност</option>
+                <option value="Комуникација и соработка">Комуникација и соработка</option>
+                <option value="Дисциплина и почитување">Дисциплина и почитување</option>
+                <option value="Управување со време">Управување со време</option>
+                <option value="Социјални вештини">Социјални вештини</option>
+                <option value="Критичко размислување">Критичко размислување</option>
+                <option value="Емоционална регулација">Емоционална регулација</option>
+                <option value="Негативни однесувања">Негативни однесувања</option>
+            </select>
+            <select id="filterScore" onchange="applyFilters()">
+                <option value="all">Сите бодови</option>
+                <option value="2">Само Да (2 бода)</option>
+                <option value="1">Само Делумно (1 бод)</option>
+                <option value="0">Само Не (0 бода)</option>
+            </select>
+            <input type="text" id="filterText" placeholder="🔎 Пребарај..." oninput="applyFilters()" style="flex:1;min-width:150px;">
+            <button class="btn-reset" onclick="resetFilters()">Откажи</button>
+        </div>
+
+        <div id="checklistContainer"></div>
+
+        <!-- ============================================================ -->
+        <!-- РЕЗИМЕ -->
+        <!-- ============================================================ -->
+        <div class="summary" id="summaryArea">
+            <div class="summary-item">
+                <div class="label">Вкупно бодови</div>
+                <div class="value blue" id="totalScore">0</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Оценети индикатори</div>
+                <div class="value blue" id="answeredCount">0</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Процент</div>
+                <div class="value" id="percentScore">0%</div>
+            </div>
+            <div class="summary-item" style="grid-column: span 1;">
+                <div class="label">Конечен статус</div>
+                <div id="statusBadge">—</div>
+            </div>
+            <div class="summary-item" style="grid-column: span 2;">
+                <div class="label">Преглед по категории</div>
+                <div id="categorySummary" style="font-size:13px;text-align:left;padding:5px;"></div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- КОПЧИЊА -->
+        <!-- ============================================================ -->
+        <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+            <button onclick="window.print()" class="btn btn-primary">🖨️ Печати / PDF</button>
+            <button onclick="printStatusCards('single')" class="btn btn-pink">🏆 Статус - избран</button>
+            <button onclick="printStatusCards('class')" class="btn btn-teal">🏆 Статус - паралелка</button>
+            <button onclick="printStatusCards('all')" class="btn btn-orange">🏆 Статус - сите</button>
+            <button onclick="exportStatusExcel('single')" class="btn btn-excel">📊 Excel - избран</button>
+            <button onclick="exportStatusExcel('class')" class="btn btn-excel" style="background:#1a5c38;">📊 Excel - паралелка</button>
+            <button onclick="exportStatusExcel('all')" class="btn btn-excel" style="background:#0d4a2a;">📊 Excel - сите</button>
+            <button onclick="exportCSV()" class="btn btn-success">📥 CSV</button>
+            <button onclick="resetAll()" class="btn btn-danger">🗑️ Избриши ги сите одговори</button>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        // 1. ИНДИКАТОРИ - ПРЕГРУПИРАНИ ПО КАТЕГОРИИ
+        // ================================================================
+        const indicators = [
+            // АНГАЖМАН И МОТИВАЦИЈА
+            { id: 1, text: "Покажува интерес за наставната содржина.", category: "Ангажман и мотивација" },
+            { id: 2, text: "Внимателно ја следи наставата.", category: "Ангажман и мотивација" },
+            { id: 3, text: "Активно учествува во работата на час.", category: "Ангажман и мотивација" },
+            { id: 4, text: "Покажува мотивација за учење.", category: "Ангажман и мотивација" },
+            { id: 5, text: "Доброволно излегува на табла да реши задача.", category: "Ангажман и мотивација" },
+            { id: 6, text: "Покажува позитивен однос кон предметот.", category: "Ангажман и мотивација" },
+            { id: 7, text: "Поставува релевантни прашања кога не разбира.", category: "Ангажман и мотивација" },
+
+            // ПОДГОТВЕНОСТ И ОРГАНИЗАЦИЈА
+            { id: 8, text: "Доаѓа подготвен на час (учебник, тетратка, прибор).", category: "Подготвеност и организација" },
+            { id: 9, text: "Носи комплетна опрема (линијар, геометриски прибор).", category: "Подготвеност и организација" },
+            { id: 10, text: "Редовно ги извршува домашните задачи.", category: "Подготвеност и организација" },
+            { id: 11, text: "Домашната задача е уредно и целосно решена.", category: "Подготвеност и организација" },
+            { id: 12, text: "Навремено ги завршува задачите на час.", category: "Подготвеност и организација" },
+
+            // САМОСТОЈНОСТ И ПЕРЗИСТЕНТНОСТ
+            { id: 13, text: "Самостојно работи на задачите.", category: "Самостојност и перзистентност" },
+            { id: 14, text: "Работи уредно и прецизно.", category: "Самостојност и перзистентност" },
+            { id: 15, text: "Покажува упорност при решавање потешки задачи.", category: "Самостојност и перзистентност" },
+            { id: 16, text: "Не се откажува веднаш кај тешките задачи.", category: "Самостојност и перзистентност" },
+            { id: 17, text: "Покажува одговорност за сопственото учење.", category: "Самостојност и перзистентност" },
+
+            // КОМУНИКАЦИЈА И СОРАБОТКА
+            { id: 18, text: "Соработува со соучениците во групна работа.", category: "Комуникација и соработка" },
+            { id: 19, text: "Слуша и дели идеи во групна/парна работа.", category: "Комуникација и соработка" },
+            { id: 20, text: "Го образложува своето решение.", category: "Комуникација и соработка" },
+            { id: 21, text: "Се јавува за збор пред да зборува.", category: "Комуникација и соработка" },
+            { id: 22, text: "Прифаќа различни мислења и покажува толеранција.", category: "Комуникација и соработка" },
+            { id: 23, text: "Покажува самодоверба при презентирање.", category: "Комуникација и соработка" },
+            { id: 24, text: "Активно учествува во усна дискусија.", category: "Комуникација и соработка" },
+
+            // ДИСЦИПЛИНА И ПОЧИТУВАЊЕ
+            { id: 25, text: "Ги почитува правилата на однесување.", category: "Дисциплина и почитување" },
+            { id: 26, text: "Покажува дисциплинирано однесување.", category: "Дисциплина и почитување" },
+            { id: 27, text: "Го почитува наставникот и соучениците.", category: "Дисциплина и почитување" },
+            { id: 28, text: "Го користи мобилниот телефон само со дозвола.", category: "Дисциплина и почитување" },
+            { id: 29, text: "Не разговара со други за време на индивидуална работа.", category: "Дисциплина и почитување" },
+            { id: 30, text: "Не го нарушува текот на наставата.", category: "Дисциплина и почитување" },
+            { id: 31, text: "Не ги попречува соучениците при работа.", category: "Дисциплина и почитување" },
+            { id: 32, text: "Внимателно слуша и ги запишува клучните поими.", category: "Дисциплина и почитување" },
+
+            // УПРАВУВАЊЕ СО ВРЕМЕ
+            { id: 33, text: "Го почитува договореното време за активностите.", category: "Управување со време" },
+            { id: 34, text: "Го следи темпото на часот и навреме завршува.", category: "Управување со време" },
+
+            // СОЦИЈАЛНИ ВЕШТИНИ
+            { id: 35, text: "Ги чува училишниот инвентар и материјалите.", category: "Социјални вештини" },
+            { id: 36, text: "Забележува грешка и нуди корекција културно.", category: "Социјални вештини" },
+            { id: 37, text: "Не одбива да соработува во групна работа.", category: "Социјални вештини" },
+
+            // КРИТИЧКО РАЗМИСЛУВАЊЕ
+            { id: 38, text: "Користи различни стратегии за решавање.", category: "Критичко размислување" },
+            { id: 39, text: "Правилно ги толкува текстуалните задачи.", category: "Критичко размислување" },
+            { id: 40, text: "Проверува точност на сопствените решенија.", category: "Критичко размислување" },
+
+            // ЕМОЦИОНАЛНА РЕГУЛАЦИЈА
+            { id: 41, text: "Покажува флексибилност – се обидува поинаку.", category: "Емоционална регулација" },
+            { id: 42, text: "Прифаќа повратна информација и ги коригира грешките.", category: "Емоционална регулација" },
+
+            // НЕГАТИВНИ ОДНЕСУВАЊА
+            { id: 43, text: "Доцни на часот или е отсутен/неподготвен.", category: "Негативни однесувања" },
+            { id: 44, text: "Заборава или нема основни материјали.", category: "Негативни однесувања" },
+            { id: 45, text: "Домашната задача недостасува или е неуредна.", category: "Негативни однесувања" },
+            { id: 46, text: "Се занимава со странични активности.", category: "Негативни однесувања" },
+            { id: 47, text: "Разговара со другар за време на објаснувањето.", category: "Негативни однесувања" },
+            { id: 48, text: "Ги прекинува другите без да подигне рака.", category: "Негативни однесувања" },
+            { id: 49, text: "Дава нерелевантни одговори.", category: "Негативни однесувања" },
+            { id: 50, text: "Неврзан е, често го менува фокусот.", category: "Негативни однесувања" },
+            { id: 51, text: "Покажува нервозни реакции кога не успева.", category: "Негативни однесувања" }
+        ];
+
+        const negativeIndicators = [43, 44, 45, 46, 47, 48, 49, 50, 51];
+
+        const allCategories = [
+            'Ангажман и мотивација',
+            'Подготвеност и организација',
+            'Самостојност и перзистентност',
+            'Комуникација и соработка',
+            'Дисциплина и почитување',
+            'Управување со време',
+            'Социјални вештини',
+            'Критичко размислување',
+            'Емоционална регулација',
+            'Негативни однесувања'
+        ];
+
+        // ================================================================
+        // 2. ТЕМИ - СИТЕ СТАНДАРДИ ОД ТЕМАТСКИТЕ ПЛАНИРАЊА
+        // ================================================================
+        const curriculumData = {
+            "I": {
+                "Броеви и операции со броеви": [
+                    "Стандард 1 - Броеви до 100",
+                    "Стандард 2 - Операции со броеви",
+                    "Стандард 3 - Собирање и одземање",
+                    "Стандард 4 - Множење и делење"
+                ],
+                "Алгебарски рационални изрази": [
+                    "Стандард 1 - Вовед во изрази",
+                    "Стандард 2 - Рационални изрази",
+                    "Стандард 3 - Сложување на изрази"
+                ],
+                "Функција, равенка, систем": [
+                    "Стандард 1 - Линеарни равенки",
+                    "Стандард 2 - Системи равенки",
+                    "Стандард 3 - Примена на равенки",
+                    "Стандард 4 - Квадратни равенки"
+                ],
+                "Геометрија": [
+                    "Стандард 1 - Основни геометриски поими",
+                    "Стандард 2 - Плоштини и периметри",
+                    "Стандард 3 - Волумен и површина"
+                ],
+                "Мерење": [
+                    "Стандард 1 - Единици за мерење",
+                    "Стандард 2 - Мерење на време",
+                    "Стандард 3 - Мерење на маса и должина"
+                ],
+                "Работа со податоци": [
+                    "Стандард 1 - Табели и графикони",
+                    "Стандард 2 - Анализа на податоци",
+                    "Стандард 3 - Статистички параметри"
+                ]
+            },
+            "II": {
+                "Корени и комплексни броеви": [
+                    "Стандард 1 - Квадратни корени",
+                    "Стандард 2 - Комплексни броеви",
+                    "Стандард 3 - Операции со корени"
+                ],
+                "Квадратни равенки": [
+                    "Стандард 1 - Решавање квадратни равенки",
+                    "Стандард 2 - Примена на квадратни равенки",
+                    "Стандард 3 - Виетови формули"
+                ],
+                "Квадратна функција": [
+                    "Стандард 1 - Особини на квадратна функција",
+                    "Стандард 2 - График на квадратна функција",
+                    "Стандард 3 - Екстреми на квадратна функција"
+                ],
+                "Елементи од веројатност": [
+                    "Стандард 1 - Основни поими од веројатност",
+                    "Стандард 2 - Пресметка на веројатност",
+                    "Стандард 3 - Условна веројатност"
+                ],
+                "Геометрија (II)": [
+                    "Стандард 1 - Сличност и склаѓање",
+                    "Стандард 2 - Питагорова теорема",
+                    "Стандард 3 - Триаголници и четириаголници"
+                ],
+                "Мерење (II)": [
+                    "Стандард 1 - Волумен и површина",
+                    "Стандард 2 - Примена на мерење",
+                    "Стандард 3 - Претворање на единици"
+                ]
+            },
+            "III": {
+                "Тригонометрија": [
+                    "Стандард 1 - Тригонометриски функции",
+                    "Стандард 2 - Примена на тригонометрија",
+                    "Стандард 3 - Тригонометриски равенки"
+                ],
+                "Експоненцијални функции": [
+                    "Стандард 1 - Експоненцијална функција",
+                    "Стандард 2 - Логаритамски функции",
+                    "Стандард 3 - Логаритамски равенки"
+                ],
+                "Низни и прогресии": [
+                    "Стандард 1 - Аритметичка прогресија",
+                    "Стандард 2 - Геометриска прогресија",
+                    "Стандард 3 - Збир на прогресии"
+                ],
+                "Аналитичка геометрија": [
+                    "Стандард 1 - Координатен систем",
+                    "Стандард 2 - Равенки на прави",
+                    "Стандард 3 - Растојание меѓу точки"
+                ]
+            },
+            "IV": {
+                "Низи и прогресии": [
+                    "Стандард 1 - Граници на низи",
+                    "Стандард 2 - Конвергенција",
+                    "Стандард 3 - Дивергенција"
+                ],
+                "Функции и гранични вредности": [
+                    "Стандард 1 - Дефиниција на граница",
+                    "Стандард 2 - Пресметка на граници",
+                    "Стандард 3 - Непрекинатост на функции"
+                ],
+                "Диференцијално сметање": [
+                    "Стандард 1 - Извод на функција",
+                    "Стандард 2 - Примена на изводи",
+                    "Стандард 3 - Интеграл на функција"
+                ],
+                "Веројатност (IV)": [
+                    "Стандард 1 - Комбинаторика",
+                    "Стандард 2 - Теореми на веројатност",
+                    "Стандард 3 - Нормална распределба"
+                ],
+                "Статистика": [
+                    "Стандард 1 - Статистички параметри",
+                    "Стандард 2 - Нормална распределба",
+                    "Стандард 3 - Статистичко заклучување"
+                ]
+            }
+        };
+
+        // ================================================================
+        // 3. ГЛОБАЛНА СОСТОЈБА
+        // ================================================================
+        let allData = {};
+        let currentClass = '';
+        let currentStudent = '';
+        let state = {};
+        let currentYear = 'I';
+        let currentTopic = '';
+        let currentUnit = '';
+        let currentLesson = 1;
+
+        // ================================================================
+        // 4. localStorage
+        // ================================================================
+        function saveAllData() {
+            const fullData = {
+                classes: allData,
+                year: currentYear,
+                topic: currentTopic,
+                unit: currentUnit,
+                lesson: currentLesson
+            };
+            localStorage.setItem('mathClassData', JSON.stringify(fullData));
+        }
+
+        function loadAllData() {
+            const saved = localStorage.getItem('mathClassData');
+            if (saved) {
+                try {
+                    const fullData = JSON.parse(saved);
+                    allData = fullData.classes || {};
+                    currentYear = fullData.year || 'I';
+                    currentTopic = fullData.topic || '';
+                    currentUnit = fullData.unit || '';
+                    currentLesson = fullData.lesson || 1;
+
+                    for (const className in allData) {
+                        if (!allData[className].students) allData[className].students = {};
+                        for (const studentName in allData[className].students) {
+                            const student = allData[className].students[studentName];
+                            if (!student.data) student.data = {};
+                            if (!student.lastUpdated) student.lastUpdated = new Date().toISOString();
+                            for (const ind of indicators) {
+                                if (!student.data[ind.id]) {
+                                    student.data[ind.id] = { value: null, note: '' };
+                                }
+                            }
+                        }
+                    }
+                    return;
+                } catch (e) {
+                    console.error('Грешка при вчитување:', e);
+                }
+            }
+            allData = {};
+            currentYear = 'I';
+            currentTopic = '';
+            currentUnit = '';
+            currentLesson = 1;
+        }
+
+        function saveStudentData(className, studentName) {
+            if (!className || !studentName) return;
+            if (!allData[className]) allData[className] = { students: {} };
+            if (!allData[className].students[studentName]) {
+                allData[className].students[studentName] = { data: {}, lastUpdated: new Date().toISOString() };
+            }
+            allData[className].students[studentName].data = JSON.parse(JSON.stringify(state));
+            allData[className].students[studentName].lastUpdated = new Date().toISOString();
+            saveAllData();
+        }
+
+        function syncStateToStorage() {
+            if (currentClass && currentStudent) {
+                saveStudentData(currentClass, currentStudent);
+            }
+            updateAllUI();
+        }
+
+        // ================================================================
+        // 5. КАЛКУЛАЦИЈА НА СТАТУС
+        // ================================================================
+        function calculateStatus(studentState) {
+            let total = 0,
+                answered = 0;
+            let maxTotal = 0;
+
+            for (const ind of indicators) {
+                const data = studentState[ind.id] || { value: null };
+                const val = data.value;
+                const score = val === 'Да' ? 2 : (val === 'Делумно' ? 1 : (val === 'Не' ? 0 : null));
+
+                if (score !== null) {
+                    let adjustedScore = score;
+                    if (negativeIndicators.includes(ind.id)) {
+                        adjustedScore = 2 - score;
+                    }
+                    total += adjustedScore;
+                    answered++;
+                    maxTotal += 2;
+                }
+            }
+
+            const percent = maxTotal > 0 ? Math.round((total / maxTotal) * 100) : 0;
+            let status = '',
+                statusClass = '',
+                statusIcon = '';
+            if (answered === 0) { status = 'Нема одговори';
+                statusClass = 'empty';
+                statusIcon = '❓'; } else if (percent >= 80) { status = 'ОДЛИЧЕН';
+                statusClass = 'excellent';
+                statusIcon = '🟢'; } else if (percent >= 50) { status = 'ЗАДОВОЛИТЕЛЕН';
+                statusClass = 'good';
+                statusIcon = '🟡'; } else { status = 'ПОТРЕБНА ПОДДРШКА';
+                statusClass = 'needs';
+                statusIcon = '🔴'; }
+
+            return { total, answered, maxTotal, percent, status, statusClass, statusIcon };
+        }
+
+        function getCategoryStatus(studentState) {
+            const categoryStats = {};
+            for (const cat of allCategories) {
+                categoryStats[cat] = { total: 0, answered: 0, maxTotal: 0, indicators: [] };
+            }
+
+            for (const ind of indicators) {
+                const data = studentState[ind.id] || { value: null };
+                const val = data.value;
+                const score = val === 'Да' ? 2 : (val === 'Делумно' ? 1 : (val === 'Не' ? 0 : null));
+                const cat = ind.category;
+
+                if (!categoryStats[cat]) categoryStats[cat] = { total: 0, answered: 0, maxTotal: 0, indicators: [] };
+
+                if (score !== null) {
+                    let adjustedScore = score;
+                    if (negativeIndicators.includes(ind.id)) {
+                        adjustedScore = 2 - score;
+                    }
+                    categoryStats[cat].total += adjustedScore;
+                    categoryStats[cat].answered++;
+                    categoryStats[cat].maxTotal += 2;
+                    categoryStats[cat].indicators.push(ind.id);
+                }
+            }
+
+            for (const cat in categoryStats) {
+                const stats = categoryStats[cat];
+                const percent = stats.maxTotal > 0 ? Math.round((stats.total / stats.maxTotal) * 100) : 0;
+                stats.percent = percent;
+                if (stats.answered === 0) {
+                    stats.status = 'Нема одговори';
+                    stats.statusClass = 'empty';
+                } else if (percent >= 80) {
+                    stats.status = 'ОДЛИЧЕН';
+                    stats.statusClass = 'excellent';
+                } else if (percent >= 50) {
+                    stats.status = 'ЗАДОВОЛИТЕЛЕН';
+                    stats.statusClass = 'good';
+                } else {
+                    stats.status = 'ПОТРЕБНА ПОДДРШКА';
+                    stats.statusClass = 'needs';
+                }
+            }
+
+            return categoryStats;
+        }
+
+        function getTopicStatus(studentState, year) {
+            const topics = curriculumData[year] || {};
+            const topicStats = {};
+
+            for (const topic in topics) {
+                topicStats[topic] = { total: 0, answered: 0, maxTotal: 0, indicators: [] };
+            }
+
+            const topicMapping = {
+                'Ангажман и мотивација': 'Броеви и операции со броеви',
+                'Подготвеност и организација': 'Алгебарски рационални изрази',
+                'Самостојност и перзистентност': 'Функција, равенка, систем',
+                'Комуникација и соработка': 'Геометрија',
+                'Дисциплина и почитување': 'Мерење',
+                'Управување со време': 'Работа со податоци',
+                'Социјални вештини': 'Геометрија',
+                'Критичко размислување': 'Функција, равенка, систем',
+                'Емоционална регулација': 'Алгебарски рационални изрази',
+                'Негативни однесувања': 'Мерење'
+            };
+
+            for (const ind of indicators) {
+                const data = studentState[ind.id] || { value: null };
+                const val = data.value;
+                const score = val === 'Да' ? 2 : (val === 'Делумно' ? 1 : (val === 'Не' ? 0 : null));
+
+                let topicKey = topicMapping[ind.category] || 'Броеви и операции со броеви';
+
+                if (topics[topicKey] !== undefined) {
+                    if (!topicStats[topicKey]) topicStats[topicKey] = { total: 0, answered: 0, maxTotal: 0, indicators: [] };
+
+                    if (score !== null) {
+                        let adjustedScore = score;
+                        if (negativeIndicators.includes(ind.id)) {
+                            adjustedScore = 2 - score;
+                        }
+                        topicStats[topicKey].total += adjustedScore;
+                        topicStats[topicKey].answered++;
+                        topicStats[topicKey].maxTotal += 2;
+                        topicStats[topicKey].indicators.push(ind.id);
+                    }
+                }
+            }
+
+            for (const topic in topicStats) {
+                const stats = topicStats[topic];
+                const percent = stats.maxTotal > 0 ? Math.round((stats.total / stats.maxTotal) * 100) : 0;
+                stats.percent = percent;
+                if (stats.answered === 0) {
+                    stats.status = 'Нема одговори';
+                    stats.statusClass = 'empty';
+                } else if (percent >= 80) {
+                    stats.status = 'ОДЛИЧЕН';
+                    stats.statusClass = 'excellent';
+                } else if (percent >= 50) {
+                    stats.status = 'ЗАДОВОЛИТЕЛЕН';
+                    stats.statusClass = 'good';
+                } else {
+                    stats.status = 'ПОТРЕБНА ПОДДРШКА';
+                    stats.statusClass = 'needs';
+                }
+            }
+
+            return topicStats;
+        }
+
+        // ================================================================
+        // 6. UI ФУНКЦИИ
+        // ================================================================
+        function updateAllUI() {
+            updateClassList();
+            updateStudentList();
+            updateStudentSelect();
+            updateOverview();
+            updateCategoryStatus();
+            updateTopicStatus();
+            updateFinalStatus();
+            renderChecklist();
+            updateSummary();
+
+            if (currentClass && currentStudent) {
+                document.getElementById('currentStudentName').textContent = currentStudent;
+                document.getElementById('currentStudentClass').textContent = currentClass;
+                const studentData = allData[currentClass]?.students?.[currentStudent];
+                if (studentData?.lastUpdated) {
+                    document.getElementById('lastUpdated').textContent = new Date(studentData.lastUpdated)
+                        .toLocaleString('mk-MK');
+                } else {
+                    document.getElementById('lastUpdated').textContent = '—';
+                }
+                const status = calculateStatus(studentData?.data || {});
+                document.getElementById('currentStudentStatus').textContent = status.statusIcon + ' ' + status.status;
+                document.getElementById('studentInfo').style.display = 'flex';
+            } else {
+                document.getElementById('studentInfo').style.display = 'none';
+            }
+
+            if (currentClass) {
+                document.getElementById('currentClassNameDisplay').textContent = currentClass;
+                const count = Object.keys(allData[currentClass]?.students || {}).length;
+                document.getElementById('studentCountDisplay').textContent = `(${count} ученици)`;
+            } else {
+                document.getElementById('currentClassNameDisplay').textContent = '(изберете паралелка)';
+                document.getElementById('studentCountDisplay').textContent = '';
+            }
+        }
+
+        function updateClassList() {
+            const container = document.getElementById('classList');
+            const classNames = Object.keys(allData);
+            if (classNames.length === 0) {
+                container.innerHTML = '<span style="color:#a0aec0;font-size:13px;">Нема додадени паралелки</span>';
+                return;
+            }
+
+            container.innerHTML = '';
+            for (const name of classNames) {
+                const tag = document.createElement('span');
+                tag.className = `class-tag ${name === currentClass ? 'active' : ''}`;
+                const count = Object.keys(allData[name]?.students || {}).length;
+                tag.innerHTML = `
+                    ${name}
+                    <span class="class-count">${count}</span>
+                    <span class="delete-class" onclick="event.stopPropagation(); deleteClassByName('${name}')">×</span>
+                `;
+                tag.onclick = () => selectClass(name);
+                container.appendChild(tag);
+            }
+
+            const select = document.getElementById('classSelect');
+            select.innerHTML = '<option value="">-- Паралелка --</option>';
+            for (const name of classNames) {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                if (name === currentClass) opt.selected = true;
+                select.appendChild(opt);
+            }
+        }
+
+        function updateStudentList() {
+            const container = document.getElementById('studentList');
+            const students = allData[currentClass]?.students || {};
+
+            if (Object.keys(students).length === 0) {
+                container.innerHTML = '<span class="empty-message" style="color:#a0aec0;font-size:13px;">Нема ученици во оваа паралелка.</span>';
+                return;
+            }
+
+            container.innerHTML = '';
+            for (const name in students) {
+                const studentData = students[name]?.data || {};
+                const status = calculateStatus(studentData);
+                const tag = document.createElement('span');
+                tag.className = `student-tag ${name === currentStudent ? 'active' : ''} status-${status.statusClass}-tag`;
+                tag.innerHTML = `
+                    ${status.statusIcon} ${name}
+                    <span class="student-status-label">${status.status}</span>
+                    <span class="delete-student" onclick="event.stopPropagation(); deleteStudentByName('${name}')">×</span>
+                `;
+                tag.onclick = () => selectStudent(name);
+                container.appendChild(tag);
+            }
+        }
+
+        function updateStudentSelect() {
+            const select = document.getElementById('studentSelect');
+            const students = allData[currentClass]?.students || {};
+            select.innerHTML = '<option value="">-- Ученик --</option>';
+            for (const name in students) {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                if (name === currentStudent) opt.selected = true;
+                select.appendChild(opt);
+            }
+        }
+
+        function updateOverview() {
+            const students = allData[currentClass]?.students || {};
+            const tbody = document.getElementById('overviewBody');
+
+            if (Object.keys(students).length === 0) {
+                tbody.innerHTML =
+                    '<tr><td colspan="7" style="text-align:center;color:#a0aec0;padding:30px;">Нема ученици</td></tr>';
+                document.getElementById('overviewClassInfo').textContent = '(изберете паралелка)';
+                return;
+            }
+
+            document.getElementById('overviewClassInfo').textContent = `📚 ${currentClass}`;
+
+            if (currentTopic && currentUnit) {
+                document.getElementById('overviewTopicInfo').style.display = 'flex';
+                document.getElementById('overviewYear').textContent = currentYear;
+                document.getElementById('overviewTopicName').textContent = currentTopic;
+                document.getElementById('overviewUnitName').textContent = currentUnit;
+                document.getElementById('overviewLessonNum').textContent = currentLesson;
+            } else {
+                document.getElementById('overviewTopicInfo').style.display = 'none';
+            }
+
+            let html = '';
+            let index = 1;
+            for (const name in students) {
+                const studentData = students[name]?.data || {};
+                const status = calculateStatus(studentData);
+                const statusClass = `overview-status-${status.statusClass}`;
+                const scoreClass = `overview-score-${status.statusClass}`;
+
+                html += `
+                    <tr onclick="selectStudent('${name}')" style="cursor:pointer;">
+                        <td>${index++}</td>
+                        <td style="text-align:left;font-weight:600;">${name}</td>
+                        <td><span class="overview-status-badge ${statusClass}">${status.statusIcon} ${status.status}</span></td>
+                        <td class="overview-score ${scoreClass}">${status.total} / ${status.maxTotal}</td>
+                        <td class="overview-score ${scoreClass}">${status.percent}%</td>
+                        <td>${status.answered} / ${indicators.length}</td>
+                        <td style="font-size:11px;color:#718096;">${students[name]?.lastUpdated ? new Date(students[name].lastUpdated).toLocaleString('mk-MK') : '—'}</td>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = html;
+        }
+
+        function updateCategoryStatus() {
+            const container = document.getElementById('categoryStatusCards');
+            const selectedDisplay = document.getElementById('selectedStudentDisplay');
+
+            if (!currentClass || !currentStudent) {
+                container.innerHTML =
+                    '<span style="color:#a0aec0;font-size:14px;grid-column:1/-1;text-align:center;padding:20px;">Изберете ученик за да ги видите статусите по категории.</span>';
+                selectedDisplay.style.display = 'none';
+                return;
+            }
+
+            selectedDisplay.style.display = 'block';
+            document.getElementById('selectedStudentName').textContent = currentStudent;
+            document.getElementById('selectedStudentClass').textContent = currentClass;
+
+            const studentData = allData[currentClass]?.students?.[currentStudent]?.data || {};
+            const categoryStats = getCategoryStatus(studentData);
+
+            let html = '';
+            for (const cat of allCategories) {
+                const stats = categoryStats[cat] || { total: 0, answered: 0, maxTotal: 0, percent: 0, status: 'Нема одговори',
+                    statusClass: 'empty' };
+                const cardClass = `cat-${stats.statusClass}`;
+                html += `
+                    <div class="category-status-card ${cardClass}">
+                        <div class="cat-name">${cat}</div>
+                        <div class="cat-status">${stats.status}</div>
+                        <div class="cat-score">${stats.total} / ${stats.maxTotal} бода (${stats.percent}%)</div>
+                        <div class="cat-count">${stats.answered} индикатори</div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function updateTopicStatus() {
+            const container = document.getElementById('topicStatusCards');
+            const display = document.getElementById('topicStatusDisplay');
+
+            if (!currentClass || !currentStudent) {
+                container.innerHTML =
+                    '<span style="color:#a0aec0;font-size:14px;grid-column:1/-1;text-align:center;padding:20px;">Изберете ученик за да ги видите статусите по наставни теми.</span>';
+                display.style.display = 'none';
+                return;
+            }
+
+            display.style.display = 'block';
+            document.getElementById('topicStudentName').textContent = currentStudent;
+            document.getElementById('topicStudentYear').textContent = currentYear;
+
+            const studentData = allData[currentClass]?.students?.[currentStudent]?.data || {};
+            const topicStats = getTopicStatus(studentData, currentYear);
+
+            let html = '';
+            for (const topic in topicStats) {
+                const stats = topicStats[topic];
+                const cardClass = `topic-${stats.statusClass}`;
+                html += `
+                    <div class="topic-status-card ${cardClass}">
+                        <div class="topic-name">${topic}</div>
+                        <div class="topic-status">${stats.status}</div>
+                        <div class="topic-score">${stats.total} / ${stats.maxTotal} бода (${stats.percent}%)</div>
+                        <div class="topic-count">${stats.answered} индикатори</div>
+                    </div>
+                `;
+            }
+
+            if (html === '') {
+                html =
+                    '<span style="color:#a0aec0;font-size:14px;grid-column:1/-1;text-align:center;padding:20px;">Нема податоци за темите.</span>';
+            }
+            container.innerHTML = html;
+        }
+
+        function updateFinalStatus() {
+            const display = document.getElementById('finalStatusDisplay');
+            const details = document.getElementById('finalStatusDetails');
+
+            if (!currentClass || !currentStudent) {
+                display.className = 'final-status-large empty';
+                display.textContent = '❓ Изберете ученик';
+                document.getElementById('finalTotal').textContent = '0';
+                document.getElementById('finalMax').textContent = '70';
+                document.getElementById('finalPercent').textContent = '0%';
+                document.getElementById('finalAnswered').textContent = '0';
+                document.getElementById('finalIndicators').textContent = '51';
+                return;
+            }
+
+            const studentData = allData[currentClass]?.students?.[currentStudent]?.data || {};
+            const status = calculateStatus(studentData);
+
+            display.className = `final-status-large ${status.statusClass}`;
+            display.textContent = `${status.statusIcon} ${status.status}`;
+            document.getElementById('finalTotal').textContent = status.total;
+            document.getElementById('finalMax').textContent = status.maxTotal;
+            document.getElementById('finalPercent').textContent = status.percent + '%';
+            document.getElementById('finalAnswered').textContent = status.answered;
+            document.getElementById('finalIndicators').textContent = indicators.length;
+        }
+
+        // ================================================================
+        // 7. ПРЕГРУПИРАНА ЧЕК-ЛИСТА
+        // ================================================================
+        function renderChecklist() {
+            const container = document.getElementById('checklistContainer');
+            const filterCategory = document.getElementById('filterCategory').value;
+            const filterScore = document.getElementById('filterScore').value;
+            const filterText = document.getElementById('filterText').value.toLowerCase();
+
+            let html = '';
+            let categoriesToShow = allCategories;
+
+            if (filterCategory !== 'all') {
+                categoriesToShow = [filterCategory];
+            }
+
+            for (const cat of categoriesToShow) {
+                const catIndicators = indicators.filter(ind => ind.category === cat);
+                const filteredIndicators = catIndicators.filter(ind => {
+                    let show = true;
+                    if (filterScore !== 'all') {
+                        const data = getIndicatorData(ind.id);
+                        const score = data.value === 'Да' ? 2 : (data.value === 'Делумно' ? 1 : (data.value === 'Не' ? 0 :
+                        null));
+                        if (score !== parseInt(filterScore)) show = false;
+                    }
+                    if (filterText && !ind.text.toLowerCase().includes(filterText)) show = false;
+                    return show;
+                });
+
+                if (filteredIndicators.length === 0) continue;
+
+                const totalInCat = catIndicators.length;
+                const answeredInCat = filteredIndicators.filter(ind => {
+                    const data = getIndicatorData(ind.id);
+                    return data.value !== null;
+                }).length;
+
+                html += `
+                    <div class="category-group" data-category="${cat}">
+                        <div class="group-title">
+                            ${cat}
+                            <span class="badge">${answeredInCat}/${totalInCat} оценети</span>
+                        </div>
+                `;
+
+                for (const ind of filteredIndicators) {
+                    const data = getIndicatorData(ind.id);
+                    const value = data.value;
+                    const note = data.note || '';
+                    const score = value === 'Да' ? 2 : (value === 'Делумно' ? 1 : (value === 'Не' ? 0 : null));
+                    const adjustedScore = score !== null && negativeIndicators.includes(ind.id) ? 2 - score : score;
+                    const scoreClass = adjustedScore !== null ? `score-${adjustedScore}` : '';
+
+                    html += `
+                        <div class="indicator-row" data-indicator="${ind.id}">
+                            <span class="ind-num">${ind.id}.</span>
+                            <span class="ind-text">${ind.text}</span>
+                            <div class="ind-radio">
+                                <label>
+                                    <input type="radio" name="ind_${ind.id}" value="Да" ${value === 'Да' ? 'checked' : ''} onchange="setValue(${ind.id}, 'Да')">
+                                    Да (2)
+                                </label>
+                                <label>
+                                    <input type="radio" name="ind_${ind.id}" value="Делумно" ${value === 'Делумно' ? 'checked' : ''} onchange="setValue(${ind.id}, 'Делумно')">
+                                    Делумно (1)
+                                </label>
+                                <label>
+                                    <input type="radio" name="ind_${ind.id}" value="Не" ${value === 'Не' ? 'checked' : ''} onchange="setValue(${ind.id}, 'Не')">
+                                    Не (0)
+                                </label>
+                            </div>
+                            <span class="ind-score ${scoreClass}">${adjustedScore !== null ? adjustedScore : '—'}</span>
+                            <span class="ind-note">
+                                <input type="text" placeholder="Забелешка..." value="${note}" onchange="setNote(${ind.id}, this.value)">
+                            </span>
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
+            }
+
+            if (html === '') {
+                html = '<p style="text-align:center;color:#a0aec0;padding:20px;">Нема индикатори што одговараат на филтрите.</p>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        function getIndicatorData(indicatorId) {
+            if (currentClass && currentStudent) {
+                const studentData = allData[currentClass]?.students?.[currentStudent]?.data || {};
+                return studentData[indicatorId] || { value: null, note: '' };
+            }
+            return { value: null, note: '' };
+        }
+
+        // ================================================================
+        // 8. РАБОТА СО ПОДАТОЦИ
+        // ================================================================
+        function setValue(indicatorId, value) {
+            if (!currentClass || !currentStudent) {
+                showToast('⚠️ Прво изберете ученик!');
+                return;
+            }
+
+            if (!state) state = {};
+            state[indicatorId] = state[indicatorId] || {};
+            state[indicatorId].value = value;
+
+            syncStateToStorage();
+        }
+
+        function setNote(indicatorId, note) {
+            if (!currentClass || !currentStudent) return;
+
+            if (!state) state = {};
+            state[indicatorId] = state[indicatorId] || {};
+            state[indicatorId].note = note;
+
+            syncStateToStorage();
+        }
+
+        function selectClass(className) {
+            currentClass = className;
+            currentStudent = '';
+            state = {};
+            updateAllUI();
+            saveAllData();
+        }
+
+        function selectStudent(studentName) {
+            if (!currentClass) {
+                showToast('⚠️ Прво изберете паралелка!');
+                return;
+            }
+
+            currentStudent = studentName;
+            const studentData = allData[currentClass]?.students?.[studentName];
+            if (studentData) {
+                state = JSON.parse(JSON.stringify(studentData.data || {}));
+            } else {
+                state = {};
+            }
+
+            updateAllUI();
+            saveAllData();
+        }
+
+        function addClass() {
+            const input = document.getElementById('className');
+            const name = input.value.trim();
+            if (!name) {
+                showToast('⚠️ Внесете име на паралелка!');
+                return;
+            }
+            if (allData[name]) {
+                showToast('⚠️ Паралелката веќе постои!');
+                return;
+            }
+
+            allData[name] = { students: {} };
+            currentClass = name;
+            currentStudent = '';
+            state = {};
+            input.value = '';
+
+            updateAllUI();
+            saveAllData();
+            showToast(`✅ Додадена паралелка: ${name}`);
+        }
+
+        function deleteClass() {
+            const select = document.getElementById('classSelect');
+            const name = select.value;
+            if (!name) {
+                showToast('⚠️ Изберете паралелка за бришење!');
+                return;
+            }
+            deleteClassByName(name);
+        }
+
+        function deleteClassByName(name) {
+            if (!confirm(`Дали сте сигурни дека сакате да ја избришете паралелката "${name}"?`)) return;
+
+            delete allData[name];
+            if (currentClass === name) {
+                currentClass = '';
+                currentStudent = '';
+                state = {};
+            }
+            updateAllUI();
+            saveAllData();
+            showToast(`🗑️ Избришана паралелка: ${name}`);
+        }
+
+        function addStudent() {
+            if (!currentClass) {
+                showToast('⚠️ Прво изберете или додадете паралелка!');
+                return;
+            }
+
+            const input = document.getElementById('studentName');
+            const name = input.value.trim();
+            if (!name) {
+                showToast('⚠️ Внесете име на ученик!');
+                return;
+            }
+
+            if (allData[currentClass].students[name]) {
+                showToast('⚠️ Ученикот веќе постои во оваа паралелка!');
+                return;
+            }
+
+            allData[currentClass].students[name] = {
+                data: {},
+                lastUpdated: new Date().toISOString()
+            };
+            currentStudent = name;
+            state = {};
+            input.value = '';
+
+            updateAllUI();
+            saveAllData();
+            showToast(`✅ Додаден ученик: ${name}`);
+        }
+
+        function deleteStudent() {
+            if (!currentClass || !currentStudent) {
+                showToast('⚠️ Изберете ученик за бришење!');
+                return;
+            }
+            deleteStudentByName(currentStudent);
+        }
+
+        function deleteStudentByName(name) {
+            if (!confirm(`Дали сте сигурни дека сакате да го избришете ученикот "${name}"?`)) return;
+
+            delete allData[currentClass].students[name];
+            if (currentStudent === name) {
+                currentStudent = '';
+                state = {};
+            }
+            updateAllUI();
+            saveAllData();
+            showToast(`🗑️ Избришан ученик: ${name}`);
+        }
+
+        function onClassSelect() {
+            const select = document.getElementById('classSelect');
+            const name = select.value;
+            if (name) {
+                selectClass(name);
+            }
+        }
+
+        function onStudentSelect() {
+            const select = document.getElementById('studentSelect');
+            const name = select.value;
+            if (name) {
+                selectStudent(name);
+            }
+        }
+
+        // ================================================================
+        // 9. УВОЗ НА УЧЕНИЦИ ОД EXCEL
+        // ================================================================
+        function importStudentsFromExcel() {
+            if (!currentClass) {
+                showToast('⚠️ Прво изберете или додадете паралелка!');
+                return;
+            }
+
+            const fileInput = document.getElementById('excelImport');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showToast('⚠️ Изберете Excel датотека!');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+                    let importedCount = 0;
+                    let skippedCount = 0;
+                    let emptyCount = 0;
+
+                    for (const row of jsonData) {
+                        if (row.length === 0 || !row[0] || row[0].toString().trim() === '') {
+                            emptyCount++;
+                            continue;
+                        }
+                        
+                        const name = row[0].toString().trim();
+                        if (!name) {
+                            emptyCount++;
+                            continue;
+                        }
+
+                        if (allData[currentClass].students[name]) {
+                            skippedCount++;
+                            continue;
+                        }
+
+                        allData[currentClass].students[name] = {
+                            data: {},
+                            lastUpdated: new Date().toISOString()
+                        };
+                        importedCount++;
+                    }
+
+                    if (importedCount > 0) {
+                        currentStudent = '';
+                        state = {};
+                        updateAllUI();
+                        saveAllData();
+                        showToast(`✅ Увезени ${importedCount} ученици. ${skippedCount} постоечки, ${emptyCount} празни редови.`);
+                    } else if (skippedCount > 0) {
+                        showToast(`⚠️ Сите ${skippedCount} ученици веќе постојат во паралелката.`);
+                    } else {
+                        showToast('⚠️ Нема валидни податоци во датотеката.');
+                    }
+
+                    // Ресетирај го input-от
+                    fileInput.value = '';
+                    
+                } catch (error) {
+                    console.error('Грешка при увоз:', error);
+                    showToast('❌ Грешка при читање на датотеката. Проверете го форматот.');
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        // ================================================================
+        // 10. ТЕМИ
+        // ================================================================
+        function onYearSelect() {
+            const select = document.getElementById('yearSelect');
+            currentYear = select.value;
+            populateTopics();
+            updateAllUI();
+            showToast(`📅 Избрана година: ${currentYear}`);
+        }
+
+        function populateTopics() {
+            const topicSelect = document.getElementById('topicSelect');
+            const unitSelect = document.getElementById('unitSelect');
+
+            const topics = curriculumData[currentYear] || {};
+
+            topicSelect.innerHTML = '<option value="">-- Избери тема --</option>';
+            for (const topic in topics) {
+                const opt = document.createElement('option');
+                opt.value = topic;
+                opt.textContent = topic;
+                if (topic === currentTopic) opt.selected = true;
+                topicSelect.appendChild(opt);
+            }
+
+            if (!currentTopic || !topics[currentTopic]) {
+                unitSelect.innerHTML = '<option value="">-- Избери единица --</option>';
+                currentUnit = '';
+                return;
+            }
+
+            unitSelect.innerHTML = '<option value="">-- Избери единица --</option>';
+            const units = topics[currentTopic] || [];
+            for (const unit of units) {
+                const opt = document.createElement('option');
+                opt.value = unit;
+                opt.textContent = unit;
+                if (unit === currentUnit) opt.selected = true;
+                unitSelect.appendChild(opt);
+            }
+
+            if (currentUnit && !units.includes(currentUnit)) {
+                currentUnit = '';
+            }
+        }
+
+        function onTopicSelect() {
+            const select = document.getElementById('topicSelect');
+            currentTopic = select.value;
+
+            const unitSelect = document.getElementById('unitSelect');
+            const topics = curriculumData[currentYear] || {};
+
+            if (currentTopic && topics[currentTopic]) {
+                unitSelect.innerHTML = '<option value="">-- Избери единица --</option>';
+                for (const unit of topics[currentTopic]) {
+                    const opt = document.createElement('option');
+                    opt.value = unit;
+                    opt.textContent = unit;
+                    if (unit === currentUnit) opt.selected = true;
+                    unitSelect.appendChild(opt);
+                }
+            } else {
+                unitSelect.innerHTML = '<option value="">-- Избери единица --</option>';
+                currentUnit = '';
+            }
+
+            updateAllUI();
+            showToast(`📚 Избрана тема: ${currentTopic || 'нема'}`);
+        }
+
+        function onUnitSelect() {
+            const select = document.getElementById('unitSelect');
+            currentUnit = select.value;
+            updateAllUI();
+            showToast(`📖 Избрана единица: ${currentUnit || 'нема'}`);
+        }
+
+        function saveTopicInfo() {
+            const lessonInput = document.getElementById('lessonNumber');
+            currentLesson = parseInt(lessonInput.value) || 1;
+
+            if (!currentTopic || !currentUnit) {
+                showToast('⚠️ Изберете тема и наставна единица!');
+                return;
+            }
+
+            saveAllData();
+            updateAllUI();
+            showToast(`✅ Зачувано: ${currentYear} - ${currentTopic} - ${currentUnit} (Час ${currentLesson})`);
+        }
+
+        // ================================================================
+        // 11. ФИЛТРИ
+        // ================================================================
+        function applyFilters() {
+            renderChecklist();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterCategory').value = 'all';
+            document.getElementById('filterScore').value = 'all';
+            document.getElementById('filterText').value = '';
+            renderChecklist();
+        }
+
+        // ================================================================
+        // 12. СУМАРИ
+        // ================================================================
+        function updateSummary() {
+            if (!currentClass || !currentStudent) {
+                document.getElementById('totalScore').textContent = '0';
+                document.getElementById('answeredCount').textContent = '0';
+                document.getElementById('percentScore').textContent = '0%';
+                document.getElementById('statusBadge').innerHTML = '—';
+                document.getElementById('categorySummary').textContent = 'Нема избран ученик';
+                return;
+            }
+
+            const studentData = allData[currentClass]?.students?.[currentStudent]?.data || {};
+            const status = calculateStatus(studentData);
+
+            document.getElementById('totalScore').textContent = status.total;
+            document.getElementById('answeredCount').textContent = status.answered;
+            document.getElementById('percentScore').textContent = status.percent + '%';
+
+            const badge = document.getElementById('statusBadge');
+            badge.className = `status-badge status-${status.statusClass}`;
+            badge.textContent = `${status.statusIcon} ${status.status}`;
+
+            const categoryStats = getCategoryStatus(studentData);
+            let summaryHTML = '';
+            for (const cat of allCategories) {
+                const stats = categoryStats[cat] || { total: 0, maxTotal: 0, percent: 0, status: 'Нема одговори' };
+                const emoji = stats.status === 'ОДЛИЧЕН' ? '🟢' : (stats.status === 'ЗАДОВОЛИТЕЛЕН' ? '🟡' : (stats.status ===
+                    'ПОТРЕБНА ПОДДРШКА' ? '🔴' : '⚪'));
+                summaryHTML +=
+                    `<div style="margin:2px 0;"><span style="font-weight:600;">${cat}:</span> ${emoji} ${stats.status} (${stats.total}/${stats.maxTotal})</div>`;
+            }
+            document.getElementById('categorySummary').innerHTML = summaryHTML;
+        }
+
+        // ================================================================
+        // 13. СТАТУС КАРТИЧКИ ЗА ПЕЧАТЕЊЕ
+        // ================================================================
+        function printStatusCards(mode) {
+            const container = document.getElementById('printStatusCardsContainer');
+            const title = document.getElementById('printTitle');
+            const subtitle = document.getElementById('printSubtitle');
+
+            let students = [];
+
+            if (mode === 'single') {
+                if (!currentClass || !currentStudent) {
+                    showToast('⚠️ Изберете ученик!');
+                    return;
+                }
+                const studentData = allData[currentClass]?.students?.[currentStudent]?.data || {};
+                students = [{ name: currentStudent, class: currentClass, data: studentData }];
+                title.textContent = `СТАТУС НА УЧЕНИКОТ: ${currentStudent}`;
+                subtitle.textContent = `Паралелка: ${currentClass} | Математика`;
+            } else if (mode === 'class') {
+                if (!currentClass) {
+                    showToast('⚠️ Изберете паралелка!');
+                    return;
+                }
+                const classStudents = allData[currentClass]?.students || {};
+                for (const name in classStudents) {
+                    students.push({
+                        name: name,
+                        class: currentClass,
+                        data: classStudents[name]?.data || {}
+                    });
+                }
+                title.textContent = `СТАТУС НА УЧЕНИЦИТЕ - ПАРАЛЕЛКА ${currentClass}`;
+                subtitle.textContent = `Математика | ${currentYear} година`;
+            } else {
+                for (const className in allData) {
+                    const classStudents = allData[className]?.students || {};
+                    for (const name in classStudents) {
+                        students.push({
+                            name: name,
+                            class: className,
+                            data: classStudents[name]?.data || {}
+                        });
+                    }
+                }
+                title.textContent = 'СТАТУС НА СИТЕ УЧЕНИЦИ';
+                subtitle.textContent = `Математика | Вкупно ${students.length} ученици`;
+            }
+
+            let cardsHTML = '';
+            for (const student of students) {
+                const status = calculateStatus(student.data);
+                const cardClass = `card-${status.statusClass}`;
+                cardsHTML += `
+                    <div class="status-card ${cardClass}">
+                        <div class="card-name">${student.name}</div>
+                        <div class="card-class">${student.class}</div>
+                        <div class="card-status">${status.statusIcon} ${status.status}</div>
+                        <div class="card-score">${status.total} / ${status.maxTotal} бода (${status.percent}%)</div>
+                        <div class="card-score" style="font-size:11px;color:#718096;">Одговорени: ${status.answered}/${indicators.length}</div>
+                    </div>
+                `;
+            }
+
+            if (cardsHTML === '') {
+                cardsHTML = '<p style="text-align:center;color:#a0aec0;">Нема податоци за прикажување.</p>';
+            }
+
+            container.innerHTML = cardsHTML;
+            container.style.display = 'flex';
+
+            setTimeout(() => {
+                window.print();
+                container.style.display = 'none';
+            }, 500);
+        }
+
+        // ================================================================
+        // 14. EXCEL ИЗВОЗ
+        // ================================================================
+        function exportStatusExcel(mode) {
+            let students = [];
+
+            if (mode === 'single') {
+                if (!currentClass || !currentStudent) {
+                    showToast('⚠️ Изберете ученик!');
+                    return;
+                }
+                const studentData = allData[currentClass]?.students?.[currentStudent]?.data || {};
+                students = [{ name: currentStudent, class: currentClass, data: studentData }];
+            } else if (mode === 'class') {
+                if (!currentClass) {
+                    showToast('⚠️ Изберете паралелка!');
+                    return;
+                }
+                const classStudents = allData[currentClass]?.students || {};
+                for (const name in classStudents) {
+                    students.push({
+                        name: name,
+                        class: currentClass,
+                        data: classStudents[name]?.data || {}
+                    });
+                }
+            } else {
+                for (const className in allData) {
+                    const classStudents = allData[className]?.students || {};
+                    for (const name in classStudents) {
+                        students.push({
+                            name: name,
+                            class: className,
+                            data: classStudents[name]?.data || {}
+                        });
+                    }
+                }
+            }
+
+            if (students.length === 0) {
+                showToast('⚠️ Нема податоци за извоз!');
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+            const rows = [];
+            const headers = ['Ученик', 'Паралелка', 'Статус', 'Бодови', 'Процент', 'Одговорени'];
+
+            for (const ind of indicators) {
+                headers.push(`${ind.id}. ${ind.text.substring(0, 30)}...`);
+            }
+
+            rows.push(headers);
+
+            for (const student of students) {
+                const status = calculateStatus(student.data);
+                const row = [
+                    student.name,
+                    student.class,
+                    `${status.statusIcon} ${status.status}`,
+                    `${status.total}/${status.maxTotal}`,
+                    `${status.percent}%`,
+                    `${status.answered}/${indicators.length}`
+                ];
+
+                for (const ind of indicators) {
+                    const data = student.data[ind.id] || { value: null };
+                    row.push(data.value || '');
+                }
+
+                rows.push(row);
+            }
+
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            XLSX.utils.book_append_sheet(wb, ws, 'Статуси');
+
+            const wbname = `Статуси_${mode === 'single' ? currentStudent : (mode === 'class' ? currentClass : 'сите')}_${new Date().toISOString().slice(0,10)}.xlsx`;
+            XLSX.writeFile(wb, wbname);
+            showToast(`✅ Експортирано во ${wbname}`);
+        }
+
+        // ================================================================
+        // 15. CSV ИЗВОЗ
+        // ================================================================
+        function exportCSV() {
+            if (!currentClass || !currentStudent) {
+                showToast('⚠️ Изберете ученик!');
+                return;
+            }
+
+            const studentData = allData[currentClass]?.students?.[currentStudent]?.data || {};
+            const status = calculateStatus(studentData);
+
+            let csv = 'Индикатор,Категорија,Одговор,Забелешка\n';
+            for (const ind of indicators) {
+                const data = studentData[ind.id] || { value: null, note: '' };
+                csv += `"${ind.text}","${ind.category}","${data.value || ''}","${data.note || ''}"\n`;
+            }
+
+            csv += `\n"Статус","${status.statusIcon} ${status.status}"\n`;
+            csv += `"Бодови","${status.total}/${status.maxTotal}"\n`;
+            csv += `"Процент","${status.percent}%"\n`;
+            csv += `"Одговорени","${status.answered}/${indicators.length}"\n`;
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${currentStudent}_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+            showToast('✅ CSV експортиран!');
+        }
+
+        // ================================================================
+        // 16. РЕСЕТ
+        // ================================================================
+        function resetAll() {
+            if (!confirm('Дали сте сигурни дека сакате да ги избришете сите одговори за сите ученици?')) return;
+
+            for (const className in allData) {
+                for (const studentName in allData[className].students) {
+                    allData[className].students[studentName].data = {};
+                    allData[className].students[studentName].lastUpdated = new Date().toISOString();
+                }
+            }
+
+            if (currentClass && currentStudent) {
+                state = {};
+            }
+
+            saveAllData();
+            updateAllUI();
+            showToast('🗑️ Сите одговори се избришани!');
+        }
+
+        // ================================================================
+        // 17. TOAST
+        // ================================================================
+        function showToast(message) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // ================================================================
+        // 18. INIT
+        // ================================================================
+        loadAllData();
+
+        document.getElementById('yearSelect').value = currentYear;
+        populateTopics();
+
+        const classNames = Object.keys(allData);
+        if (classNames.length > 0) {}
+
+        updateAllUI();
+
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('input[type="radio"][name^="ind_"]')) {}
+        });
+
+        console.log('✅ Чек-листата е вчитана!');
+        console.log(`📚 Тековна година: ${currentYear}, тема: ${currentTopic || 'нема'}`);
+        console.log(`👥 Паралелки: ${Object.keys(allData).length}, ученици: ${Object.values(allData).reduce((sum, cls) => sum + Object.keys(cls.students || {}).length, 0)}`);
+    </script>
+</body>
+</html>

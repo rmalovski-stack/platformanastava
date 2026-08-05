@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Актив по математика</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7fc;
+            padding: 40px 20px;
+            color: #1e2b3a;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            background: white;
+            padding: 45px 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.07);
+        }
+
+        /* ---- ЗАГЛАВЈЕ ---- */
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #1a6b9b;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 28px;
+            color: #0a2a44;
+            margin-bottom: 5px;
+        }
+        .header .skola {
+            font-size: 18px;
+            color: #2c4c6e;
+            font-weight: 600;
+        }
+        .header .godina {
+            background: #dce6f0;
+            padding: 4px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 16px;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        /* ---- ПРИОРИТЕТИ ---- */
+        .prioriteti-sekcija {
+            background: #e8f0fa;
+            padding: 18px 25px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+        }
+        .prioriteti-sekcija h2 {
+            font-size: 18px;
+            color: #0a2a44;
+            margin-bottom: 8px;
+        }
+        .prioriteti-lista {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 15px;
+        }
+        .prioriteti-lista li {
+            background: white;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            border: 1px solid #c9dcee;
+        }
+
+        /* ---- ИЗБОР НА МЕСЕЦ ---- */
+        .izbor-sekcija {
+            background: #f0f6fd;
+            padding: 20px 25px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 15px;
+        }
+        .izbor-sekcija .grupa {
+            flex: 1;
+            min-width: 180px;
+        }
+        .izbor-sekcija label {
+            font-weight: 600;
+            color: #0a2a44;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+        .izbor-sekcija select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #bccddb;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+        .izbor-sekcija select:focus {
+            outline: 2px solid #1a6b9b;
+            border-color: transparent;
+        }
+        .btn {
+            background: #1a6b9b;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .btn:hover {
+            background: #0f4a6e;
+            transform: scale(1.02);
+        }
+        .btn-secondary {
+            background: #6c8ba0;
+        }
+        .btn-secondary:hover {
+            background: #4d6a7e;
+        }
+        .btn-success {
+            background: #1f8b4c;
+        }
+        .btn-success:hover {
+            background: #15693a;
+        }
+
+        /* ---- ПРИКАЗ НА АКТИВНОСТИ ЗА МЕСЕЦ ---- */
+        .aktivnosti-karticka {
+            background: #fafcff;
+            border: 1px solid #e2eaf5;
+            border-radius: 14px;
+            padding: 25px 30px;
+            min-height: 150px;
+            margin-bottom: 25px;
+        }
+        .aktivnosti-karticka .mesec-naslov {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0a2a44;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .aktivnosti-karticka .mesec-naslov .broj {
+            font-size: 15px;
+            font-weight: 400;
+            color: #4a6a8a;
+            background: #e8f0fa;
+            padding: 2px 14px;
+            border-radius: 30px;
+        }
+        .aktivnosti-lista {
+            list-style: none;
+            padding: 0;
+        }
+        .aktivnosti-lista li {
+            padding: 8px 0 8px 28px;
+            border-bottom: 1px dashed #e6edf6;
+            font-size: 15px;
+            position: relative;
+            line-height: 1.5;
+        }
+        .aktivnosti-lista li:last-child {
+            border-bottom: none;
+        }
+        .aktivnosti-lista li::before {
+            content: "▹";
+            position: absolute;
+            left: 4px;
+            color: #1a6b9b;
+            font-weight: 700;
+        }
+        .prazno {
+            color: #8a9baa;
+            font-style: italic;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        /* ---- ЦЕЛ ДОКУМЕНТ (скриен стандардно) ---- */
+        .cel-dokument {
+            display: none;
+            margin-top: 30px;
+            border-top: 2px solid #dce6f0;
+            padding-top: 30px;
+        }
+        .cel-dokument.aktivno {
+            display: block;
+        }
+
+        .cel-dokument .aktivnosti-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        .cel-dokument .aktivnosti-table th {
+            background: #1a4971;
+            color: white;
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .cel-dokument .aktivnosti-table td {
+            vertical-align: top;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e2e9f2;
+            background: #fafcff;
+        }
+        .cel-dokument .aktivnosti-table tr:nth-child(even) td {
+            background: #f6faff;
+        }
+        .cel-dokument .aktivnosti-table tr:hover td {
+            background: #eef4fb;
+        }
+        .cel-dokument .mesec-cell {
+            font-weight: 700;
+            color: #0a2a44;
+            background: #eef4fb !important;
+            width: 110px;
+        }
+        .cel-dokument .aktivnosti-cell ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .cel-dokument .aktivnosti-cell ul li {
+            padding: 4px 0 4px 22px;
+            border-bottom: 1px dashed #e6edf6;
+            position: relative;
+            line-height: 1.4;
+        }
+        .cel-dokument .aktivnosti-cell ul li:last-child {
+            border-bottom: none;
+        }
+        .cel-dokument .aktivnosti-cell ul li::before {
+            content: "▹";
+            position: absolute;
+            left: 2px;
+            color: #1a6b9b;
+            font-weight: 700;
+        }
+
+        /* ---- КОПЧИЊА ЗА ДОКУМЕНТ ---- */
+        .btn-grupa {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        /* ---- ФУТЕР ---- */
+        footer {
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 2px solid #dce6f0;
+            font-size: 14px;
+            color: #4a6a8a;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .footer-box {
+            background: #f3f8fe;
+            padding: 6px 18px;
+            border-radius: 30px;
+        }
+        .badge {
+            background: #1a6b9b;
+            color: white;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
+            margin-left: 6px;
+        }
+        .footer-izgotvil {
+            font-weight: 600;
+            color: #0a2a44;
+            background: #e8f0fa;
+            padding: 6px 20px;
+            border-radius: 30px;
+            border-left: 3px solid #1a6b9b;
+        }
+
+        /* ---- СТИЛОВИ ЗА ПЕЧАТЕЊЕ ---- */
+        @media print {
+            body {
+                background: white;
+                padding: 15px;
+            }
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 25px 30px;
+            }
+            .izbor-sekcija {
+                display: none !important;
+            }
+            .aktivnosti-karticka {
+                display: none !important;
+            }
+            .cel-dokument {
+                display: block !important;
+                border-top: none;
+                padding-top: 0;
+            }
+            .btn-grupa {
+                display: none !important;
+            }
+            .aktivnosti-table tr:hover td {
+                background: #fafcff !important;
+            }
+            .aktivnosti-table td {
+                background: #fafcff !important;
+            }
+            .aktivnosti-table tr:nth-child(even) td {
+                background: #f6faff !important;
+            }
+            .mesec-cell {
+                background: #eef4fb !important;
+            }
+            footer {
+                border-top-color: #aaa;
+            }
+            .footer-box, .footer-izgotvil {
+                background: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .prioriteti-sekcija {
+                background: #e8f0fa !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .prioriteti-lista li {
+                background: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .header {
+                border-bottom-color: #1a6b9b;
+            }
+            .aktivnosti-table th {
+                background: #1a4971 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .godina, .label-godina {
+                background: #dce6f0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .aktivnosti-cell ul li::before {
+                color: #1a6b9b;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .container { padding: 20px; }
+            .izbor-sekcija { flex-direction: column; }
+            .izbor-sekcija .grupa { min-width: 100%; }
+            .btn { width: 100%; text-align: center; }
+            .aktivnosti-karticka { padding: 18px 16px; }
+            .cel-dokument .aktivnosti-table th,
+            .cel-dokument .aktivnosti-table td { padding: 8px 10px; font-size: 13px; }
+            .cel-dokument .mesec-cell { width: 80px; }
+            footer { flex-direction: column; align-items: center; text-align: center; }
+            .btn-grupa { flex-direction: column; }
+            .btn-grupa .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="dokument">
+
+    <!-- ЗАГЛАВЈЕ -->
+    <div class="header">
+        <h1>📐 Програма за работа на активот по математика</h1>
+        <div class="skola">СОУ „28 НОЕМВРИ" ДЕБАР</div>
+        <div class="godina" id="godinaLabel">2026/2027</div>
+    </div>
+
+    <!-- ПРИОРИТЕТИ -->
+    <div class="prioriteti-sekcija">
+        <h2>🎯 Приоритети на активот</h2>
+        <ul class="prioriteti-lista" id="prioritetiLista">
+            <li>Примена на интерактивни методи во наставата по математика со цел да се подобри средината и мотивацијата за учење кај учениците</li>
+            <li>Усогласување на критериумите за оценување на знаењата на учениците</li>
+            <li>Усогласување на методолошкиот пристап во реализацијата на наставата</li>
+            <li>Активно вклучување на учениците на наставата (стекнување на работни навики и трајни знаења)</li>
+            <li>Отворена соработка со родителите кои можат да придонесат во совладувањето на наставните содржини и организирање на дополнителна настава</li>
+            <li>Стимулирање на надарените ученици за нивно учество на натпревари по математика и организирање и реализирање на дополнителна настава</li>
+        </ul>
+    </div>
+
+    <!-- ИЗБОР НА МЕСЕЦ -->
+    <div class="izbor-sekcija">
+        <div class="grupa">
+            <label for="mesecSelect">📅 Избери месец</label>
+            <select id="mesecSelect"></select>
+        </div>
+        <div class="grupa" style="flex:0 0 auto; min-width:auto;">
+            <button class="btn" onclick="prikaziMesec()">👁️ Прегледај месец</button>
+        </div>
+    </div>
+
+    <!-- ПРИКАЗ НА АКТИВНОСТИ ЗА ИЗБРАН МЕСЕЦ -->
+    <div class="aktivnosti-karticka" id="kartickaMesec">
+        <div class="mesec-naslov">
+            <span id="mesecNaslov">Август</span>
+            <span class="broj" id="brojAktivnosti">0 активности</span>
+        </div>
+        <ul class="aktivnosti-lista" id="aktivnostiLista">
+            <li class="prazno">Избери месец за да ги видиш активностите</li>
+        </ul>
+    </div>
+
+    <!-- КОПЧИЊА ЗА ЦЕЛ ДОКУМЕНТ -->
+    <div class="btn-grupa">
+        <button class="btn btn-success" onclick="prikaziCelDokument()">📄 Преглед на цел документ</button>
+        <button class="btn" onclick="pecatiDokument()">🖨️ Печати цел документ</button>
+        <button class="btn btn-secondary" onclick="zatvoriCelDokument()">✖️ Затвори цел документ</button>
+    </div>
+
+    <!-- ЦЕЛ ДОКУМЕНТ (сите месеци) -->
+    <div class="cel-dokument" id="celDokument">
+        <h2 style="color:#0a2a44; margin-bottom:15px;">📋 Целосен преглед на активности</h2>
+        <table class="aktivnosti-table" id="celDokumentTabela">
+            <thead>
+                <tr>
+                    <th style="width:120px;">📅 Месец</th>
+                    <th>📋 Активности</th>
+                </tr>
+            </thead>
+            <tbody id="celDokumentTelo"></tbody>
+        </table>
+    </div>
+
+    <!-- ФУТЕР -->
+    <footer>
+        <div class="footer-box">
+            📅 Подготвено: <span id="datumPodgotovka"></span>
+        </div>
+        <div class="footer-box">
+            🏫 Учебна година: <span id="godinaPocetok"></span>
+            <span class="badge" id="godinaBadge"></span>
+        </div>
+        <div class="footer-izgotvil">
+            ✍️ Изготвил: проф. Решат Маловски
+        </div>
+    </footer>
+</div>
+
+<script>
+    // ---- ПОДАТОЦИ ----
+    const aktivnostiData = {
+        "Август": [
+            "Изработка на Годишна програма за работа на активот за учебната 2025/26 година и формулирање на приоритети и цели на активот",
+            "Анализа на резултатите од државна матура по математика (реализација на дополнителна настава и државна матура, консултативни часови и реализирање на пробни тестови)",
+            "Разгледување и усогласување на методолошкиот пристап и наставните програми на ниво на актив за годишните и тематските распределенија",
+            "Интегрирано планирање на наставата по математика со застапеност на програмата - Интеграција на еколошка едукација во македонскиот образовен систем",
+            "Размена на искуства и забелешки, дискусија за реализација на наставната програма во наредната учебна година"
+        ],
+        "Септември": [
+            "Подготовка (изработка) на дијагностички тестови на знаења, особено за учениците од прва година со цел да се утврди со какви предзнаења доаѓаат новите ученици",
+            "Изработка на програми за реализација на дополнителна и додатна настава",
+            "Идентификација на учениците кои имаат потешкотии во совладување на наставниот материјал",
+            "Идентификација на надарените ученици за учество на натпревари по математика",
+            "Утврдување на термини за изведување на дополнителна и додатна настава",
+            "Дискусија за начинот на подобрување на квалитетот на наставата и изработка на план за методски единици кои можат да се реализираат со ИКТ"
+        ],
+        "Октомври": [
+            "Стратегија за примена на компјутерите во наставата, посета на часови во рамките на активот со цел размена на искуства",
+            "Изработка на тематски тестови на знаења со цел да се усогласат критериумите за оценување",
+            "Следење на работата и напредокот на учениците и анализа на постигнатите резултати од првите контролни проверки"
+        ],
+        "Ноември": [
+            "Разгледување на успехот и редовноста на учениците во првото тримесечје",
+            "Реализација на дополнителна настава за учениците кои покажале послаби резултати"
+        ],
+        "Декември": [
+            "Договор за реализација на полугодишните писмени работи и усогласување на критериумите",
+            "Определување на матурски теми и испити за учениците од четврта година",
+            "План одржување на дополнителна настава за учениците кои покажале послаби резултати за време на зимскиот распуст",
+            "План за реализација на подготовителни часови за натпревар за надарените ученици за време на зимскиот распуст"
+        ],
+        "Јануари": [
+            "Анализа на полугодишниот успех на учениците како повратна информација за ефективноста на реализираната настава како и дополнителната настава со послабите ученици",
+            "Размена на мислења и искуства за избор на теми, реализација и оценување на проектните задачи во рамките на државната матура",
+            "Интегрирање на еко-стандардите во наставата (развивање и поттикнување на екосвест кај учениците)"
+        ],
+        "Февруари": [
+            "Размена на искуства како и стручна литература и материјали за подготовка на учениците за нивно учество на натпревари",
+            "Организирање и одржување на училишни натпревари",
+            "Разговор за начинот на реализација на проектната задача и информирање на учениците за критериумите за оценување на проектната задача"
+        ],
+        "Март": [
+            "Анализа на постигнатиот успех на учениците во третото тримесечје, предлози и сугестии со цел унапредување на знаењата и вештините на учениците",
+            "Информација за дополнителната настава за учениците со слаб успех по математика",
+            "Активност и учество на други математички натпревари (КЕНГУР)"
+        ],
+        "Април": [
+            "План и реализација на презентирање на проектни задачи, нивно оценување и анализа на успехот на учениците",
+            "Одржување на консултативни часови за испитот по математика во рамките на државната матура",
+            "Информација од дополнителната настава за учениците со слаб успех и резултатите од истата и дали има подобрување на успехот на учениците и надминување на потешкотиите за совладување на материјалот",
+            "Учество на учениците на републички натпревари по математика (ако има)"
+        ],
+        "Мај": [
+            "Договор за реализација на годишните писмени работи и усогласување на критериумите",
+            "Предлози и сугестии за подобрување на успехот",
+            "Реализација на дополнителна настава",
+            "Подготовка на учениците за полагање на државна матура",
+            "Интегрирање на еко-стандардите во наставата (развивање и поттикнување на екосвест кај учениците)"
+        ],
+        "Јуни": [
+            "Анализа на успехот постигнат на крајот од учебната година",
+            "Изведување на дополнителна настава со учениците кои се упатени на поправен испит",
+            "Анализа на резултатите од поправниот испит, мислења и предлози за надминување на потешкотиите кои се јавуваат кај учениците при совладување на наставниот материјал",
+            "Изработка на тестови за интерните испити од државната матура за јунискиот испитен рок"
+        ]
+    };
+
+    // ---- ФУНКЦИИ ----
+    function odrediUchebnaGodina() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        if (month === 7 || month === 8) {
+            return `${year}/${year + 1}`;
+        } else {
+            return `${year - 1}/${year}`;
+        }
+    }
+
+    function getMesecIme() {
+        const now = new Date();
+        const mesecImena = ["Јануари","Февруари","Март","Април","Мај","Јуни","Јули","Август","Септември","Октомври","Ноември","Декември"];
+        return mesecImena[now.getMonth()];
+    }
+
+    function getGodina() {
+        return new Date().getFullYear();
+    }
+
+    // Пополни го селекторот
+    function popuniMesecSelect() {
+        const select = document.getElementById('mesecSelect');
+        const mesecImena = Object.keys(aktivnostiData);
+        select.innerHTML = mesecImena.map(m => `<option value="${m}">${m}</option>`).join('');
+    }
+
+    // Прикажи активности за избран месец
+    function prikaziMesec() {
+        const mesec = document.getElementById('mesecSelect').value;
+        const lista = document.getElementById('aktivnostiLista');
+        const naslov = document.getElementById('mesecNaslov');
+        const broj = document.getElementById('brojAktivnosti');
+
+        naslov.textContent = mesec;
+
+        const aktivnosti = aktivnostiData[mesec];
+        if (!aktivnosti || aktivnosti.length === 0) {
+            lista.innerHTML = `<li class="prazno">Нема планирани активности за овој месец</li>`;
+            broj.textContent = '0 активности';
+            return;
+        }
+
+        broj.textContent = `${aktivnosti.length} активности`;
+        lista.innerHTML = aktivnosti.map(a => `<li>${a}</li>`).join('');
+    }
+
+    // Прикажи цел документ (сите месеци)
+    function prikaziCelDokument() {
+        const celDokument = document.getElementById('celDokument');
+        const tbody = document.getElementById('celDokumentTelo');
+
+        let html = '';
+        const mesecRed = Object.keys(aktivnostiData);
+        for (let mesec of mesecRed) {
+            const aktivnosti = aktivnostiData[mesec];
+            html += `<tr>
+                <td class="mesec-cell">${mesec}</td>
+                <td class="aktivnosti-cell">
+                    <ul>
+                        ${aktivnosti.map(a => `<li>${a}</li>`).join('')}
+                    </ul>
+                </td>
+            </tr>`;
+        }
+        tbody.innerHTML = html;
+        celDokument.classList.add('aktivno');
+
+        // Скролни до документот
+        celDokument.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Затвори цел документ
+    function zatvoriCelDokument() {
+        document.getElementById('celDokument').classList.remove('aktivno');
+    }
+
+    // Печати
+    function pecatiDokument() {
+        // Прво прикажи го целиот документ ако е скриен
+        const celDokument = document.getElementById('celDokument');
+        if (!celDokument.classList.contains('aktivno')) {
+            prikaziCelDokument();
+        }
+        // Мал тајмаут за да се рендерира
+        setTimeout(() => {
+            window.print();
+        }, 300);
+    }
+
+    // Постави футер
+    function postaviFooter() {
+        const godina = odrediUchebnaGodina();
+        const mesecIme = getMesecIme();
+        const godinaBr = getGodina();
+
+        document.getElementById('datumPodgotovka').textContent = `${mesecIme} ${godinaBr} година`;
+        document.getElementById('godinaLabel').textContent = godina;
+        document.getElementById('godinaPocetok').textContent = godina.split('/')[0];
+        document.getElementById('godinaBadge').textContent = `учебна ${godina}`;
+    }
+
+    // ---- ИНИЦИЈАЛИЗАЦИЈА ----
+    window.onload = function() {
+        popuniMesecSelect();
+        // Прикажи го првиот месец (Август)
+        document.getElementById('mesecSelect').value = 'Август';
+        prikaziMesec();
+        postaviFooter();
+
+        // На промена на селекторот
+        document.getElementById('mesecSelect').addEventListener('change', prikaziMesec);
+    };
+</script>
+
+</body>
+</html>

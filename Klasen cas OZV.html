@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Годишна програма за класен час – ОЖВ (детални активности)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f0f4fa;
+            padding: 2rem 1.5rem;
+            color: #0b1a33;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            padding: 2rem 2rem 2.5rem;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #0b1a33;
+            border-left: 6px solid #2563eb;
+            padding-left: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+        .sub {
+            color: #475569;
+            font-size: 1rem;
+            margin-left: 1.8rem;
+            margin-bottom: 0.4rem;
+            border-bottom: 1px solid #e9edf2;
+            padding-bottom: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .teacher-info {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #0b1a33;
+            background: #eef2f6;
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+            display: inline-block;
+        }
+        .school-year {
+            font-weight: 600;
+            color: #2563eb;
+            background: #dbeafe;
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+        }
+        .search-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: 60px;
+            padding: 0.1rem 0.1rem 0.1rem 1.2rem;
+            border: 1px solid #dce1e9;
+            transition: 0.2s;
+            flex: 1 1 280px;
+        }
+        .search-box:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            background: #ffffff;
+        }
+        .search-box input {
+            border: none;
+            background: transparent;
+            padding: 0.7rem 0;
+            font-size: 1rem;
+            width: 100%;
+            outline: none;
+            color: #0b1a33;
+        }
+        .search-box button {
+            background: #2563eb;
+            border: none;
+            color: white;
+            padding: 0.6rem 1.4rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.15s;
+            white-space: nowrap;
+        }
+        .search-box button:hover { background: #1d4ed8; }
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .filter-group select {
+            padding: 0.5rem 2rem 0.5rem 1rem;
+            border-radius: 60px;
+            border: 1px solid #dce1e9;
+            background: #f1f5f9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23475669' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 1rem center;
+            background-size: 12px;
+            appearance: none;
+            font-size: 0.95rem;
+            color: #0b1a33;
+            cursor: pointer;
+            transition: 0.2s;
+            min-width: 220px;
+        }
+        .filter-group select:focus {
+            border-color: #2563eb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            background-color: #ffffff;
+        }
+        .stats {
+            font-size: 0.95rem;
+            background: #eef2f6;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            color: #1e293b;
+            white-space: nowrap;
+        }
+        .stats span { font-weight: 700; color: #2563eb; }
+        .program-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        .card {
+            background: #fafcff;
+            border-radius: 1.2rem;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem 1.3rem 1.2rem;
+            transition: all 0.15s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 8px 20px -8px rgba(37, 99, 235, 0.15);
+            transform: translateY(-2px);
+        }
+        .card.selected {
+            border-color: #2563eb;
+            background: #f0f7ff;
+            box-shadow: 0 8px 20px -8px rgba(37, 99, 235, 0.25);
+        }
+        .card-header {
+            display: flex;
+            align-items: baseline;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+        .hour-badge {
+            background: #1e293b;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+        }
+        .month-tag {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #2563eb;
+            background: #dbeafe;
+            padding: 0.15rem 0.9rem;
+            border-radius: 30px;
+        }
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0.4rem 0 0.2rem;
+            color: #0b1a33;
+            line-height: 1.3;
+        }
+        .card-activities {
+            margin: 0.6rem 0 0.2rem;
+            font-size: 0.95rem;
+            color: #1e293b;
+        }
+        .card-activities strong { color: #075985; font-weight: 600; }
+        .card-desc {
+            font-size: 0.92rem;
+            color: #334155;
+            line-height: 1.6;
+            margin-top: 0.5rem;
+            border-top: 1px dashed #dce1e9;
+            padding-top: 0.7rem;
+        }
+        .card-desc strong { color: #0b1a33; }
+        .card-desc .phase {
+            display: block;
+            margin-top: 0.6rem;
+            padding: 0.6rem 0.8rem;
+            background: #f8fafc;
+            border-radius: 0.6rem;
+            border-left: 4px solid #2563eb;
+        }
+        .card-desc .phase-label {
+            font-weight: 700;
+            color: #075985;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+        .card-desc .task {
+            display: block;
+            margin-top: 0.3rem;
+            padding-left: 0.5rem;
+            border-left: 2px solid #dce1e9;
+            font-style: italic;
+            color: #1e293b;
+        }
+        .card-desc .example {
+            display: block;
+            margin-top: 0.3rem;
+            padding: 0.3rem 0.6rem;
+            background: #eef2f6;
+            border-radius: 0.4rem;
+            color: #075985;
+            font-size: 0.9rem;
+        }
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #64748b;
+            font-size: 1.1rem;
+            background: #f8fafc;
+            border-radius: 2rem;
+        }
+        .footer-note {
+            margin-top: 2rem;
+            text-align: right;
+            font-size: 0.9rem;
+            color: #64748b;
+            border-top: 1px solid #e9edf2;
+            padding-top: 1.2rem;
+        }
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .container { padding: 1.2rem; }
+            h1 { font-size: 1.6rem; padding-left: 0.8rem; }
+            .sub { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .search-wrap { flex-direction: column; align-items: stretch; }
+            .filter-group { flex-wrap: wrap; }
+            .filter-group select { flex: 1; min-width: 150px; }
+            .stats { align-self: flex-start; }
+            .program-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>📋 Годишна програма за класен час – ОЖВ</h1>
+    <div class="sub">
+        <span>
+            <span class="teacher-info">👨‍🏫 Класен раководител: проф. Решат Маловски</span>
+        </span>
+        <span class="school-year" id="schoolYearDisplay">2025/2026</span>
+    </div>
+
+    <div class="search-wrap">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Пребарај по тема, активност..." />
+            <button id="searchBtn">🔍 Пребарај</button>
+        </div>
+        <div class="filter-group">
+            <select id="hourSelect">
+                <option value="">📌 Сите часови</option>
+            </select>
+            <div class="stats">Прикажани <span id="visibleCount">39</span> од <span id="totalCount">39</span> часа</div>
+        </div>
+    </div>
+
+    <div class="program-grid" id="programGrid"></div>
+
+    <div class="footer-note">
+        <span>📅 изработено според методологијата на ОЖВ – БРО</span>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ─── УЧЕБНА ГОДИНА ──────────────────────────────────────────
+        function getSchoolYear() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = now.getMonth();
+            return (m >= 8) ? y + '/' + (y + 1) : (y - 1) + '/' + y;
+        }
+        document.getElementById('schoolYearDisplay').textContent = getSchoolYear();
+
+        // ─── ПОДАТОЦИ ──────────────────────────────────────────────
+        const programData = [
+            // 1. Запознавање со кодексот на однесување
+            {
+                month: 'Септември',
+                title: 'Запознавање со кодексот на однесување',
+                activities: 'Дискусија, групно читање, пополнување табела, креирање на заеднички договор.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Учениците да се запознаат со училишните правила и да изготват заеднички кодекс на однесување.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Поставување прашање:</strong> "Што се случува кога нема правила во една игра? Како тоа се одразува на училиштето?" <span class="task">➜ Учениците даваат одговори, наставникот ги запишува на табла.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Групна работа:</strong> Поделба во 5 групи. Секоја група добива дел од Кодексот. <span class="task">➜ Прочитајте и издвојте 5 најважни правила. Пополнете ја табелата: "Правило" – "Зошто е важно" – "Последица ако не се почитува".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Презентација:</strong> <span class="task">➜ Секоја група презентира по едно правило. Останатите поставуваат прашања.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Креирање на заеднички договор:</strong> <span class="task">➜ Секој ученик пишува едно правило на стикер. Заедно ги групираме и изготвуваме "Договор за однесување" кој се лепи на видливо место.</span></span>
+                `
+            },
+            // 2. Избор на класна заедница
+            {
+                month: 'Септември',
+                title: 'Избор на класна заедница',
+                activities: 'Номинирање, гласање, формирање на тим.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Демократски избор на претседател, заменик, делегат, благајник и хроникер.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Објаснување:</strong> Наставникот ги објаснува улогите и одговорностите на секоја функција. <span class="task">➜ Нацртајте ги функциите на табла.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Номинација и кандидирање:</strong> <span class="task">➜ Секој ученик кој сака да кандидира пишува име на ливче. Кандидатите имаат по 2 минути да кажат зошто се добар избор.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Гласање:</strong> <span class="task">➜ Пополнете ги гласачките ливчиња (тајно гласање). Двајца ученици ги бројат гласовите пред целото одделение.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (5 мин):</span> <strong>Прогласување:</strong> <span class="task">➜ Избраните членови се прогласуваат. Изгответе кратко "Писмо за соработка" со задачите на секој член.</span></span>
+                `
+            },
+            // 3. ОЖВ – Работилница I-2: Фактори на здравје
+            {
+                month: 'Септември',
+                title: 'ОЖВ – Работилница I-2: Фактори на здравје',
+                activities: 'Асоцијации, групна работа, креирање постери, план за здрави навики.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Идентификување на факторите што влијаат на здравјето и креирање план за здрави навики.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Асоцијации:</strong> <span class="task">➜ Напишете го зборот "ЗДРАВЈЕ" на табла. Учениците кажуваат асоцијации – наставникот ги запишува (физичко, ментално, социјално, исхрана, вежбање...).</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Групна работа:</strong> <span class="task">➜ Секоја група добива еден фактор (исхрана, физичка активност, хигиена, сон и одмор, стрес). Изгответе постер со: "Што е факторот?", "Како влијае на здравјето?", "3 совети за подобрување".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Презентација:</strong> <span class="task">➜ Секоја група го презентира својот постер (2 минути). Останатите поставуваат прашања.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Личен план:</strong> <span class="task">➜ Секој ученик креира "Мој план за здрави навики" – запишува 5 конкретни чекори што ќе ги примени во следните 7 дена (пр. "Ќе пијам 2 литри вода", "Ќе шетам 20 минути").</span></span>
+                `
+            },
+            // 4. ОЖВ – Работилница I-8: Полово преносливи болести
+            {
+                month: 'Септември',
+                title: 'ОЖВ – Работилница I-8: Полово преносливи болести',
+                activities: 'Поврзување поими, анализа на сценарија, креирање пораки за превенција.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Стекнување знаења за ППБ, начини на пренос и превенција.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што знаете за полово преносливите болести?" <span class="task">➜ Запишете ги одговорите на табла – груписрање на клучни зборови.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Работен лист:</strong> <span class="task">➜ Поврзете ги болестите (ХИВ, сифилис, хепатитис Б, гонореја) со: симптоми, начин на пренос, превенција. Пополнете ја табелата.</span> <span class="example">Пример: ХИВ – треска, замор; пренос: крв, секс; превенција: кондоми, тестирање.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Анализа на сценарија:</strong> <span class="task">➜ Прочитајте 2 сценарија. Пополнете: "Дали лицето е во ризик?", "Што треба да направи?", "Како да се заштити?".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Креирање пораки:</strong> <span class="task">➜ Во групи изгответе 3 пораки за превенција од ППБ (за социјални мрежи). Секоја порака да биде кратка, јасна и да содржи #хeштег.</span></span>
+                `
+            },
+            // 5. ОЖВ – Работилница I-11: Различни групи и различно однесување
+            {
+                month: 'Октомври',
+                title: 'ОЖВ – Работилница I-11: Различни групи и различно однесување',
+                activities: 'Анализа на слики, сценарија, креирање "Круг на толеранција".',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Развивање на толеранција и емпатија кон различни групи.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Слики:</strong> <span class="task">➜ Покажете слики на луѓе од различни култури, возрасти, професии. Прашајте: "Што забележувате? Што заедничко имаат?"</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Анализа на сценарија:</strong> <span class="task">➜ Во групи прочитајте 3 сценарија за дискриминација. Пополнете ја табелата: "Што се случува?", "Зошто е тоа дискриминација?", "Како би постапиле вие?"</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Креирање "Круг на толеранција":</strong> <span class="task">➜ Нацртајте круг поделен на 4 дела. Во секој дел запишете групи кои често се маргинализирани (етнички, верски, лица со посебни потреби, ЛГБТ+). До секоја група запишете како можете да покажете почит.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Порака за толеранција:</strong> <span class="task">➜ Секој ученик пишува "порака за толеранција" (1-2 реченици). Заедно креираме "Ѕид на толеранција" во училницата.</span></span>
+                `
+            },
+            // 6. ОЖВ – Работилница I-13: Авантури
+            {
+                month: 'Октомври',
+                title: 'ОЖВ – Работилница I-13: Авантури',
+                activities: 'Споделување искуства, планирање авантура, проценка на ризик.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Развивање на вештини за планирање, работа во тим и проценка на ризик.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што е авантура за вас? Дали сте имале авантура?" <span class="task">➜ 3-4 ученици споделуваат искуства.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Планирање авантура:</strong> <span class="task">➜ Групите осмислуваат авантура (планина, река, град, велосипедизам). Пополнете го планот: Цел на авантурата, Опрема, Буџет, Временска рамка, Ризици и мерки за безбедност.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Процена на ризик:</strong> <span class="task">➜ Направете листа на 5 потенцијални ризици и за секој напишете како да се спречи (пр. "губење – понесете мапа и компас").</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Презентација и гласање:</strong> <span class="task">➜ Секоја група ја презентира својата авантура (3 минути). Гласање за "Авантура на годината" – победничката група добива симболична награда.</span></span>
+                `
+            },
+            // 7. ОЖВ – Работилница I-15: Митови, факти и вистини
+            {
+                month: 'Октомври',
+                title: 'ОЖВ – Работилница I-15: Митови, факти и вистини',
+                activities: 'Истражување на митови, пополнување табела, презентација.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Развивање на критичко размислување и разликување факти од митови.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Дали е вистина дека..." (прочитајте 5 изјави, некои точни, некои митови). <span class="task">➜ Учениците гласаат со кревање рака дали е вистина или мит.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Истражување:</strong> <span class="task">➜ Секоја група добива 3 митови за здравјето (пр. "Ако седите близу ТВ, ќе ви се расипе видот"). Пополнете ја табелата: "Мит" – "Факт" – "Објаснување/Извор".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Креирање инфографик:</strong> <span class="task">➜ Направете едноставен инфографик (постер) со 3 мита и факти кои ги разбиваат.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Презентација:</strong> <span class="task">➜ Секоја група го презентира својот инфографик. Поставување на ѕидот на одделението.</span></span>
+                `
+            },
+            // 8. ОЖВ – Работилница I-16: Каква врска има алкохолот со љубовта
+            {
+                month: 'Октомври',
+                title: 'ОЖВ – Работилница I-16: Каква врска има алкохолот со љубовта',
+                activities: 'Анализа на случај, Венов дијаграм, креирање совети.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Да се разбере влијанието на алкохолот врз односите и одлуките.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Дали алкохолот помага или одмага во врските?" <span class="task">➜ Кратка анкета со кревање рака.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Студија на случај:</strong> <span class="task">➜ Прочитајте ја приказната за Марко и Ана. Одговорете: "Што се случило?", "Која е улогата на алкохолот?", "Како можело да се избегне?"</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Венов дијаграм:</strong> <span class="task">➜ Нацртајте два круга: "Здрава врска" и "Врска под влијание на алкохол". Запишете карактеристики во секој круг и заеднички карактеристики во средината.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Креирање совети:</strong> <span class="task">➜ Секој ученик пишува 3 совети за изградба на искрена, здрава врска без алкохол. Заедно ги групираме и креираме "Водич за здрави врски".</span></span>
+                `
+            },
+            // 9. ОЖВ – Работилница II-20: Надворешна реченица
+            {
+                month: 'Октомври',
+                title: 'ОЖВ – Работилница II-20: Надворешна реченица',
+                activities: 'Вежби за комуникација, анализа на јазик на телото, роле игра.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Развивање на вештини за вербална и невербална комуникација.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што е надворешна реченица? Како тон, гестови и израз на лицето влијаат на пораката?" <span class="task">➜ Наставникот покажува 3 слики на луѓе со различен израз и прашува: "Што мислите дека кажуваат?"</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Работен лист:</strong> <span class="task">➜ Поврзете ги емоциите (лутина, радост, тага, страв, изненадување) со соодветните изрази на лицето и гестови. Пополнете ја табелата.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (15 мин):</span> <strong>Роле игра:</strong> <span class="task">➜ Во парови: Еден ученик кажува реченица ("Дојди овде") со различен тон (луто, радосно, тажно, иронично). Другиот погодува за која емоција станува збор. Потоа улогите се менуваат.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (5 мин):</span> <strong>Рефлексија:</strong> <span class="task">➜ Напишете еден пример од секојдневниот живот каде тонот или гестот ја промениле пораката. Како би било поинаку со поинаков тон?</span></span>
+                `
+            },
+            // 10. ОЖВ – Работилница I-21: „За“ или „Против“
+            {
+                month: 'Ноември',
+                title: 'ОЖВ – Работилница I-21: „За“ или „Против“',
+                activities: 'Дебата, аргументирање, пишување есеј.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Развивање на вештини за аргументирана дискусија.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Најава на тема:</strong> "Дали треба да се воведат здрави оброци во училишните мензи?" <span class="task">➜ Наставникот ги објаснува правилата за дебата.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Подготовка на аргументи:</strong> <span class="task">➜ Групите "За" и "Против" подготвуваат по 5 аргументи. Пополнете го работниот лист: "Аргумент" – "Објаснување" – "Пример".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (15 мин):</span> <strong>Дебата:</strong> <span class="task">➜ Секоја група има по 3 минути презентација, потоа 5 минути контра-аргументи и 3 минути завршни зборови.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (5 мин):</span> <strong>Гласање и рефлексија:</strong> <span class="task">➜ Гласање: "Кој го промени мислењето?" Секој ученик пишува краток осврт (3-5 реченици) за она што го научил.</span></span>
+                `
+            },
+            // 11. ОЖВ – Работилница I-22: За моето тело
+            {
+                month: 'Ноември',
+                title: 'ОЖВ – Работилница I-22: За моето тело',
+                activities: 'Самопроценка, споделување во парови, креирање афирмации.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Градење позитивна слика за сопственото тело.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што ви се допаѓа кај вашето тело? Што би сакале да промените?" <span class="task">➜ Анонимно пишување на одговори на ливчиња.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Самопроценка:</strong> <span class="task">➜ Пополнете го листот: "Моите 5 најдобри физички особини" и "Моите 5 најдобри карактерни особини".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Споделување во парови:</strong> <span class="task">➜ Во парови споделете ги вашите листи. Партнерот додава уште 3 особини што тој/таа ги гледа кај вас.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Креирање афирмации:</strong> <span class="task">➜ Секој ученик пишува "афирмација" за себе (пр. "Јас сум вреден/на и убав/а токму ваков/ваква"). Направете "Ѕид на афирмации" во училницата.</span></span>
+                `
+            },
+            // 12. ОЖВ – Работилница I-23: Микроби
+            {
+                month: 'Ноември',
+                title: 'ОЖВ – Работилница I-23: Микроби',
+                activities: 'Демонстрација, работен лист, креирање хигиенски плакат.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Разбирање на важноста на хигиената и превенција од инфекции.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што се микроби? Каде живеат?" <span class="task">➜ Запишете ги одговорите на табла.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Работен лист:</strong> <span class="task">➜ Поврзете ја болеста со предизвикувачот (вирус, бактерија, габа). Пополнете ја табелата: "Болест" – "Предизвикувач" – "Како се пренесува" – "Како да се спречи".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Демонстрација:</strong> <span class="task">➜ Наставникот прска (безбедна) боја на рацете на ученикот и покажува како се шират микробите при ракување. Учениците учат правилно миење раце (20 секунди, со сапун).</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Креирање хигиенски плакат:</strong> <span class="task">➜ Во групи изгответе плакат "5 златни правила за хигиена" (миење раце, кашлање во лакт, редовно туширање...). Постерите се лепат во училницата.</span></span>
+                `
+            },
+            // 13. ОЖВ – Работилница I-24: Мораш – не сакам
+            {
+                month: 'Ноември',
+                title: 'ОЖВ – Работилница I-24: Мораш – не сакам',
+                activities: 'Анализа на сценарија, вежби за асертивност, роле игра.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Развивање на асертивност и вештина за одбивање.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што правите кога некој ве тера да направите нешто што не сакате?" <span class="task">➜ 3-4 ученици споделуваат искуства.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Анализа на сценарија:</strong> <span class="task">➜ Прочитајте 4 сценарија (пр. "Пријател ви нуди цигара"). Пополнете ја табелата: "Ситуација" – "Што чувствувам?" – "Како би одговорил асертивно?"</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (15 мин):</span> <strong>Роле игра:</strong> <span class="task">➜ Во парови: Еден ученик врши притисок (нуди алкохол, цигара, прескокнување час). Другиот одбива на 3 различни начини (пр. "Не, благодарам.", "Не сакам.", "Тоа не е за мене."). Потоа улогите се менуваат.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (5 мин):</span> <strong>Рефлексија:</strong> <span class="task">➜ Запишете една ситуација каде успеавте да бидете асертивни или каде би сакале да бидете.</span></span>
+                `
+            },
+            // 14. ОЖВ – Работилница I-25: Ме тераат да
+            {
+                month: 'Декември',
+                title: 'ОЖВ – Работилница I-25: Ме тераат да',
+                activities: 'Анализа на случај, креирање стратегија за отпор.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Препознавање на врснички притисок и стратегии за справување.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Дали некогаш сте направиле нешто само за да бидете прифатени од групата?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Анализа на случај:</strong> <span class="task">➜ Прочитајте ја приказната за Лена (15-годишна девојка која под притисок на групата пробала алкохол). Пополнете: "Кој врши притисок?", "Како се чувствува Лена?", "Што може да направи поинаку?".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>"Кругови на влијание":</strong> <span class="task">➜ Нацртајте круг поделен на 3 дела: "Врсници", "Медиуми", "Семејство". Во секој дел запишете каков притисок чувствувате и како да се справите.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Креирање стратегија:</strong> <span class="task">➜ Изгответе "STOP" стратегија: S (Stop – застани), T (Think – размисли), O (Options – опции), P (Proceed – постапи). Секој ученик креира лична карта со оваа стратегија.</span></span>
+                `
+            },
+            // 16. ОЖВ – Работилница I-26: На кого можам да се потпрам
+            {
+                month: 'Декември',
+                title: 'ОЖВ – Работилница I-26: На кого можам да се потпрам',
+                activities: 'Креирање круг на поддршка, идентификување лица од доверба.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Идентификување на мрежата на поддршка.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Кога ви е тешко, на кого се обраќате? Зошто токму на таа личност?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Креирање "Круг на поддршка":</strong> <span class="task">➜ Нацртајте круг поделен на 4 дела: Семејство, Пријатели, Наставници, Стручни лица (психолог, лекар). Во секој дел запишете 2-3 конкретни имиња.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Пополнување прашалник:</strong> <span class="task">➜ Одговорете: "На кого би се обратиле за совет?", "На кого за забава?", "На кого за помош при учење?", "На кого за тајна?".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Рефлексија:</strong> <span class="task">➜ Напишете кој е вашето "лице од доверба" и зошто. Што би направиле ако некој од вашата мрежа не е достапен?</span></span>
+                `
+            },
+            // 17. ОЖВ – Работилница I-27: Пари или затвор
+            {
+                month: 'Декември',
+                title: 'ОЖВ – Работилница I-27: Пари или затвор',
+                activities: 'Анализа на дилеми, групна дискусија, креирање деколог.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Развивање на вештини за донесување одговорни одлуки.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Дали би направиле нешто погрешно за пари? Зошто да/не?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Анализа на дилеми:</strong> <span class="task">➜ Прочитајте 3 дилеми (пр. "Наоѓаш паричник со 500 евра и лична карта"). Пополнете: "Што би направил?" – "Кои се последиците од секоја опција?" – "Која е најдобрата опција?"</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Групна дискусија:</strong> <span class="task">➜ Кои вредности водат кон добри одлуки (чесност, одговорност, емпатија, интегритет)? Направете листа на 5 вредности.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Креирање "Мој деколог на одлучување":</strong> <span class="task">➜ Секој ученик пишува 5 правила кои ќе ги следи при донесување важни одлуки (пр. "Ќе размислам за последиците", "Ќе се консултирам со лице од доверба").</span></span>
+                `
+            },
+            // 18. ОЖВ – Работилница I-2: Како би се опишал
+            {
+                month: 'Декември',
+                title: 'ОЖВ – Работилница I-2: Како би се опишал',
+                activities: 'Прашалник, споделување, креирање колаж.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Самоспознавање и разбирање на сопствениот идентитет.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Како би се опишале со 5 збора? Зошто токму тие?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Прашалник за самопроценка:</strong> <span class="task">➜ Пополнете го прашалникот: "Кои се моите силни страни?", "Кои се моите слаби страни?", "Што ме прави среќен/на?", "Што ме прави тажен/на?", "Што сакам да постигнам?"</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Споделување во групи:</strong> <span class="task">➜ Во групи од 4, секој споделува една силна и една слаба страна. Групата дава повратна информација.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Креирање колаж:</strong> <span class="task">➜ Направете "Колаж на идентитетот" – изберете слики, зборови, симболи што ве опишуваат (од списанија или цртање). Изложба на колажите.</span></span>
+                `
+            },
+            // 19. ОЖВ – Работилница I-4: Што велат за мене
+            {
+                month: 'Декември',
+                title: 'ОЖВ – Работилница I-4: Што велат за мене',
+                activities: '360-степен повратна информација, рефлексија.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Согледување како нè перцепираат другите.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Дали е важно што мислат другите за нас? Зошто?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (20 мин):</span> <strong>Вежба 360 степени:</strong> <span class="task">➜ Секој ученик пишува свое име на лист хартија. Листовите кружат низ одделението – секој пишува еден позитивен збор или кратка фраза за личноста (анонимно).</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Анализа:</strong> <span class="task">➜ Кога листот ќе се врати, прочитајте ги коментарите. Пополнете ја табелата: "Збор/фраза" – "Дали се согласувам?" – "Зошто да/не?".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (5 мин):</span> <strong>Рефлексија:</strong> <span class="task">➜ Дали она што го пишаа другите се совпаѓа со вашата слика за себе? Што ве изненади?</span></span>
+                `
+            },
+            // 20. ОЖВ – Работилница I-5: Јас сум тоа што сум
+            {
+                month: 'Јануари',
+                title: 'ОЖВ – Работилница I-5: Јас сум тоа што сум',
+                activities: 'Круг на идентитет, декларација, дискусија.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Прифаќање на сопствениот идентитет.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што ве прави единствени? Која е вашата најважна карактеристика?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Круг на идентитет:</strong> <span class="task">➜ Нацртајте круг. Во средината напишете го вашето име. Околу него запишете: семејство, интереси, вредности, вештини, соништа, култура.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Декларација за автентичност:</strong> <span class="task">➜ Напишете 5 реченици кои почнуваат со "Јас сум..." (пр. "Јас сум љубител на музика", "Јас сум некој кој секогаш помага").</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Споделување:</strong> <span class="task">➜ Доброволци ги читаат своите декларации. Дискусија: Како да останеме верни на себе во светот на притисоци?</span></span>
+                `
+            },
+            // 21. ОЖВ – Работилница I-8: Како комуницирам?
+            {
+                month: 'Февруари',
+                title: 'ОЖВ – Работилница I-8: Како комуницирам?',
+                activities: 'Тест за комуникациски стил, вежби за асертивност.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Откривање на сопствениот комуникациски стил.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Каков комуникатор сте? Дали сте директен/на, пасивен/на, агресивен/на?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Тест за комуникациски стил:</strong> <span class="task">➜ Пополнете 12 прашања. Пресметајте ги поените – одредете дали сте асертивен, пасивен или агресивен комуникатор.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Анализа:</strong> <span class="task">➜ Кои се предностите и недостатоците на вашиот стил? Како да комуницирате со некој со спротивен стил?</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Вежби за асертивност:</strong> <span class="task">➜ Преформулирајте пасивна/агресивна реченица во асертивна (пр. "Никогаш не ме слушаш" → "Би сакал/а да разговараме за тоа како комуницираме").</span></span>
+                `
+            },
+            // 22. ОЖВ – Работилница I-9: Себеизразување
+            {
+                month: 'Февруари',
+                title: 'ОЖВ – Работилница I-9: Себеизразување',
+                activities: 'Креативно изразување, изложба, рефлексија.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Поттикнување на креативноста и изразување на емоции.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "На кој начин најдобро се изразувате? (зборови, цртање, музика, танц?)"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (20 мин):</span> <strong>Креативна задача:</strong> <span class="task">➜ Изберете една од формите: 1) Напишете песна или краток расказ за себе, 2) Нацртајте автопортрет, 3) Направете колаж од слики и зборови, 4) Напишете монолог.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Изложба:</strong> <span class="task">➜ Поставете ги творбите на клупите. Секој ученик разгледува и пишува коментар за 3 творби (на стикери).</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (5 мин):</span> <strong>Рефлексија:</strong> <span class="task">➜ Како се чувствувавте кога се изразувавте креативно? Дали ви беше тешко или лесно?</span></span>
+                `
+            },
+            // 23. ОЖВ – Работилница I-12: Одговорност и привилегии
+            {
+                month: 'Февруари',
+                title: 'ОЖВ – Работилница I-12: Одговорност и привилегии',
+                activities: 'Пополнување табела, групна дискусија, кодекс.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Разбирање на врската помеѓу одговорностите и привилегиите.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што е привилегија? А што одговорност? Дали можат да постојат едни без други?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Пополнување табела:</strong> <span class="task">➜ Направете табела со две колони: "Мои права/привилегии" и "Мои обврски/одговорности". Пополнете најмалку 5 во секоја колона.</span> <span class="example">Пример: Право на образование → Одговорност да учам; Право на слобода на говор → Одговорност да не ширам омраза.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Групна дискусија:</strong> <span class="task">➜ Дискутирајте го примерот "Возење автомобил". Кои се привилегиите, а кои одговорностите? Како ова се поврзува со секојдневниот живот?</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Креирање "Мој кодекс на одговорност":</strong> <span class="task">➜ Секој ученик пишува 3 правила што ќе ги следи (пр. "Ќе си ги завршувам обврските на време", "Ќе ги почитувам правата на другите").</span></span>
+                `
+            },
+            // 24. ОЖВ – Работилница I-14: Врски со постари лица
+            {
+                month: 'Февруари',
+                title: 'ОЖВ – Работилница I-14: Врски со постари лица',
+                activities: 'Интервју, симулација, писмо благодарност.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Градење на меѓугенерациска солидарност.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Какви се вашите односи со постарите (баби, дедовци, комшии)? Што учите од нив?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Подготовка на интервју:</strong> <span class="task">➜ Напишете 5 прашања што би ги поставиле на постаро лице (пр. "Како беше кога бевте млади?", "Што е најважно во животот?").</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Симулација:</strong> <span class="task">➜ Во парови: Еден ученик е "постаро лице", друг го интервјуира. Потоа улогите се менуваат.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Писмо благодарност:</strong> <span class="task">➜ Напишете писмо благодарност до некое постаро лице кое ви помогнало или ве инспирирало. Доколку е можно, испратете го писмото.</span></span>
+                `
+            },
+            // 25. ОЖВ – Работилница I-19: Смислата на животот
+            {
+                month: 'Март',
+                title: 'ОЖВ – Работилница I-19: Смислата на животот',
+                activities: 'Анализа на текст, цвет на смисла, животна мисија.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Рефлексија за животните цели и вредности.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што ви дава смисла во животот? Што ве мотивира да станете наутро?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Анализа на текст:</strong> <span class="task">➜ Прочитајте краток текст (цитат од М.Л. Кинг или В. Франкл). Одговорете: "Што е смислата според авторот? Дали се согласувате?"</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Цвет на смисла:</strong> <span class="task">➜ Нацртајте цвет. Во средината напишете "Мојата смисла". Во ливчињата запишете: семејство, пријатели, кариера, хоби, добротворност, учење.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Животна мисија:</strong> <span class="task">➜ Напишете една реченица која ја опишува вашата животна мисија (пр. "Мојата мисија е да помагам на другите преку образованието"). Споделете со одделението.</span></span>
+                `
+            },
+            // 26. ОЖВ – Работилница III-1: Авторитет и родители
+            {
+                month: 'Март',
+                title: 'ОЖВ – Работилница III-1: Авторитет и родители',
+                activities: 'Анализа на сценарија, пишување писмо, дискусија.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Разбирање на улогата на авторитетот и комуникација со родителите.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што значи авторитет? Кој е авторитет во вашето семејство? Како се воспоставува авторитет?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Анализа на сценарија:</strong> <span class="task">➜ Прочитајте 3 сценарија за конфликт со родители (пр. "Родителите не ви дозволуваат да излезете до 23ч"). Пополнете: "Што чувствувам?", "Што чувствува родителот?", "Како да се реши конструктивно?"</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Писмо до родителите:</strong> <span class="task">➜ Напишете писмо до вашите родители – кажете им нешто што отсекогаш сте сакале да им кажете (почит, благодарност, или недоразбирање).</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Дискусија:</strong> <span class="task">➜ Како да изградиме здрав авторитет и взаемна почит во семејството? Кои се вашите предлози?</span></span>
+                `
+            },
+            // 28. ОЖВ – Работилница III-3: Како да не се изгубат пријателите
+            {
+                month: 'Март',
+                title: 'ОЖВ – Работилница III-3: Како да не се изгубат пријателите',
+                activities: 'Табела, анализа на случај, рецепт за пријателство.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Развивање на вештини за одржување здрави пријателства.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што е најважно за едно пријателство? Кои квалитети ги цените кај пријателите?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Табела:</strong> <span class="task">➜ Направете табела со две колони: "Квалитети на добар пријател" и "Квалитети на лош пријател". Пополнете најмалку 5 во секоја колона.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Анализа на случај:</strong> <span class="task">➜ Прочитајте ја приказната за двајца пријатели кои се скарале. Пополнете ги чекорите за помирување: 1) Извини се, 2) Слушни ја другата страна, 3) Прости, 4) Договорете се за иднината.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Рецепт за пријателство:</strong> <span class="task">➜ Напишете "Рецепт за совршено пријателство" – состојки: доверба, почит, време, смеа, поддршка... (со мерки и упатства).</span></span>
+                `
+            },
+            // 29. ОЖВ – Работилница III-4: Врснички групи
+            {
+                month: 'Март',
+                title: 'ОЖВ – Работилница III-4: Врснички групи',
+                activities: 'Пополнување улоги, симулација, рефлексија.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Разбирање на групната динамика и улогите во групата.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Дали сте дел од некоја група? Каква е вашата улога – лидер, следбеник, критичар, миротворец?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Пополнување улоги:</strong> <span class="task">➜ Нацртајте табела со улогите: лидер, следбеник, критичар, миротворец, забавувач. Запишете ги карактеристиките на секоја улога и прецизирајте која улога најчесто ја имате.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (15 мин):</span> <strong>Симулација:</strong> <span class="task">➜ Група од 5 ученици добива задача да изгради кула од шпагети и леплива лента (10 минути). Останатите набљудуваат и ги запишуваат улогите. Потоа дискутираат за групната динамика.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (5 мин):</span> <strong>Рефлексија:</strong> <span class="task">➜ Како групата влијае на вашето однесување? Што научивте за себе преку оваа активност?</span></span>
+                `
+            },
+            // 30. ОЖВ – Работилница III-5: Врснички групи (втор дел)
+            {
+                month: 'Април',
+                title: 'ОЖВ – Работилница III-5: Врснички групи',
+                activities: 'Венов дијаграм, сценарио, водич за избор на пријатели.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Препознавање на позитивното и негативното влијание на групите.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Дали групата некогаш ве натерала да направите нешто што не сакате? Како се чувствувавте?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Венов дијаграм:</strong> <span class="task">➜ Нацртајте два круга: "Здрава група" и "Нездрава група". Во секој круг запишете карактеристики, однесувања и чувства. Во средината запишете заеднички карактеристики.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Сценарио:</strong> <span class="task">➜ Прочитајте сценарио: "Групата ви нуди цигара и ве исмева ако не прифатите". Пополнете го дијалогот како би одбиле асертивно и кои би биле последиците.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Водич за избор на пријатели:</strong> <span class="task">➜ Изгответе "Водич за здрав избор на пријатели" – 5 совети (пр. "Бирај пријатели кои те почитуваат", "Не се плаши да бидеш сам ако групата е лоша").</span></span>
+                `
+            },
+            // 31. ОЖВ – Работилница III-6: Кој и зошто ни прави притисок
+            {
+                month: 'Април',
+                title: 'ОЖВ – Работилница III-6: Кој и зошто ни прави притисок',
+                activities: 'Табела со извори, анализа на реклами, стратегии.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Идентификување на изворите на притисок и мотивите зад нив.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Од кого најчесто чувствувате притисок? (врсници, медиуми, семејство, наставници?)"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Табела:</strong> <span class="task">➜ Направете табела со 4 колони: "Извор на притисок", "Зошто го прави тоа?", "Како се чувствувам?", "Како да се справам?". Пополнете за врсници, медиуми, семејство и наставници.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Анализа на реклами:</strong> <span class="task">➜ Погледнете 2-3 реклами (наставникот ги прикажува). Кој притисок создаваат? Како да бидеме критички потрошувачи?</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Стратегии за справување:</strong> <span class="task">➜ Напишете 3 стратегии за справување со притисок од медиумите (пр. "Провери ги изворите", "Не верувај на се што гледаш", "Разговарај со некој од доверба").</span></span>
+                `
+            },
+            // 32. ОЖВ – Работилница III-9: Сексуално насилство
+            {
+                month: 'Април',
+                title: 'ОЖВ – Работилница III-9: Сексуално насилство',
+                activities: 'Аналогнија со чај, анализа на сценарија, ресурси за поддршка.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Едукација за согласност, граници и каде да се побара помош.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Поставување правила:</strong> Наставникот објаснува дека ова е чувствителна тема и поставува правила за безбедна дискусија (доверливост, почит, право да не се зборува).</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Аналогнија со чај:</strong> <span class="task">➜ Прочитајте го текстот "Согласност како чај" (Tea Consent). Пополнете ги прашањата: "Што е согласност?", "Како да знаеме дали некој се согласува?", "Што значи 'не'?".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Анализа на сценарија:</strong> <span class="task">➜ Прочитајте 2 сценарија (несоодветно однесување). Пополнете: "Што е проблемот?", "Дали има согласност?", "Каде може да се пријави?"</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Ресурси за поддршка:</strong> <span class="task">➜ Секој ученик добива листа на ресурси (телефон за пријавување, советувалишта, организации). Дискусија: Зошто е важно да се знае каде да се побара помош?</span></span>
+                `
+            },
+            // 33. ОЖВ – Работилница III-13: Крукчиња на челото
+            {
+                month: 'Април',
+                title: 'ОЖВ – Работилница III-13: Крукчиња на челото',
+                activities: 'Самопроценка, вежба во парови, писмо до себе.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Прифаќање на себеси и на своите недостатоци.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што би сакале да промените кај себе? Зошто?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Самопроценка:</strong> <span class="task">➜ Пополнете го листот: "Моите недостатоци" и "Како тие можат да бидат предност".</span> <span class="example">Пример: "Сум срамежлив/ва" → "Сум добар слушател" или "Сум внимателен/на на детали".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Вежба во парови:</strong> <span class="task">➜ Во парови: Раскажете нешто што не ви се допаѓа кај себе. Партнерот ќе ви каже зошто тоа е всушност вредно и како може да биде ваша сила.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Писмо до себе:</strong> <span class="task">➜ Напишете "Писмо до себе" – порака на љубов, прифаќање и охрабрување. Зачувајте го писмото и прочитајте го кога ќе ви биде тешко.</span></span>
+                `
+            },
+            // 34. ОЖВ – Работилница III-14: Конфликти
+            {
+                month: 'Април',
+                title: 'ОЖВ – Работилница III-14: Конфликти',
+                activities: 'Подредување чекори, роле игра, кодекс за решавање.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Развивање на вештини за конструктивно решавање конфликти.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што е конфликт? Дали е секогаш лош? Кои се позитивните страни на конфликтот?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Подредување чекори:</strong> <span class="task">➜ Добијте лист со 6 чекори за решавање конфликт (испрскани). Подредете ги во правилен редослед: 1) Смири се, 2) Слушни, 3) Изрази ги своите чувства, 4) Барај решенија, 5) Договорете се, 6) Следете го договорот.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (15 мин):</span> <strong>Роле игра:</strong> <span class="task">➜ Двајца ученици глумат конфликт (за училишен проект – кој ќе работи кој дел). Останатите набљудуваат и предлагаат решенија според чекорите.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (5 мин):</span> <strong>Кодекс за решавање конфликти:</strong> <span class="task">➜ Заедно изгответе "Кодекс за решавање конфликти" за одделението – 5 правила за конструктивна комуникација.</span></span>
+                `
+            },
+            // 35. ОЖВ – Работилница III-16: Емоции и потреби
+            {
+                month: 'Април',
+                title: 'ОЖВ – Работилница III-16: Емоции и потреби',
+                activities: 'Поврзување емоции и потреби, термометар, план за справување.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Поврзување на емоциите со потребите.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Кои емоции ги чувствувате најчесто? Што ви треба кога сте тажни/лути/среќни?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Поврзување:</strong> <span class="task">➜ Направете листа на емоции (лутина, тага, страв, радост, вознемиреност). До секоја емоција запишете која потреба стои зад неа (сигурност, прифаќање, почит, љубов, контрола).</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Емоционален термометар:</strong> <span class="task">➜ Нацртајте термометар. Обележете како се чувствувате во моментов (1-10). Напишете што ви треба за да се чувствувате подобро.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>План за справување:</strong> <span class="task">➜ Креирајте "чекор-по-чекор" план за справување со стрес/тага: 1) Дишење (3 длабоки вдишувања), 2) Разговор со некој, 3) Прошетка, 4) Пишување дневник.</span></span>
+                `
+            },
+            // 36. ОЖВ – Работилница III-17: Моја слика – твоја слика
+            {
+                month: 'Април',
+                title: 'ОЖВ – Работилница III-17: Моја слика – твоја слика',
+                activities: 'Автопортрет, портрет на соученик, рефлексија.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Развивање на емпатија и разбирање на различни перспективи.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> <span class="task">➜ Покажете слика (илузија на две лица/вазна). Прашајте: "Што гледате? Како е можно двајца да гледаат различни работи?"</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Автопортрет:</strong> <span class="task">➜ Нацртајте автопортрет (не мора уметнички – симболи, бои, зборови). Потоа листовите се мешаат и секој црта портрет на соученик (со опис на неговите/нејзините квалитети).</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Споредба:</strong> <span class="task">➜ Кога ќе се вратат портретите, споредете го вашиот автопортрет со портретот на соученикот. Пополнете ја табелата: "Како ме гледам јас" – "Како ме гледа соученикот".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Рефлексија:</strong> <span class="task">➜ Зошто е важно да гледаме од туѓа перспектива? Како тоа гради емпатија? Напишете еден пример како ќе примените гледање од туѓа перспектива.</span></span>
+                `
+            },
+            // 37. ОЖВ – Работилница III-22: Мир
+            {
+                month: 'Април',
+                title: 'ОЖВ – Работилница III-22: Мир',
+                activities: 'Круг на мир, креирање постери, изложба.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Разбирање на концептот на мир и ненасилство.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Што значи мир за вас? Како изгледа мирот во секојдневниот живот?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Круг на мир:</strong> <span class="task">➜ Нацртајте круг поделен на 4 дела: "Мир во семејството", "Мир во училиштето", "Мир во заедницата", "Мир во светот". Во секој дел запишете 3 конкретни активности со кои можете да промовирате мир.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (15 мин):</span> <strong>Креирање постери:</strong> <span class="task">➜ Во групи изгответе постер со порака за мир. Постерот треба да има: наслов, порака (на македонски и англиски), илустрација и акционен чекор.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (5 мин):</span> <strong>Изложба:</strong> <span class="task">➜ Изложете ги постерите во училницата. Заедничка фотографија со симболот на мирот.</span></span>
+                `
+            },
+            // 38. ОЖВ – Работилница IV-7: Мрежа од права
+            {
+                month: 'Јуни',
+                title: 'ОЖВ – Работилница IV-7: Мрежа од права',
+                activities: 'Поврзување права и објаснувања, групна презентација.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Запознавање со Универзалната декларација за човекови права.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Кои човекови права ги знаете? Зошто се важни?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Поврзување:</strong> <span class="task">➜ Работен лист: Поврзете го правото со објаснувањето (пр. "Право на образование" → "Секој има право на бесплатно основно образование").</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (15 мин):</span> <strong>Групна презентација:</strong> <span class="task">➜ Секоја група избира 3 права кои смета дека се најважни. Подготвува кратка презентација (3 минути) – зошто се важни и како се применуваат во Македонија.</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (5 мин):</span> <strong>Моите права – моите одговорности:</strong> <span class="task">➜ Секој ученик пишува 3 права и соодветни одговорности (пр. "Право на образование" → "Одговорност да учам и да ги почитувам наставниците").</span></span>
+                `
+            },
+            // 39. ОЖВ – Работилница IV-4: Човекови права за сите
+            {
+                month: 'Јуни',
+                title: 'ОЖВ – Работилница IV-4: Човекови права за сите',
+                activities: 'Анализа на случаи, групна дискусија, Повелба за еднаквост.',
+                description: `
+                    <span class="phase"><span class="phase-label">📌 Цели:</span> Промовирање на еднаквост и инклузија.</span>
+                    <span class="phase"><span class="phase-label">🔹 Вовед (5 мин):</span> <strong>Прашање:</strong> "Дали сите луѓе имаат исти права? Зошто понекогаш доаѓа до дискриминација?"</span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 1 (15 мин):</span> <strong>Анализа на случаи:</strong> <span class="task">➜ Прочитајте 3 студии на случај за дискриминација (по етничка припадност, пол, инвалидност). Пополнете: "Што се случило?", "Зошто е тоа дискриминација?", "Како би постапиле вие?", "Каде да се пријави?".</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Задача 2 (10 мин):</span> <strong>Групна дискусија:</strong> <span class="task">➜ Како да бидеме инклузивни кон соучениците кои се различни? Кои чекори можеме да ги преземеме како одделение?</span></span>
+                    <span class="phase"><span class="phase-label">🔹 Завршна (10 мин):</span> <strong>Повелба за еднаквост:</strong> <span class="task">➜ Заедно изгответе "Повелба за еднаквост" на одделението – 5 принципи што сите ќе ги почитуваат (пр. "Ги почитуваме различностите", "Не користиме навредливи зборови", "Сите имаме право на свое мислење"). Сите ученици потпишуваат.</span></span>
+                `
+            }
+        ];
+
+        // ─── ПОПОЛНИ ГО SELECT ─────────────────────────────────────
+        const hourSelect = document.getElementById('hourSelect');
+        function populateSelect() {
+            let opts = '<option value="">📌 Сите часови</option>';
+            programData.forEach((item, idx) => {
+                const num = idx + 1;
+                opts += `<option value="${idx}">Час ${num}: ${item.title}</option>`;
+            });
+            hourSelect.innerHTML = opts;
+        }
+        populateSelect();
+
+        // ─── РЕНДЕРИРАЊЕ ───────────────────────────────────────────
+        const grid = document.getElementById('programGrid');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const visibleSpan = document.getElementById('visibleCount');
+        const totalSpan = document.getElementById('totalCount');
+        totalSpan.textContent = programData.length;
+
+        let selectedIndex = null;
+
+        function render() {
+            const term = searchInput.value.trim().toLowerCase();
+            const sel = hourSelect.value;
+            selectedIndex = (sel !== '') ? parseInt(sel, 10) : null;
+
+            let visible = 0;
+            let html = '';
+
+            programData.forEach((item, idx) => {
+                const num = idx + 1;
+                let show = true;
+
+                if (selectedIndex !== null && selectedIndex !== idx) show = false;
+
+                if (selectedIndex === null && term) {
+                    const searchable = `${item.month} ${item.title} ${item.activities} ${item.description}`.toLowerCase();
+                    if (!searchable.includes(term)) show = false;
+                }
+
+                if (!show) return;
+                visible++;
+
+                const selClass = (selectedIndex === idx) ? ' selected' : '';
+                html += `
+                    <div class="card${selClass}" data-index="${idx}">
+                        <div class="card-header">
+                            <span class="hour-badge">Час ${num}</span>
+                            <span class="month-tag">${item.month}</span>
+                        </div>
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-activities"><strong>Активности:</strong> ${item.activities}</div>
+                        <div class="card-desc">${item.description}</div>
+                    </div>
+                `;
+            });
+
+            if (visible === 0) {
+                const msg = term ? `за „${term}“` : '';
+                html = `<div class="no-results">🔍 Нема пронајдено часови ${msg}</div>`;
+            }
+
+            grid.innerHTML = html;
+            visibleSpan.textContent = visible;
+
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.index, 10);
+                    if (!isNaN(idx)) {
+                        hourSelect.value = idx;
+                        searchInput.value = '';
+                        render();
+                    }
+                });
+            });
+        }
+
+        render();
+
+        // ─── НАСТАНИ ────────────────────────────────────────────────
+        searchBtn.addEventListener('click', function() {
+            hourSelect.value = '';
+            render();
+        });
+
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                hourSelect.value = '';
+                render();
+            }
+        });
+
+        hourSelect.addEventListener('change', function() {
+            searchInput.value = '';
+            render();
+        });
+
+    })();
+</script>
+</body>
+</html>

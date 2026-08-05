@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дополнителна, Додатна настава и Слободни активности</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7fc;
+            padding: 30px 20px;
+            color: #1e2b3a;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px 45px;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.07);
+        }
+        .header-doc {
+            text-align: center;
+            border-bottom: 3px solid #1a6b9b;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header-doc h1 {
+            font-size: 26px;
+            color: #0a2a44;
+            margin-bottom: 5px;
+        }
+        .header-doc .skola {
+            font-size: 18px;
+            color: #2c4c6e;
+            font-weight: 600;
+        }
+        .godina-badge {
+            background: #dce6f0;
+            padding: 4px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 16px;
+            display: inline-block;
+            margin-top: 6px;
+        }
+        .sekcija {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px dashed #dce6f0;
+        }
+        .sekcija:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .sekcija h2 {
+            font-size: 24px;
+            color: #0a2a44;
+            margin-bottom: 10px;
+        }
+        .opis {
+            font-size: 15px;
+            color: #2c4c6e;
+            background: #f0f6fd;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            border-left: 4px solid #1a6b9b;
+        }
+        .opis ul {
+            list-style: none;
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+        .opis ul li {
+            padding: 4px 0 4px 20px;
+            position: relative;
+        }
+        .opis ul li::before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: #1a6b9b;
+            font-weight: 700;
+        }
+        .izbor-sekcija {
+            background: #f0f6fd;
+            padding: 20px 25px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 15px;
+        }
+        .izbor-sekcija .grupa {
+            flex: 1;
+            min-width: 160px;
+        }
+        .izbor-sekcija label {
+            font-weight: 600;
+            color: #0a2a44;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+        .izbor-sekcija select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #bccddb;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+        .btn {
+            background: #1a6b9b;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn:hover {
+            background: #0f4a6e;
+            transform: scale(1.02);
+        }
+        .btn-success {
+            background: #1f8b4c;
+        }
+        .btn-success:hover {
+            background: #15693a;
+        }
+        .btn-secondary {
+            background: #6c8ba0;
+        }
+        .btn-secondary:hover {
+            background: #4d6a7e;
+        }
+        .btn-small {
+            padding: 6px 16px;
+            font-size: 13px;
+        }
+        .btn-grupa {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0 20px 0;
+        }
+        .karticka {
+            background: #fafcff;
+            border: 1px solid #e2eaf5;
+            border-radius: 14px;
+            padding: 25px 30px;
+            margin-bottom: 20px;
+        }
+        .karticka .naslov {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0a2a44;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .karticka .naslov .broj {
+            font-size: 15px;
+            font-weight: 400;
+            color: #4a6a8a;
+            background: #e8f0fa;
+            padding: 2px 14px;
+            border-radius: 30px;
+        }
+        .temi-izbor {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 15px;
+            padding: 12px 15px;
+            background: #f8fbff;
+            border-radius: 10px;
+            border: 1px solid #dce6f0;
+            margin-bottom: 15px;
+        }
+        .temi-izbor label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 20px;
+            transition: 0.15s;
+        }
+        .temi-izbor label:hover {
+            background: #e8f0fa;
+        }
+        .temi-izbor input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .temi-izbor input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .tema-sodrzina {
+            font-size: 13px;
+            color: #4a6a8a;
+            padding-left: 30px;
+            margin-top: 3px;
+        }
+        .ucenici-sekcija {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 2px dashed #dce6f0;
+        }
+        .ucenici-sekcija h4 {
+            color: #0a2a44;
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+        .ucenici-lista {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 10px;
+            padding: 8px 12px;
+            background: #f0f6fd;
+            border-radius: 10px;
+            min-height: 36px;
+            align-items: center;
+        }
+        .ucenici-lista .tag {
+            background: #1a6b9b;
+            color: white;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ucenici-lista .tag .remove {
+            cursor: pointer;
+            font-weight: 700;
+            opacity: 0.7;
+        }
+        .ucenici-lista .tag .remove:hover {
+            opacity: 1;
+        }
+        .ucenici-lista .prazno {
+            color: #8a9baa;
+            font-style: italic;
+            font-size: 14px;
+        }
+        .ucenici-input {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .ucenici-input input {
+            flex: 1;
+            min-width: 150px;
+            padding: 7px 14px;
+            border: 1px solid #bccddb;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .datum-input {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .datum-input input[type="date"] {
+            padding: 7px 14px;
+            border: 1px solid #bccddb;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        .prikaz-lista {
+            background: #f8fbff;
+            border: 1px solid #dce6f0;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-top: 10px;
+        }
+        .prikaz-lista .stavka {
+            padding: 6px 0;
+            border-bottom: 1px dashed #e6edf6;
+            font-size: 14px;
+        }
+        .prikaz-lista .stavka:last-child {
+            border-bottom: none;
+        }
+        .prikaz-lista .stavka .ucenik-ime {
+            font-weight: 600;
+            color: #0a2a44;
+        }
+        .prikaz-lista .stavka .datum-odr {
+            color: #4a6a8a;
+            font-size: 13px;
+            margin-left: 10px;
+        }
+        .slobodni-opis {
+            background: #f8fbff;
+            padding: 20px 25px;
+            border-radius: 14px;
+            border: 1px solid #e2eaf5;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        .slobodni-opis ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+        .slobodni-opis ul li {
+            padding: 5px 0 5px 25px;
+            position: relative;
+        }
+        .slobodni-opis ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #1a6b9b;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .slobodni-opis .podnaslov {
+            font-weight: 600;
+            color: #0a2a44;
+            margin-top: 10px;
+        }
+        footer {
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 2px solid #dce6f0;
+            font-size: 14px;
+            color: #4a6a8a;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .footer-box {
+            background: #f3f8fe;
+            padding: 6px 18px;
+            border-radius: 30px;
+        }
+        .badge {
+            background: #1a6b9b;
+            color: white;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
+            margin-left: 6px;
+        }
+        .footer-izgotvil {
+            font-weight: 600;
+            color: #0a2a44;
+            background: #e8f0fa;
+            padding: 6px 20px;
+            border-radius: 30px;
+            border-left: 3px solid #1a6b9b;
+        }
+        @media print {
+            body { background: white; padding: 10px; }
+            .container { box-shadow: none; border-radius: 0; padding: 20px; }
+            .izbor-sekcija { display: none !important; }
+            .btn-grupa { display: none !important; }
+            .ucenici-input { display: none !important; }
+            .datum-input { display: none !important; }
+            .temi-izbor { display: none !important; }
+            .ucenici-lista .tag .remove { display: none !important; }
+            footer { border-top-color: #aaa; }
+            .footer-box, .footer-izgotvil {
+                background: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .godina-badge, .badge {
+                background: #dce6f0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .sekcija { page-break-inside: avoid; }
+            .karticka { page-break-inside: avoid; }
+        }
+        @media (max-width: 650px) {
+            .container { padding: 20px; }
+            .izbor-sekcija { flex-direction: column; }
+            .izbor-sekcija .grupa { min-width: 100%; }
+            .karticka { padding: 18px 16px; }
+            footer { flex-direction: column; align-items: center; text-align: center; }
+            .btn-grupa { flex-direction: column; }
+            .btn-grupa .btn { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="dokument">
+
+    <div class="header-doc">
+        <h1>📐 Дополнителна настава, Додатна настава и Слободни ученички активности</h1>
+        <div class="skola">СОУ „28 НОЕМВРИ" ДЕБАР</div>
+        <div class="godina-badge" id="godinaLabel">2026/2027</div>
+    </div>
+
+    <div class="btn-grupa">
+        <button class="btn btn-success" onclick="pecatiPDF()">🖨️ Преглед / PDF</button>
+        <button class="btn btn-secondary" onclick="resetirajSite()">🔄 Ресетирај ги сите податоци</button>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- ===== 1. ДОПОЛНИТЕЛНА НАСТАВА ===== -->
+    <!-- ========================================================= -->
+    <div class="sekcija" id="dopolnitelna">
+        <h2>📘 Дополнителна настава</h2>
+        <div class="opis">
+            <p>За постигнување на <strong>целите</strong> на наставата по предметот математика, потребно е да се планира и организира дополнителната настава по математика, посебно заради проширување на знаењата и вештините стекнати од редовните часови по математика.</p>
+            <p style="margin-top:10px;"><strong>Планирано е дополнителната настава да се одвива двапати месечно, во траење од два училишни часа.</strong></p>
+            <p><strong>Термините на одржување ќе бидат флексибилни, по договор со учениците.</strong></p>
+        </div>
+
+        <div class="izbor-sekcija">
+            <div class="grupa">
+                <label for="dopGodinaSelect">📚 Избери година</label>
+                <select id="dopGodinaSelect">
+                    <option value="1">Прва година</option>
+                    <option value="2">Втора година</option>
+                    <option value="3">Трета година</option>
+                    <option value="4">Четврта година</option>
+                </select>
+            </div>
+            <div class="grupa" style="flex:0 0 auto; min-width:auto;">
+                <button class="btn" onclick="prikaziDop()">👁️ Прикажи</button>
+            </div>
+        </div>
+
+        <div class="karticka" id="dopKarticka">
+            <div class="naslov">
+                <span id="dopNaslov">Прва година</span>
+                <span class="broj" id="dopBroj">0 теми</span>
+            </div>
+            <div class="temi-izbor" id="dopTemiIzbor"></div>
+            <div class="ucenici-sekcija">
+                <h4>👨‍🎓 Внеси ученици и датум на одржување</h4>
+                <div class="ucenici-input">
+                    <input type="text" id="dopUcenikInput" placeholder="Име на ученик..." onkeypress="if(event.key==='Enter') dodadiDopUcenik()">
+                    <button class="btn btn-small" onclick="dodadiDopUcenik()">➕ Додади ученик</button>
+                </div>
+                <div class="datum-input">
+                    <label style="font-weight:400;">📅 Датум на одржување:</label>
+                    <input type="date" id="dopDatumInput">
+                    <button class="btn btn-small btn-success" onclick="zapishiDop()">💾 Зачувај за избраните теми</button>
+                </div>
+            </div>
+            <div style="margin-top:15px;">
+                <h4>📋 Листа на ученици на дополнителна настава</h4>
+                <div class="prikaz-lista" id="dopPrikazLista">
+                    <div style="color:#8a9baa; font-style:italic;">Нема зачувани податоци</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- ===== 2. ДОДАТНА НАСТАВА ===== -->
+    <!-- ========================================================= -->
+    <div class="sekcija" id="dodatna">
+        <h2>📗 Додатна настава</h2>
+        <div class="opis">
+            <p>Додатната настава по предметот математика се планира да се одвива согласно потребите на учениците:</p>
+            <ul>
+                <li>било тоа да е иницијатива на ученикот посебно, заради разјаснување на некои дилеми во врска со наставата од редовните часови,</li>
+                <li>или на предлог на наставникот, заради подобрување на степенот на усвоеност на наставната материја, која не е усвоена од една или друга причина.</li>
+                <li>доколку ученикот има потреба од дополнително дообјаснување, тоа може да го стори секој работен ден во неделата, во термин кој одговара на ученикот и наставникот.</li>
+                <li><strong>времетраењето на додатната настава е диктирано од обемот на содржините кои се предмет на дообјаснување.</strong></li>
+            </ul>
+        </div>
+
+        <div class="izbor-sekcija">
+            <div class="grupa">
+                <label for="dodGodinaSelect">📚 Избери година</label>
+                <select id="dodGodinaSelect">
+                    <option value="1">Прва година</option>
+                    <option value="2">Втора година</option>
+                    <option value="3">Трета година</option>
+                    <option value="4">Четврта година</option>
+                </select>
+            </div>
+            <div class="grupa" style="flex:0 0 auto; min-width:auto;">
+                <button class="btn" onclick="prikaziDod()">👁️ Прикажи</button>
+            </div>
+        </div>
+
+        <div class="karticka" id="dodKarticka">
+            <div class="naslov">
+                <span id="dodNaslov">Прва година</span>
+                <span class="broj" id="dodBroj">0 теми</span>
+            </div>
+            <div class="temi-izbor" id="dodTemiIzbor"></div>
+            <div class="ucenici-sekcija">
+                <h4>👨‍🎓 Внеси ученици и датум на одржување</h4>
+                <div class="ucenici-input">
+                    <input type="text" id="dodUcenikInput" placeholder="Име на ученик..." onkeypress="if(event.key==='Enter') dodadiDodUcenik()">
+                    <button class="btn btn-small" onclick="dodadiDodUcenik()">➕ Додади ученик</button>
+                </div>
+                <div class="datum-input">
+                    <label style="font-weight:400;">📅 Датум на одржување:</label>
+                    <input type="date" id="dodDatumInput">
+                    <button class="btn btn-small btn-success" onclick="zapishiDod()">💾 Зачувај за избраната тема</button>
+                </div>
+                <div style="margin-top:8px; font-size:14px; color:#4a6a8a;">⚠️ Избери една тема од листата погоре, па зачувај.</div>
+            </div>
+            <div style="margin-top:15px;">
+                <h4>📋 Листа на ученици на додатна настава</h4>
+                <div class="prikaz-lista" id="dodPrikazLista">
+                    <div style="color:#8a9baa; font-style:italic;">Нема зачувани податоци</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- ===== 3. СЛОБОДНИ УЧЕНИЧКИ АКТИВНОСТИ ===== -->
+    <!-- ========================================================= -->
+    <div class="sekcija" id="slobodni">
+        <h2>🎯 Слободни ученички активности</h2>
+        <div class="slobodni-opis">
+            <p>Слободните ученички активности се составен дел од активностите кои ја доближуваат математиката до ученикот, ја прават поинтересна и видлива.</p>
+            <p style="margin-top:10px;"><strong>Планирано е тие да се одвиваат во две етапи:</strong></p>
+
+            <p class="podnaslov">1. На иницијатива на учениците:</p>
+            <ul>
+                <li>кои наслови им се посебно интересни за обработка,</li>
+                <li>изработка на брошури од поедини поими,</li>
+                <li>изработка на цртежи, графици, графикони, формули,</li>
+                <li>презентирање на факти,</li>
+                <li>користење на компјутерски програми за изработка на презентации и др...</li>
+            </ul>
+
+            <p class="podnaslov">2. На иницијатива на наставникот поради:</p>
+            <ul>
+                <li>учество на саеми на наука,</li>
+                <li>учество на математички натпревари,</li>
+                <li>учество на олимпијада - Млади техничари и природници,</li>
+                <li>заради презентирање на математички поими и тврдења кои се од интерес на учениците во нивното понатамошно школување.</li>
+            </ul>
+
+            <p style="margin-top:15px;"><strong>Слободните ученички активности ќе се одржуваат еднаш месечно, во траење од два училишни часа во термин на одржување усогласен од учениците и наставникот.</strong></p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-box">
+            📅 Подготвено: <span id="datumPodgotovka"></span>
+        </div>
+        <div class="footer-box">
+            🏫 Учебна година: <span id="godinaPocetok"></span>
+            <span class="badge" id="godinaBadge"></span>
+        </div>
+        <div class="footer-izgotvil">
+            ✍️ Изготвил: проф. Решат Маловски
+        </div>
+    </footer>
+</div>
+
+<script>
+    // ================================================================
+    //  ПОДАТОЦИ
+    // ================================================================
+
+    // ---- ДОПОЛНИТЕЛНА: теми од ГИМНАЗИСКО ОБРАЗОВАНИЕ (според БРО) ----
+    const dopTemiData = {
+        "1": [
+            "Броеви и операции со броеви",
+            "Алгебарски рационални изрази",
+            "Функција, равенка, систем од две равенки и неравенка",
+            "Геометрија",
+            "Мерење",
+            "Работа со податоци"
+        ],
+        "2": [
+            "Корени и комплексни броеви",
+            "Квадратни равенки и равенки што се сведуваат на квадратни",
+            "Квадратна функција, квадратна неравенка и систем од квадратни неравенки со една непозната",
+            "Елементи од веројатност",
+            "Геометрија",
+            "Мерење"
+        ],
+        "3": [
+            "Експоненцијална и логаритамска функција",
+            "Тригонометрија",
+            "Права во рамнина",
+            "Криви од втор ред",
+            "Елементи од комбинаторика и веројатност"
+        ],
+        "4": [
+            "Низи и прогресии",
+            "Функции и гранични вредности на функции",
+            "Диференцијално сметање",
+            "Веројатност",
+            "Статистика"
+        ]
+    };
+
+    // ---- ДОДАТНА: ПРЕГРУПИРАНИ ТЕМИ ОД ДОКУМЕНТОТ ----
+    const dodTemiData = {
+        "1": [
+            { naslov: "Основни поими од теорија на броеви", sodrzina: ["Деливост на броеви", "Признаци за деливост", "Прости и сложени броеви"] },
+            { naslov: "Множества и операции со множества", sodrzina: ["Основни операции со множества", "Принцип на вклучување и исклучување"] },
+            { naslov: "Линеарни равенки и неравенки", sodrzina: ["Решавање линеарни равенки", "Решавање линеарни неравенки", "Апсолутна вредност"] },
+            { naslov: "Системи линеарни равенки", sodrzina: ["Решавање системи со две непознати", "Примена на системи во текстуални задачи"] }
+        ],
+        "2": [
+            { naslov: "Вектори во рамнина", sodrzina: ["Основни операции со вектори", "Скаларен производ", "Примена на вектори"] },
+            { naslov: "Трансформации во рамнина", sodrzina: ["Транслација", "Ротација", "Симетрија"] },
+            { naslov: "Квадратни равенки", sodrzina: ["Решавање квадратни равенки", "Виетови формули", "Квадратни неравенки"] },
+            { naslov: "Комплексни броеви", sodrzina: ["Основни операции", "Тригонометриска форма", "Моаврова формула"] }
+        ],
+        "3": [
+            { naslov: "Експоненцијални и логаритамски равенки", sodrzina: ["Експоненцијални равенки", "Логаритамски равенки", "Примена во задачи"] },
+            { naslov: "Тригонометриски равенки", sodrzina: ["Основни тригонометриски равенки", "Равенки со примена на адициони теореми"] },
+            { naslov: "Аналитичка геометрија во рамнина", sodrzina: ["Равенка на права", "Заемен однос на прави", "Растојание меѓу точка и права"] },
+            { naslov: "Криви од втор ред", sodrzina: ["Кружница", "Елипса", "Хипербола", "Парабола"] }
+        ],
+        "4": [
+            { naslov: "Низи и прогресии", sodrzina: ["Аритметичка прогресија", "Геометриска прогресија", "Гранична вредност на низа"] },
+            { naslov: "Гранични вредности на функции", sodrzina: ["Дефиниција на граница", "Карактеристични граници", "Непрекнатост"] },
+            { naslov: "Изводи на функции", sodrzina: ["Таблица на изводи", "Извод на сложена функција", "Примена на изводи"] },
+            { naslov: "Веројатност и статистика", sodrzina: ["Класична веројатност", "Статистички тестови", "Табели на контингенција"] }
+        ]
+    };
+
+    // ---- localStorage ----
+    function getDopData(godina) {
+        const key = 'dop_data_' + godina;
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : { temi: [], ucenici: [] };
+    }
+
+    function setDopData(godina, data) {
+        const key = 'dop_data_' + godina;
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    function getDodData(godina) {
+        const key = 'dod_data_' + godina;
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : { temi: [], ucenici: [] };
+    }
+
+    function setDodData(godina, data) {
+        const key = 'dod_data_' + godina;
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    // ---- ОПШТИ ----
+    function odrediUchebnaGodina() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        if (month === 7 || month === 8) {
+            return year + '/' + (year + 1);
+        } else {
+            return (year - 1) + '/' + year;
+        }
+    }
+
+    function getMesecIme() {
+        const now = new Date();
+        const mesecImena = ["Јануари", "Февруари", "Март", "Април", "Мај", "Јуни", "Јули", "Август", "Септември", "Октомври", "Ноември", "Декември"];
+        return mesecImena[now.getMonth()];
+    }
+
+    function getGodinaBr() {
+        return new Date().getFullYear();
+    }
+
+    function postaviFooter() {
+        const godina = odrediUchebnaGodina();
+        const mesecIme = getMesecIme();
+        const godinaBr = getGodinaBr();
+
+        document.getElementById('datumPodgotovka').textContent = mesecIme + ' ' + godinaBr + ' година';
+        document.getElementById('godinaLabel').textContent = godina;
+        document.getElementById('godinaPocetok').textContent = godina.split('/')[0];
+        document.getElementById('godinaBadge').textContent = 'учебна ' + godina;
+    }
+
+    function getGodinaIme(godina) {
+        const iminja = { "1": "Прва година", "2": "Втора година", "3": "Трета година", "4": "Четврта година" };
+        return iminja[godina] || godina;
+    }
+
+    // ================================================================
+    //  ДОПОЛНИТЕЛНА НАСТАВА
+    // ================================================================
+
+    function prikaziDop() {
+        var godina = document.getElementById('dopGodinaSelect').value;
+        var temi = dopTemiData[godina] || [];
+
+        document.getElementById('dopNaslov').textContent = getGodinaIme(godina);
+        document.getElementById('dopBroj').textContent = temi.length + ' теми';
+
+        var data = getDopData(godina);
+        var izborHtml = '';
+        for (var i = 0; i < temi.length; i++) {
+            var checked = data.temi.indexOf(i) > -1 ? 'checked' : '';
+            izborHtml += '<label><input type="checkbox" value="' + i + '" ' + checked + ' onchange="dopToggleTema(' + i + ')"> ' + temi[i] + '</label>';
+        }
+        document.getElementById('dopTemiIzbor').innerHTML = izborHtml;
+        prikaziDopLista(godina);
+    }
+
+    function dopToggleTema(idx) {
+        var godina = document.getElementById('dopGodinaSelect').value;
+        var data = getDopData(godina);
+        var index = data.temi.indexOf(idx);
+        if (index > -1) {
+            data.temi.splice(index, 1);
+        } else {
+            data.temi.push(idx);
+        }
+        setDopData(godina, data);
+        prikaziDopLista(godina);
+    }
+
+    function dodadiDopUcenik() {
+        var godina = document.getElementById('dopGodinaSelect').value;
+        var input = document.getElementById('dopUcenikInput');
+        var ime = input.value.trim();
+        if (!ime) { alert('Внеси име на ученик!'); return; }
+
+        var data = getDopData(godina);
+        for (var i = 0; i < data.ucenici.length; i++) {
+            if (data.ucenici[i].ime === ime) {
+                alert('Овој ученик веќе е додаден!');
+                return;
+            }
+        }
+        data.ucenici.push({ ime: ime, datum: '' });
+        setDopData(godina, data);
+        input.value = '';
+        prikaziDopLista(godina);
+    }
+
+    function zapishiDop() {
+        var godina = document.getElementById('dopGodinaSelect').value;
+        var data = getDopData(godina);
+        var datum = document.getElementById('dopDatumInput').value;
+
+        if (data.temi.length === 0) {
+            alert('Избери барем една тема!');
+            return;
+        }
+        if (!datum) {
+            alert('Внеси датум на одржување!');
+            return;
+        }
+
+        var izmeni = false;
+        for (var i = 0; i < data.ucenici.length; i++) {
+            if (!data.ucenici[i].datum) {
+                data.ucenici[i].datum = datum;
+                izmeni = true;
+            }
+        }
+
+        if (!izmeni) {
+            alert('Сите ученици веќе имаат датум. Додади нов ученик или промени датум.');
+            return;
+        }
+
+        setDopData(godina, data);
+        document.getElementById('dopDatumInput').value = '';
+        prikaziDopLista(godina);
+        alert('✅ Зачувано!');
+    }
+
+    function prikaziDopLista(godina) {
+        var data = getDopData(godina);
+        var container = document.getElementById('dopPrikazLista');
+        var temi = dopTemiData[godina] || [];
+
+        if (data.ucenici.length === 0) {
+            container.innerHTML = '<div style="color:#8a9baa; font-style:italic;">Нема зачувани податоци</div>';
+            return;
+        }
+
+        var izbraniTemi = [];
+        for (var i = 0; i < data.temi.length; i++) {
+            if (temi[data.temi[i]]) {
+                izbraniTemi.push(temi[data.temi[i]]);
+            }
+        }
+        var temiText = izbraniTemi.length > 0 ? izbraniTemi.join(', ') : 'нема избрани теми';
+
+        var html = '<div style="font-size:13px; color:#4a6a8a; margin-bottom:8px;">📌 Избрани теми: <strong>' + temiText + '</strong></div>';
+        for (var j = 0; j < data.ucenici.length; j++) {
+            var u = data.ucenici[j];
+            var datumText = u.datum ? '📅 ' + u.datum : '<span style="color:#b13e3e;">(нема датум)</span>';
+            html += '<div class="stavka"><span class="ucenik-ime">' + u.ime + '</span> <span class="datum-odr">' + datumText + '</span> <span style="float:right; cursor:pointer; color:#b13e3e; font-weight:700;" onclick="removeDopUcenik(' + j + ')">✕</span></div>';
+        }
+        container.innerHTML = html;
+    }
+
+    function removeDopUcenik(index) {
+        var godina = document.getElementById('dopGodinaSelect').value;
+        var data = getDopData(godina);
+        if (!confirm('Да го отстраниш ученикот "' + data.ucenici[index].ime + '"?')) return;
+        data.ucenici.splice(index, 1);
+        setDopData(godina, data);
+        prikaziDopLista(godina);
+    }
+
+    // ================================================================
+    //  ДОДАТНА НАСТАВА
+    // ================================================================
+
+    function prikaziDod() {
+        var godina = document.getElementById('dodGodinaSelect').value;
+        var temi = dodTemiData[godina] || [];
+
+        document.getElementById('dodNaslov').textContent = getGodinaIme(godina);
+        document.getElementById('dodBroj').textContent = temi.length + ' теми';
+
+        var data = getDodData(godina);
+        var izborHtml = '';
+        for (var i = 0; i < temi.length; i++) {
+            var checked = data.temi.indexOf(i) > -1 ? 'checked' : '';
+            izborHtml += '<label style="display:block; width:100%; padding:6px 10px; border-bottom:1px solid #e6edf6;">';
+            izborHtml += '<input type="radio" name="dodTema" value="' + i + '" ' + checked + ' onchange="dodSelectTema(' + i + ')">';
+            izborHtml += '<strong>' + (i+1) + '. ' + temi[i].naslov + '</strong>';
+            izborHtml += '<div class="tema-sodrzina">' + temi[i].sodrzina.join(' • ') + '</div>';
+            izborHtml += '</label>';
+        }
+        document.getElementById('dodTemiIzbor').innerHTML = izborHtml;
+        prikaziDodLista(godina);
+    }
+
+    function dodSelectTema(idx) {
+        var godina = document.getElementById('dodGodinaSelect').value;
+        var data = getDodData(godina);
+        data.temi = [idx];
+        setDodData(godina, data);
+        prikaziDodLista(godina);
+    }
+
+    function dodadiDodUcenik() {
+        var godina = document.getElementById('dodGodinaSelect').value;
+        var input = document.getElementById('dodUcenikInput');
+        var ime = input.value.trim();
+        if (!ime) { alert('Внеси име на ученик!'); return; }
+
+        var data = getDodData(godina);
+        for (var i = 0; i < data.ucenici.length; i++) {
+            if (data.ucenici[i].ime === ime) {
+                alert('Овој ученик веќе е додаден!');
+                return;
+            }
+        }
+        data.ucenici.push({ ime: ime, datum: '' });
+        setDodData(godina, data);
+        input.value = '';
+        prikaziDodLista(godina);
+    }
+
+    function zapishiDod() {
+        var godina = document.getElementById('dodGodinaSelect').value;
+        var data = getDodData(godina);
+        var datum = document.getElementById('dodDatumInput').value;
+
+        if (data.temi.length === 0) {
+            alert('Избери тема од листата!');
+            return;
+        }
+        if (!datum) {
+            alert('Внеси датум на одржување!');
+            return;
+        }
+
+        var izmeni = false;
+        for (var i = 0; i < data.ucenici.length; i++) {
+            if (!data.ucenici[i].datum) {
+                data.ucenici[i].datum = datum;
+                izmeni = true;
+            }
+        }
+
+        if (!izmeni) {
+            alert('Сите ученици веќе имаат датум. Додади нов ученик или промени датум.');
+            return;
+        }
+
+        setDodData(godina, data);
+        document.getElementById('dodDatumInput').value = '';
+        prikaziDodLista(godina);
+        alert('✅ Зачувано!');
+    }
+
+    function prikaziDodLista(godina) {
+        var data = getDodData(godina);
+        var container = document.getElementById('dodPrikazLista');
+        var temi = dodTemiData[godina] || [];
+
+        if (data.ucenici.length === 0) {
+            container.innerHTML = '<div style="color:#8a9baa; font-style:italic;">Нема зачувани податоци</div>';
+            return;
+        }
+
+        var izbranaTema = data.temi.length > 0 ? temi[data.temi[0]] : null;
+        var temaText = izbranaTema ? izbranaTema.naslov : 'нема избрана тема';
+
+        var html = '<div style="font-size:13px; color:#4a6a8a; margin-bottom:8px;">📌 Избрана тема: <strong>' + temaText + '</strong></div>';
+        for (var j = 0; j < data.ucenici.length; j++) {
+            var u = data.ucenici[j];
+            var datumText = u.datum ? '📅 ' + u.datum : '<span style="color:#b13e3e;">(нема датум)</span>';
+            html += '<div class="stavka"><span class="ucenik-ime">' + u.ime + '</span> <span class="datum-odr">' + datumText + '</span> <span style="float:right; cursor:pointer; color:#b13e3e; font-weight:700;" onclick="removeDodUcenik(' + j + ')">✕</span></div>';
+        }
+        container.innerHTML = html;
+    }
+
+    function removeDodUcenik(index) {
+        var godina = document.getElementById('dodGodinaSelect').value;
+        var data = getDodData(godina);
+        if (!confirm('Да го отстраниш ученикот "' + data.ucenici[index].ime + '"?')) return;
+        data.ucenici.splice(index, 1);
+        setDodData(godina, data);
+        prikaziDodLista(godina);
+    }
+
+    // ================================================================
+    //  ОПШТИ АКЦИИ
+    // ================================================================
+
+    function resetirajSite() {
+        if (!confirm('ДА ГИ РЕСЕТИРАШ СИТЕ ПОДАТОЦИ? Оваа акција е неповратна!')) return;
+        var godini = ['1', '2', '3', '4'];
+        for (var g = 0; g < godini.length; g++) {
+            localStorage.removeItem('dop_data_' + godini[g]);
+            localStorage.removeItem('dod_data_' + godini[g]);
+        }
+        prikaziDop();
+        prikaziDod();
+        alert('✅ Сите податоци се ресетирани!');
+    }
+
+    function pecatiPDF() {
+        window.print();
+    }
+
+    // ================================================================
+    //  ИНИЦИЈАЛИЗАЦИЈА
+    // ================================================================
+
+    window.onload = function() {
+        postaviFooter();
+
+        var dopSelect = document.getElementById('dopGodinaSelect');
+        var dodSelect = document.getElementById('dodGodinaSelect');
+
+        dopSelect.value = '1';
+        dodSelect.value = '1';
+
+        prikaziDop();
+        prikaziDod();
+
+        dopSelect.onchange = function() { prikaziDop(); };
+        dodSelect.onchange = function() { prikaziDod(); };
+    };
+</script>
+
+</body>
+</html>

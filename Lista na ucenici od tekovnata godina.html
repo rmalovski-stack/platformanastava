@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ученици - СОУ "28 НОЕМВРИ"</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #eef2f7;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 14px;
+            padding: 25px 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: #d45c5c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .close-btn:hover {
+            transform: scale(1.1);
+            background: #b94242;
+        }
+        h1 {
+            color: #1a3a4e;
+            font-size: 26px;
+            border-bottom: 3px solid #e6edf4;
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+            padding-right: 50px;
+        }
+        .header-info {
+            background: #1a3a4e;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-weight: 500;
+        }
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            background: #f4f7fa;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            align-items: center;
+        }
+        .filters label {
+            font-weight: 600;
+            color: #1a3a4e;
+        }
+        .filters select {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid #c0d0e0;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+        .filters select:focus {
+            outline: 2px solid #1a6b8f;
+            border-color: transparent;
+        }
+        .badge {
+            background: #d4e2ee;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #1a3a4e;
+        }
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+            align-items: center;
+        }
+        .toolbar input[type="text"] {
+            flex: 1;
+            min-width: 180px;
+            padding: 8px 14px;
+            border: 1px solid #c0d0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .toolbar input[type="text"]:focus {
+            outline: 2px solid #1a6b8f;
+            border-color: transparent;
+        }
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            transform: scale(0.96);
+            opacity: 0.9;
+        }
+        .btn-blue {
+            background: #1a6b8f;
+            color: white;
+        }
+        .btn-green {
+            background: #2a7d4f;
+            color: white;
+        }
+        .btn-red {
+            background: #d45c5c;
+            color: white;
+        }
+        .btn-purple {
+            background: #6c3f8c;
+            color: white;
+        }
+        .btn-gray {
+            background: #dce1e8;
+            color: #333;
+        }
+        .btn-orange {
+            background: #c97d2a;
+            color: white;
+        }
+        .file-label {
+            background: #6c8ca0;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .file-label:hover {
+            background: #55758a;
+        }
+        #excelFile {
+            display: none;
+        }
+        .import-box {
+            display: none;
+            background: #f4f7fa;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #dde2e8;
+        }
+        .import-box select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #c0d0e0;
+            margin: 5px 10px 5px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #e8edf3;
+            color: #1a3a4e;
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 2px solid #c8d8e8;
+            font-weight: 600;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e8ef;
+        }
+        .empty-msg {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+        .footer {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid #e6edf4;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        /* СТИЛОВИ ЗА ПЕЧАТЕЊЕ - САМО ТАБЕЛА */
+        @media print {
+            body {
+                background: white;
+                padding: 10px;
+            }
+            .container {
+                box-shadow: none;
+                padding: 10px;
+            }
+            .header-info,
+            .filters,
+            .toolbar,
+            .btn,
+            .file-label,
+            .badge,
+            .footer,
+            .import-box,
+            .close-btn {
+                display: none !important;
+            }
+            h1 {
+                border-bottom: 2px solid #333;
+                margin-bottom: 10px;
+                font-size: 20px;
+                padding-right: 0;
+            }
+            table {
+                border-collapse: collapse;
+            }
+            th {
+                background: #e8edf3 !important;
+                border-bottom: 2px solid #333;
+            }
+            td {
+                border-bottom: 1px solid #ccc;
+            }
+            .empty-msg {
+                display: none;
+            }
+            .print-class-label {
+                display: block !important;
+                font-size: 18px;
+                font-weight: bold;
+                text-align: center;
+                margin-bottom: 12px;
+                color: #1a3a4e;
+            }
+            /* Скриј ја колоната за бришење при печатење */
+            .del-col {
+                display: none !important;
+            }
+        }
+        .print-class-label {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="close-btn" onclick="closeApp()" title="Затвори">✕</button>
+        
+        <h1>📚 Ученици - СОУ "28 НОЕМВРИ"</h1>
+
+        <div class="header-info">
+            <span>🏫 СОУ "28 НОЕМВРИ" - Дебар</span>
+            <span>👨‍🏫 Наставник: Решат Маловски · Математика</span>
+        </div>
+
+        <div class="filters">
+            <label>📆 Година:</label>
+            <select id="filterYear">
+                <option value="I">I</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+            </select>
+            <label>🏫 Паралелка:</label>
+            <select id="filterClass">
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+            </select>
+            <span class="badge" id="countBadge">0 ученици</span>
+            <span class="badge" id="classBadge">I-5</span>
+        </div>
+
+        <div class="toolbar">
+            <input type="text" id="studentInput" placeholder="Име и презиме" />
+            <button class="btn btn-blue" onclick="addStudent()">➕ Додади</button>
+            <label class="file-label" for="excelFile">📂 Увоз од Excel</label>
+            <input type="file" id="excelFile" accept=".xlsx,.xls" />
+            <button class="btn btn-green" onclick="makePDF()">📄 PDF</button>
+            <button class="btn btn-purple" onclick="window.print()">🖨️ Печати</button>
+            <button class="btn btn-gray" onclick="resetData()">↺ Почетна</button>
+        </div>
+
+        <div class="import-box" id="importBox">
+            <strong>📌 Додели ги сите ученици на:</strong>
+            <select id="importYear">
+                <option value="I">I година</option>
+                <option value="II">II година</option>
+                <option value="III">III година</option>
+                <option value="IV">IV година</option>
+            </select>
+            <select id="importClass">
+                <option value="5">5 паралелка</option>
+                <option value="6">6 паралелка</option>
+                <option value="7">7 паралелка</option>
+            </select>
+            <button class="btn btn-blue" onclick="confirmImport()">✅ Потврди</button>
+            <button class="btn btn-gray" onclick="cancelImport()">❌ Откажи</button>
+        </div>
+
+        <!-- Ова се прикажува само при печатење -->
+        <div class="print-class-label" id="printLabel">I-5</div>
+
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:50px;">#</th>
+                        <th>Име и презиме</th>
+                        <th style="width:80px;">Година</th>
+                        <th style="width:90px;">Паралелка</th>
+                        <th style="width:70px;text-align:center;" class="del-col">Бриши</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="5" class="empty-msg">🚫 Нема ученици</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <span>📚 Математика</span>
+            <span>👨‍🏫 Решат Маловски</span>
+            <span>🏫 СОУ "28 НОЕМВРИ" - Дебар</span>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // ПОДАТОЦИ (ПРАЗНА ЛИСТА - БЕЗ ПРИМЕРИ)
+        // ============================================================
+        let students = [];
+        let nextId = 1;
+        let tempData = [];
+
+        // ============================================================
+        // ФУНКЦИЈА ЗА ЗАТВОРАЊЕ
+        // ============================================================
+        function closeApp() {
+            if (confirm('Дали сте сигурни дека сакате да ја затворите страницата?')) {
+                window.close();
+                // Ако window.close() не работи (поради безбедносни ограничувања)
+                document.body.innerHTML = '<div style="text-align:center;padding:50px;font-size:24px;color:#666;">✅ Страницата е затворена</div>';
+            }
+        }
+
+        // ============================================================
+        // ФУНКЦИИ
+        // ============================================================
+        function getFiltered() {
+            const year = document.getElementById('filterYear').value;
+            const cls = document.getElementById('filterClass').value;
+            return students.filter(s => s.year === year && s.class === cls);
+        }
+
+        function render() {
+            const filtered = getFiltered();
+            const tbody = document.getElementById('tableBody');
+            const year = document.getElementById('filterYear').value;
+            const cls = document.getElementById('filterClass').value;
+
+            document.getElementById('countBadge').textContent = filtered.length + ' ученици';
+            document.getElementById('classBadge').textContent = year + '-' + cls;
+            document.getElementById('printLabel').textContent = year + '-' + cls;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-msg">🚫 Нема ученици за оваа паралелка</td></tr>';
+                return;
+            }
+
+            let html = '';
+            filtered.forEach((s, i) => {
+                html += `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td><strong>${s.name}</strong></td>
+                            <td>${s.year}</td>
+                            <td>${s.class}</td>
+                            <td style="text-align:center;" class="del-col">
+                                <button class="del-btn" onclick="deleteStudent(${s.id})">✕</button>
+                            </td>
+                        </tr>
+                    `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function deleteStudent(id) {
+            const s = students.find(x => x.id === id);
+            if (!s) return;
+            if (confirm(`Избриши го "${s.name}"?`)) {
+                students = students.filter(x => x.id !== id);
+                render();
+            }
+        }
+
+        function addStudent() {
+            const input = document.getElementById('studentInput');
+            const name = input.value.trim();
+            if (!name) { alert('Внесете име!'); return; }
+
+            const year = document.getElementById('filterYear').value;
+            const cls = document.getElementById('filterClass').value;
+
+            if (students.some(s => s.name.toLowerCase() === name.toLowerCase() && s.year === year && s.class === cls)) {
+                alert('Ученикот веќе постои!');
+                return;
+            }
+
+            students.push({ id: nextId++, name, year, class: cls });
+            input.value = '';
+            render();
+        }
+
+        // ============================================================
+        // УВОЗ ОД EXCEL
+        // ============================================================
+        document.getElementById('excelFile').addEventListener('change', function(e) {
+            if (!this.files || !this.files[0]) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+                    if (json.length === 0) {
+                        alert('Датотеката е празна!');
+                        return;
+                    }
+
+                    tempData = [];
+                    json.forEach(row => {
+                        if (row[0]) {
+                            const name = row[0].toString().trim();
+                            if (name && !tempData.some(x => x.name.toLowerCase() === name.toLowerCase())) {
+                                tempData.push({ name });
+                            }
+                        }
+                    });
+
+                    if (tempData.length === 0) {
+                        alert('Нема пронајдено имиња во датотеката!');
+                        return;
+                    }
+
+                    document.getElementById('importBox').style.display = 'block';
+                    document.getElementById('importYear').value = document.getElementById('filterYear').value;
+                    document.getElementById('importClass').value = document.getElementById('filterClass').value;
+
+                    alert(`📋 Пронајдени ${tempData.length} имиња.\nИзберете година и паралелка и кликнете "Потврди".`);
+
+                } catch (err) {
+                    alert('Грешка при читање на Excel датотеката!');
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(this.files[0]);
+            this.value = '';
+        });
+
+        function confirmImport() {
+            if (tempData.length === 0) {
+                alert('Нема податоци за увоз!');
+                return;
+            }
+
+            const year = document.getElementById('importYear').value;
+            const cls = document.getElementById('importClass').value;
+
+            let added = 0;
+            let skipped = 0;
+
+            tempData.forEach(item => {
+                const exists = students.some(s =>
+                    s.name.toLowerCase() === item.name.toLowerCase() &&
+                    s.year === year &&
+                    s.class === cls
+                );
+
+                if (!exists) {
+                    students.push({ id: nextId++, name: item.name, year, class: cls });
+                    added++;
+                } else {
+                    skipped++;
+                }
+            });
+
+            document.getElementById('importBox').style.display = 'none';
+            tempData = [];
+            render();
+
+            alert(`✅ Увоз успешен!\nДодадени: ${added}\nПрескокнати: ${skipped} (веќе постојат)`);
+        }
+
+        function cancelImport() {
+            document.getElementById('importBox').style.display = 'none';
+            tempData = [];
+            alert('Увозот е откажан.');
+        }
+
+        // ============================================================
+        // PDF
+        // ============================================================
+        function makePDF() {
+            const filtered = getFiltered();
+            if (filtered.length === 0) {
+                alert('Нема ученици за избраната паралелка!');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageW = doc.internal.pageSize.getWidth();
+            const margin = 20;
+            let y = 30;
+            const year = document.getElementById('filterYear').value;
+            const cls = document.getElementById('filterClass').value;
+
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('СОУ "28 НОЕМВРИ" - Дебар', pageW / 2, y, { align: 'center' });
+            y += 9;
+
+            doc.setFontSize(13);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Предмет: Математика', pageW / 2, y, { align: 'center' });
+            y += 7;
+            doc.text('Наставник: Решат Маловски', pageW / 2, y, { align: 'center' });
+            y += 11;
+
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Список на ученици - ${year}-${cls}`, pageW / 2, y, { align: 'center' });
+            y += 13;
+
+            doc.setDrawColor(80);
+            doc.line(margin, y - 2, pageW - margin, y - 2);
+            y += 7;
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            const colX = [margin, margin + 22, margin + 95, margin + 138];
+            doc.text('Р.б.', colX[0], y);
+            doc.text('Име и презиме', colX[1], y);
+            doc.text('Година', colX[2], y);
+            doc.text('Паралелка', colX[3], y);
+            y += 6;
+            doc.line(margin, y - 2, pageW - margin, y - 2);
+            y += 5;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(11);
+
+            filtered.forEach((s, i) => {
+                if (y > 270) {
+                    doc.addPage();
+                    y = 25;
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Р.б.', colX[0], y);
+                    doc.text('Име и презиме', colX[1], y);
+                    doc.text('Година', colX[2], y);
+                    doc.text('Паралелка', colX[3], y);
+                    y += 6;
+                    doc.line(margin, y - 2, pageW - margin, y - 2);
+                    y += 5;
+                    doc.setFont('helvetica', 'normal');
+                }
+
+                doc.text((i + 1).toString(), colX[0], y);
+                doc.text(s.name, colX[1], y);
+                doc.text(s.year, colX[2], y);
+                doc.text(s.class, colX[3], y);
+                y += 7;
+            });
+
+            const date = new Date().toLocaleDateString('mk-MK');
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'italic');
+            doc.text(`Генерирано на: ${date}`, margin, 285);
+            doc.text(`Вкупно ученици: ${filtered.length}`, pageW - margin, 285, { align: 'right' });
+
+            doc.save(`Ученици_${year}-${cls}.pdf`);
+        }
+
+        // ============================================================
+        // ПОЧЕТНА / РЕСЕТ (ПРАЗНА ЛИСТА)
+        // ============================================================
+        function resetData() {
+            if (students.length === 0) {
+                alert('Веќе нема ученици во листата!');
+                return;
+            }
+            if (confirm('Дали сакате да ги избришете сите ученици?')) {
+                students = [];
+                nextId = 1;
+                render();
+            }
+        }
+
+        // ============================================================
+        // СЛУШАТОРИ
+        // ============================================================
+        document.getElementById('filterYear').addEventListener('change', render);
+        document.getElementById('filterClass').addEventListener('change', render);
+        document.getElementById('studentInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addStudent();
+        });
+
+        render();
+    </script>
+</body>
+</html>

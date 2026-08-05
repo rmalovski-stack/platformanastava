@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ученички формулар - Дебар</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: #f4f7fc; padding: 20px; max-width: 1100px; margin: auto; }
+        .card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        h2 { color: #1a3b5d; border-bottom: 3px solid #1a73e8; padding-bottom: 10px; }
+        h3 { color: #1a3b5d; margin-top: 25px; }
+        .klasen-racovoditel { background: #e8f0fe; border-left: 6px solid #1a73e8; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; font-size: 16px; color: #1a3b5d; }
+        .klasen-racovoditel strong { font-size: 18px; }
+        .napomena { background: #fff3cd; border-left: 6px solid #ffc107; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; color: #856404; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; }
+        .form-group { flex: 1 1 220px; }
+        .form-group.full { flex: 1 1 100%; }
+        label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 5px; color: #333; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
+        textarea { height: 60px; resize: vertical; }
+        .btn { padding: 10px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .btn-primary { background: #1a73e8; color: white; }
+        .btn-primary:hover { background: #1557b0; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: black; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th { background: #1a3b5d; color: white; padding: 8px; text-align: left; }
+        td { padding: 8px; border-bottom: 1px solid #ddd; }
+        tr:hover { background: #f1f9ff; }
+        .badge { background: #e9ecef; padding: 4px 10px; border-radius: 30px; font-size: 12px; }
+        .badge-male { background: #cce5ff; color: #004085; padding: 4px 10px; border-radius: 30px; font-size: 12px; }
+        .badge-female { background: #f8d7da; color: #721c24; padding: 4px 10px; border-radius: 30px; font-size: 12px; }
+        .teacher-only { display: none; }
+        #statusMsg { margin-top: 10px; font-weight: bold; }
+        #errorMsg { margin-top: 10px; font-weight: bold; color: red; display: none; }
+        .table-wrapper { overflow-x: auto; }
+        .hidden { display: none; }
+        .print-options { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #dee2e6; }
+        .print-options label { display: inline-block; margin-right: 20px; font-weight: normal; cursor: pointer; }
+        .print-options input[type="checkbox"] { width: auto; margin-right: 6px; transform: scale(1.1); }
+        @media print {
+            .no-print { display: none !important; }
+            .card { box-shadow: none; border: 1px solid #ccc; }
+            body { background: white; }
+            .teacher-only { display: block !important; }
+            .print-options { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>📝 Внеси лични податоци</h2>
+
+    <div class="klasen-racovoditel">
+        <strong>👨‍🏫 Класен раководител:</strong> Решат Маловски<br>
+        <span style="font-size:15px;">Дипломиран професор по математика</span><br>
+        <span style="font-size:15px;">📞 Контакт телефон: 078 710 931</span><br>
+        <span style="font-size:15px;">✉️ Email: rmalovski@gmail.com</span>
+    </div>
+
+    <div class="napomena">
+        ⚠️ Формуларот пополнувајте го со <strong>КИРИЛИЧЕН ФОНТ</strong> (освен e-mail полето).
+    </div>
+
+    <form id="studentForm">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Име на ученикот *</label>
+                <input type="text" id="ime" required placeholder="внеси име">
+            </div>
+            <div class="form-group">
+                <label>Презиме на ученикот *</label>
+                <input type="text" id="prezime" required placeholder="внеси презиме">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Датум на раѓање *</label>
+                <input type="date" id="datum_ragjanje" required>
+            </div>
+            <div class="form-group">
+                <label>Место на раѓање</label>
+                <input type="text" id="mesto_ragjanje" placeholder="избери или напиши" list="selaDabar">
+                <datalist id="selaDabar">
+                    <option value="Дебар"><option value="Горно Косоврасти"><option value="Долно Косоврати">
+                    <option value="Могорче"><option value="Отишани"><option value="Џепиште">
+                </datalist>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Место на живеење</label>
+                <input type="text" id="mesto_ziveenje" placeholder="избери или напиши" list="ziveenjeSela">
+                <datalist id="ziveenjeSela">
+                    <option value="Дебар"><option value="Горно Косоврасти"><option value="Долно Косоврати">
+                    <option value="Могорче"><option value="Отишани"><option value="Џепиште">
+                </datalist>
+            </div>
+            <div class="form-group">
+                <label>Улица и број</label>
+                <input type="text" id="ulica_broj" placeholder="внеси улица и број">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Успех од претходната година</label>
+                <select id="uspeh">
+                    <option value="">-- изберете --</option>
+                    <option value="одличен">одличен</option>
+                    <option value="многу добар">многу добар</option>
+                    <option value="добар">добар</option>
+                    <option value="доволен">доволен</option>
+                    <option value="недоволен">недоволен</option>
+                    <option value="повторувач">повторувач</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Националност</label>
+                <select id="nacionalnost" onchange="prikaziDrugoNacionalnost()">
+                    <option value="">-- изберете --</option>
+                    <option value="Македонец">Македонец</option>
+                    <option value="Албанец">Албанец</option>
+                    <option value="Турчин">Турчин</option>
+                    <option value="Ром">Ром</option>
+                    <option value="Србин">Србин</option>
+                    <option value="Влав">Влав</option>
+                    <option value="Бошњак">Бошњак</option>
+                    <option value="друго">друго</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row hidden" id="drugoNacionalnostDiv">
+            <div class="form-group full">
+                <label>Внеси друга националност</label>
+                <input type="text" id="drugo_nacionalnost" placeholder="пр. Египќанец, Грк, ...">
+            </div>
+        </div>
+
+        <!-- === НОВО: ПОЛЕ ЗА ПОЛ === -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>Пол *</label>
+                <select id="pol" required>
+                    <option value="">-- изберете --</option>
+                    <option value="машки">👨 Машки</option>
+                    <option value="женски">👩 Женски</option>
+                </select>
+            </div>
+        </div>
+
+        <h3>👪 Родители</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Име на таткото</label>
+                <input type="text" id="ime_tatko" placeholder="внеси име">
+            </div>
+            <div class="form-group">
+                <label>Име на мајката</label>
+                <input type="text" id="ime_majka" placeholder="внеси име">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Образование на таткото</label>
+                <select id="obrazovanie_tatko">
+                    <option value="">-- изберете --</option>
+                    <option value="Основно">Основно</option>
+                    <option value="Средно">Средно</option>
+                    <option value="Вишо">Вишо</option>
+                    <option value="Високо">Високо</option>
+                    <option value="Магистратура/Докторат">Магистратура/Докторат</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Образование на мајката</label>
+                <select id="obrazovanie_majka">
+                    <option value="">-- изберете --</option>
+                    <option value="Основно">Основно</option>
+                    <option value="Средно">Средно</option>
+                    <option value="Вишо">Вишо</option>
+                    <option value="Високо">Високо</option>
+                    <option value="Магистратура/Докторат">Магистратура/Докторат</option>
+                </select>
+            </div>
+        </div>
+
+        <h3>📞 Контакт</h3>
+        <div class="form-row">
+            <div class="form-group"><label>Телефон на ученикот</label><input type="tel" id="tel_ucenik" placeholder="пр. 071 234 567"></div>
+            <div class="form-group"><label>Телефон на таткото</label><input type="tel" id="tel_tatko" placeholder="пр. 070 123 456"></div>
+            <div class="form-group"><label>Телефон на мајката</label><input type="tel" id="tel_majka" placeholder="пр. 075 654 321"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Email на ученикот</label><input type="email" id="email_ucenik" placeholder="primer@mail.com"></div>
+            <div class="form-group"><label>Email на родителот</label><input type="email" id="email_roditel" placeholder="roditel@mail.com"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Зачувај ги податоците</button>
+        <span id="statusMsg"></span>
+        <div id="errorMsg"></div>
+    </form>
+</div>
+
+<!-- ============ УЧИТЕЛСКИ ПАНЕЛ ============ -->
+<div class="card no-print teacher-only" id="teacherPanel">
+    <h2>🔐 Учителски панел</h2>
+    <div class="btn-group">
+        <button class="btn btn-success" onclick="prikaziPodatoci()">👁️ Прикажи ги податоците</button>
+        <button class="btn btn-warning" onclick="downloadCSV()">📥 Преземи CSV (Excel)</button>
+        <button class="btn btn-secondary" onclick="otvoriPrintOpcii()">🖨️ Печати / PDF (избор на колони)</button>
+        <button class="btn btn-danger" onclick="izbrisiSe()">🗑️ Избриши сите податоци</button>
+    </div>
+    <button class="btn btn-secondary" onclick="zaklucajPanel()" style="margin-top:10px;">🔒 Заклучи панел</button>
+</div>
+
+<div class="card no-print" id="unlockCard">
+    <button class="btn btn-primary" onclick="otkluciPanel()">🔑 Отклучи учителски панел</button>
+    <span style="margin-left:15px; font-size:14px; color:#666;">(внеси лозинка)</span>
+</div>
+
+<!-- ========== ПАНЕЛ ЗА ИЗБОР НА КОЛОНИ ЗА ПЕЧАТЕЊЕ ========== -->
+<div class="card no-print" id="printOptionsPanel" style="display: none;">
+    <h2>🖨️ Избор на колони за печатење</h2>
+    <div class="print-options" id="printOptionsContainer">
+        <!-- генерира се преку JS -->
+    </div>
+    <div class="btn-group">
+        <button class="btn btn-primary" onclick="pecatiSoIzbor()">🖨️ Печати ги избраните колони</button>
+        <button class="btn btn-secondary" onclick="zatvoriPrintOpcii()">Затвори</button>
+    </div>
+</div>
+
+<div class="card" id="tabelaDiv" style="display: none;">
+    <h2>📋 Список на ученици</h2>
+    <div class="table-wrapper" id="tabelaContainer">
+        <p style="color:gray;">Нема зачувани податоци.</p>
+    </div>
+</div>
+
+<script>
+    // ========== КОНФИГУРАЦИЈА ==========
+    const TEACHER_PASS = '2104';
+    const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzF1JJgjeDz4hCnijUojtPn5PxPeapJbesFmb8EWTmBGFZRUtLcik_CJ5QUDumxxEULHQ/exec';
+
+    // Дефиниција на сите колони (за штампање) - ДОДАДЕН е 'pol'
+    const ALL_COLUMNS = [
+        { key: 'ime', label: 'Име' },
+        { key: 'prezime', label: 'Презиме' },
+        { key: 'pol', label: 'Пол' },
+        { key: 'datum_ragjanje', label: 'Датум на раѓање' },
+        { key: 'mesto_ragjanje', label: 'Место на раѓање' },
+        { key: 'mesto_ziveenje', label: 'Место на живеење' },
+        { key: 'ulica_broj', label: 'Улица и бр.' },
+        { key: 'uspeh', label: 'Успех' },
+        { key: 'nacionalnost', label: 'Националност' },
+        { key: 'ime_tatko', label: 'Татко (име)' },
+        { key: 'ime_majka', label: 'Мајка (име)' },
+        { key: 'obrazovanie_tatko', label: 'Образование татко' },
+        { key: 'obrazovanie_majka', label: 'Образование мајка' },
+        { key: 'tel_ucenik', label: 'Тел. ученик' },
+        { key: 'tel_tatko', label: 'Тел. татко' },
+        { key: 'tel_majka', label: 'Тел. мајка' },
+        { key: 'email_ucenik', label: 'Email ученик' },
+        { key: 'email_roditel', label: 'Email родител' },
+        { key: 'vreme', label: 'Време' }
+    ];
+
+    // ========== ЛОКАЛНИ ФУНКЦИИ ==========
+    function getData() {
+        const stored = localStorage.getItem('uceniciData');
+        return stored ? JSON.parse(stored) : [];
+    }
+
+    function saveData(data) {
+        localStorage.setItem('uceniciData', JSON.stringify(data));
+    }
+
+    function prikaziDrugoNacionalnost() {
+        const select = document.getElementById('nacionalnost');
+        const div = document.getElementById('drugoNacionalnostDiv');
+        if (select.value === 'друго') {
+            div.classList.remove('hidden');
+        } else {
+            div.classList.add('hidden');
+            document.getElementById('drugo_nacionalnost').value = '';
+        }
+    }
+
+    function otkluciPanel() {
+        const pass = prompt('Внесете ја учителската лозинка:');
+        if (pass === TEACHER_PASS) {
+            document.getElementById('teacherPanel').style.display = 'block';
+            document.getElementById('unlockCard').style.display = 'none';
+            prikaziPodatoci();
+        } else {
+            alert('❌ Погрешна лозинка!');
+        }
+    }
+
+    function zaklucajPanel() {
+        document.getElementById('teacherPanel').style.display = 'none';
+        document.getElementById('unlockCard').style.display = 'block';
+        document.getElementById('tabelaDiv').style.display = 'none';
+        document.getElementById('printOptionsPanel').style.display = 'none';
+    }
+
+    // ========== ФУНКЦИЈА ЗА ФОРМАТИРАЊЕ НА ДАТУМ ==========
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        const parts = dateStr.split('-');
+        if (parts.length !== 3) return dateStr;
+        return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
+
+    // ========== ЗАЧУВАЊЕ ==========
+    const form = document.getElementById('studentForm');
+    const statusMsg = document.getElementById('statusMsg');
+    const errorMsg = document.getElementById('errorMsg');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        let nacionalnost = document.getElementById('nacionalnost').value;
+        if (nacionalnost === 'друго') {
+            const drugo = document.getElementById('drugo_nacionalnost').value.trim();
+            nacionalnost = drugo || 'друго (непополнето)';
+        }
+
+        const ucenik = {
+            ime: document.getElementById('ime').value.trim(),
+            prezime: document.getElementById('prezime').value.trim(),
+            pol: document.getElementById('pol').value,
+            datum_ragjanje: document.getElementById('datum_ragjanje').value,
+            mesto_ragjanje: document.getElementById('mesto_ragjanje').value.trim(),
+            mesto_ziveenje: document.getElementById('mesto_ziveenje').value.trim(),
+            ulica_broj: document.getElementById('ulica_broj').value.trim(),
+            uspeh: document.getElementById('uspeh').value,
+            nacionalnost: nacionalnost,
+            ime_tatko: document.getElementById('ime_tatko').value.trim(),
+            ime_majka: document.getElementById('ime_majka').value.trim(),
+            obrazovanie_tatko: document.getElementById('obrazovanie_tatko').value,
+            obrazovanie_majka: document.getElementById('obrazovanie_majka').value,
+            tel_ucenik: document.getElementById('tel_ucenik').value.trim(),
+            tel_tatko: document.getElementById('tel_tatko').value.trim(),
+            tel_majka: document.getElementById('tel_majka').value.trim(),
+            email_ucenik: document.getElementById('email_ucenik').value.trim(),
+            email_roditel: document.getElementById('email_roditel').value.trim()
+        };
+
+        if (!ucenik.ime || !ucenik.prezime || !ucenik.datum_ragjanje || !ucenik.pol) {
+            statusMsg.style.color = 'red';
+            statusMsg.innerText = '❌ Име, презиме, датум на раѓање и пол се задолжителни!';
+            errorMsg.style.display = 'none';
+            return;
+        }
+
+        statusMsg.style.color = 'blue';
+        statusMsg.innerText = '⏳ Испраќање податоци...';
+        errorMsg.style.display = 'none';
+
+        fetch(GOOGLE_SHEETS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ucenik)
+        })
+        .then(() => {
+            statusMsg.style.color = 'green';
+            statusMsg.innerText = '✅ Податоците се испратени! (провери ја Google табелата)';
+            
+            const data = getData();
+            ucenik.id = Date.now();
+            ucenik.vreme = new Date().toLocaleString('mk-MK');
+            data.push(ucenik);
+            saveData(data);
+        })
+        .catch(error => {
+            console.error('Грешка:', error);
+            statusMsg.style.color = 'red';
+            statusMsg.innerText = '❌ Грешка при испраќање.';
+            errorMsg.style.display = 'block';
+            errorMsg.innerText = 'Детали: ' + error.message + '. Проверете ја конзолата (F12).';
+        });
+
+        form.reset();
+        document.getElementById('drugoNacionalnostDiv').classList.add('hidden');
+        document.getElementById('ime').focus();
+    });
+
+    // ========== ПРИКАЖИ ПОДАТОЦИ ==========
+    function prikaziPodatoci() {
+        if (document.getElementById('teacherPanel').style.display !== 'block') {
+            alert('Морате прво да го отклучите учителскиот панел!');
+            return;
+        }
+        const data = getData();
+        const div = document.getElementById('tabelaDiv');
+        const container = document.getElementById('tabelaContainer');
+        div.style.display = 'block';
+        if (data.length === 0) {
+            container.innerHTML = '<p style="color:gray;">📭 Нема зачувани ученици.</p>';
+            return;
+        }
+        let html = `<table><thead><tr>
+            <th>#</th><th>Име</th><th>Презиме</th>
+            <th>Пол</th>
+            <th>Датум на раѓање</th><th>Место на раѓање</th>
+            <th>Место на живеење</th><th>Улица и бр.</th>
+            <th>Успех</th><th>Националност</th>
+            <th>Татко (име)</th><th>Мајка (име)</th>
+            <th>Образование татко</th><th>Образование мајка</th>
+            <th>Тел. ученик</th><th>Тел. татко</th><th>Тел. мајка</th>
+            <th>Email ученик</th><th>Email родител</th>
+            <th>Време</th>
+        </tr></thead><tbody>`;
+        data.forEach((item, index) => {
+            let polDisplay = item.pol || '-';
+            if (polDisplay === 'машки') polDisplay = '<span class="badge-male">👨 Машки</span>';
+            else if (polDisplay === 'женски') polDisplay = '<span class="badge-female">👩 Женски</span>';
+            
+            html += `<tr>
+                <td>${index+1}</td>
+                <td>${item.ime}</td><td>${item.prezime}</td>
+                <td>${polDisplay}</td>
+                <td>${formatDate(item.datum_ragjanje)}</td>
+                <td>${item.mesto_ragjanje || '-'}</td>
+                <td>${item.mesto_ziveenje || '-'}</td>
+                <td>${item.ulica_broj || '-'}</td>
+                <td><span class="badge">${item.uspeh || '-'}</span></td>
+                <td>${item.nacionalnost || '-'}</td>
+                <td>${item.ime_tatko || '-'}</td>
+                <td>${item.ime_majka || '-'}</td>
+                <td>${item.obrazovanie_tatko || '-'}</td>
+                <td>${item.obrazovanie_majka || '-'}</td>
+                <td>${item.tel_ucenik || '-'}</td>
+                <td>${item.tel_tatko || '-'}</td>
+                <td>${item.tel_majka || '-'}</td>
+                <td>${item.email_ucenik || '-'}</td>
+                <td>${item.email_roditel || '-'}</td>
+                <td style="font-size:12px;">${item.vreme}</td>
+            </tr>`;
+        });
+        html += `</tbody></table><p style="margin-top:10px; font-weight:bold;">Вкупно пријавени: ${data.length}</p>`;
+        container.innerHTML = html;
+    }
+
+    // ========== CSV ==========
+    function downloadCSV() {
+        if (document.getElementById('teacherPanel').style.display !== 'block') {
+            alert('Морате прво да го отклучите учителскиот панел!');
+            return;
+        }
+        const data = getData();
+        if (data.length === 0) { alert('Нема податоци за преземање.'); return; }
+        let csv = "Ред.бр,Име,Презиме,Пол,Датум на раѓање,Место на раѓање,Место на живеење,Улица и бр.,Успех,Националност,Татко,Мајка,Образование татко,Образование мајка,Тел.ученик,Тел.татко,Тел.мајка,Email ученик,Email родител,Време\n";
+        data.forEach((item, i) => {
+            csv += `${i+1},"${item.ime}","${item.prezime}","${item.pol || ''}","${formatDate(item.datum_ragjanje)}","${item.mesto_ragjanje || ''}","${item.mesto_ziveenje || ''}","${item.ulica_broj || ''}","${item.uspeh || ''}","${item.nacionalnost || ''}","${item.ime_tatko || ''}","${item.ime_majka || ''}","${item.obrazovanie_tatko || ''}","${item.obrazovanie_majka || ''}","${item.tel_ucenik || ''}","${item.tel_tatko || ''}","${item.tel_majka || ''}","${item.email_ucenik || ''}","${item.email_roditel || ''}","${item.vreme || ''}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'ucenici_debar.csv';
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
+
+    // ========== ШТАМПАЊЕ СО ИЗБОР НА КОЛОНИ ==========
+    function otvoriPrintOpcii() {
+        if (document.getElementById('teacherPanel').style.display !== 'block') {
+            alert('Морате прво да го отклучите учителскиот панел!');
+            return;
+        }
+        const data = getData();
+        if (data.length === 0) {
+            alert('Нема податоци за печатење.');
+            return;
+        }
+        const panel = document.getElementById('printOptionsPanel');
+        panel.style.display = 'block';
+        const container = document.getElementById('printOptionsContainer');
+        let html = '<p style="margin-bottom:10px;"><strong>Избери колони за печатење:</strong></p>';
+        html += `<div style="margin-bottom:12px;">
+            <button class="btn btn-secondary" onclick="selektirajSve(true)" style="padding:5px 12px; font-size:12px;">✅ Сите</button>
+            <button class="btn btn-secondary" onclick="selektirajSve(false)" style="padding:5px 12px; font-size:12px;">⬜ Ниедна</button>
+        </div>`;
+        ALL_COLUMNS.forEach(col => {
+            html += `<label><input type="checkbox" class="print-col-checkbox" data-key="${col.key}" checked> ${col.label}</label>`;
+        });
+        container.innerHTML = html;
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function selektirajSve(checked) {
+        document.querySelectorAll('.print-col-checkbox').forEach(cb => cb.checked = checked);
+    }
+
+    function zatvoriPrintOpcii() {
+        document.getElementById('printOptionsPanel').style.display = 'none';
+    }
+
+    function pecatiSoIzbor() {
+        const checkedBoxes = document.querySelectorAll('.print-col-checkbox:checked');
+        if (checkedBoxes.length === 0) {
+            alert('Морате да изберете барем една колона за печатење.');
+            return;
+        }
+        const selectedKeys = Array.from(checkedBoxes).map(cb => cb.dataset.key);
+        const data = getData();
+        if (data.length === 0) {
+            alert('Нема податоци за печатење.');
+            return;
+        }
+
+        let html = `<h2 style="text-align:center; color:#1a3b5d;">📋 Список на ученици - Дебар</h2>`;
+        html += `<p style="text-align:center; font-size:14px;">Печатено: ${new Date().toLocaleString('mk-MK')}</p>`;
+        html += `<table style="width:100%; border-collapse:collapse; font-size:13px;">`;
+        html += `<thead><tr style="background:#1a3b5d; color:white;">`;
+        html += `<th style="padding:8px;">#</th>`;
+        selectedKeys.forEach(key => {
+            const col = ALL_COLUMNS.find(c => c.key === key);
+            html += `<th style="padding:8px;">${col ? col.label : key}</th>`;
+        });
+        html += `</tr></thead><tbody>`;
+        data.forEach((item, idx) => {
+            html += `<tr>`;
+            html += `<td style="padding:8px; border-bottom:1px solid #ddd;">${idx+1}</td>`;
+            selectedKeys.forEach(key => {
+                let val = item[key] || '-';
+                if (key === 'uspeh') val = `<span class="badge">${val}</span>`;
+                if (key === 'pol') {
+                    if (val === 'машки') val = '👨 Машки';
+                    else if (val === 'женски') val = '👩 Женски';
+                }
+                if (key === 'datum_ragjanje') val = formatDate(val);
+                html += `<td style="padding:8px; border-bottom:1px solid #ddd;">${val}</td>`;
+            });
+            html += `</tr>`;
+        });
+        html += `</tbody></table>`;
+        html += `<p style="margin-top:10px; font-weight:bold;">Вкупно: ${data.length} ученици</p>`;
+
+        const win = window.open('', '_blank', 'width=1000,height=800');
+        if (!win) {
+            alert('Ве молиме дозволете pop-up прозорци за печатење.');
+            return;
+        }
+        win.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head><meta charset="UTF-8"><title>Печатење - избрани колони</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, sans-serif; padding: 20px; }
+                table { width: 100%; border-collapse: collapse; }
+                th, td { padding: 6px 10px; border: 1px solid #ccc; text-align: left; }
+                th { background: #1a3b5d; color: white; }
+                .badge { background: #e9ecef; padding: 2px 10px; border-radius: 30px; }
+                h2 { color: #1a3b5d; }
+                @media print { body { padding: 10px; } }
+            </style>
+            </head>
+            <body>
+                ${html}
+                <script>
+                    window.onload = function() { window.print(); window.close(); }
+                <\/script>
+            </body>
+            </html>
+        `);
+        win.document.close();
+    }
+
+    // ========== ИЗБРИШИ ==========
+    function izbrisiSe() {
+        if (document.getElementById('teacherPanel').style.display !== 'block') {
+            alert('Морате прво да го отклучите учителскиот панел!');
+            return;
+        }
+        if (confirm('⚠️ Дали сте сигурни? Ова трајно ќе ги избрише СИТЕ податоци.')) {
+            localStorage.removeItem('uceniciData');
+            document.getElementById('tabelaContainer').innerHTML = '<p style="color:gray;">📭 Податоците се избришани.</p>';
+            document.getElementById('tabelaDiv').style.display = 'none';
+            document.getElementById('printOptionsPanel').style.display = 'none';
+            statusMsg.innerText = '🗑️ Сите податоци се избришани.';
+            statusMsg.style.color = 'red';
+        }
+    }
+
+    // ========== ИНИЦИЈАЛИЗАЦИЈА ==========
+    document.getElementById('teacherPanel').style.display = 'none';
+    document.getElementById('unlockCard').style.display = 'block';
+    document.getElementById('drugoNacionalnostDiv').classList.add('hidden');
+    document.getElementById('printOptionsPanel').style.display = 'none';
+    console.log('Формуларот е подготвен. Лозинка: 2104');
+    console.log('URL за Google Sheets:', GOOGLE_SHEETS_URL);
+</script>
+
+</body>
+</html>

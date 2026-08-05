@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Префрлање на оценки и изостаноци</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            margin: 20px;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+        }
+        h1, h2 {
+            color: #0f172a;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+        .file-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 24px 0;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        .file-group {
+            flex: 1 1 280px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: #334155;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 8px 0;
+            font-size: 0.9rem;
+        }
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 12px;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #1d4ed8;
+            transform: scale(1.01);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 16px 20px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            border-left: 6px solid #2563eb;
+            font-weight: 500;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 0.85rem;
+            min-width: 700px;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #d1d9e6;
+            padding: 8px 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        th {
+            background: #f1f6fc;
+            font-weight: 600;
+            color: #0b1d33;
+        }
+        .match-info {
+            background: #e6f0ff;
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: inline-block;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        .empty-state {
+            color: #64748b;
+            padding: 30px 0;
+            text-align: center;
+            font-style: italic;
+        }
+        .download-section {
+            margin-top: 24px;
+            padding: 20px;
+            background: #eef6ff;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #2563eb;
+        }
+        .download-btn {
+            background: #059669;
+            color: white;
+            padding: 14px 40px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+        .download-btn:hover {
+            background: #047857;
+            transform: scale(1.02);
+        }
+        .footnote {
+            margin-top: 24px;
+            padding: 16px 20px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: #1e293b;
+        }
+        .not-found-list {
+            margin-top: 16px;
+            background: #fff5f5;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #fecaca;
+        }
+        .debug-info {
+            background: #fef9e7;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            border: 1px solid #f39c12;
+            max-height: 500px;
+            overflow: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .choice-group {
+            display: flex;
+            gap: 20px;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .choice-group label {
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        .choice-group input[type="radio"] {
+            margin-right: 5px;
+        }
+        .choice-group .radio-label {
+            margin-right: 20px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📘 Префрлање на оценки и изостаноци</h1>
+    <p style="color: #475569;">Од „крај на година.xlsx“ → во „статистика…dnevik1.xlsx“</p>
+
+    <div class="file-inputs">
+        <div class="file-group">
+            <label>📂 Прва датотека (извор)</label>
+            <input type="file" id="file1" accept=".xlsx,.xls">
+        </div>
+        <div class="file-group">
+            <label>📂 Втора датотека (одредиште)</label>
+            <input type="file" id="file2" accept=".xlsx,.xls">
+        </div>
+        <div style="display: flex; align-items: flex-end;">
+            <button class="btn" id="processBtn" disabled>➡️ Префрли податоци</button>
+        </div>
+    </div>
+
+    <div class="choice-group">
+        <label>📊 Избор:</label>
+        <label class="radio-label">
+            <input type="radio" name="dataType" value="polugodisni" checked> Полугодишни
+        </label>
+        <label class="radio-label">
+            <input type="radio" name="dataType" value="godisni"> Годишни
+        </label>
+        <label class="radio-label">
+            <input type="radio" name="dataType" value="site"> Сите + изостаноци
+        </label>
+    </div>
+
+    <div id="status" class="status">⏳ Почекајте да се вчитаат датотеките...</div>
+
+    <div id="resultArea">
+        <div class="empty-state">📊 Резултатот ќе се прикаже овде по успешна обработка.</div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+    (function() {
+        const file1Input = document.getElementById('file1');
+        const file2Input = document.getElementById('file2');
+        const processBtn = document.getElementById('processBtn');
+        const statusDiv = document.getElementById('status');
+        const resultArea = document.getElementById('resultArea');
+        const dataTypeRadios = document.querySelectorAll('input[name="dataType"]');
+
+        let workbook1 = null;
+        let workbook2 = null;
+
+        const subjectMap = {
+            'Англиски јазик': { srcCol: 'E', dstCol: 'H' },
+            'Германски јазик': { srcCol: 'M', dstCol: 'I' },
+            'Македонски јазик и литература': { srcCol: 'W', dstCol: 'F' },
+            'Филозофија': { srcCol: 'AE', dstCol: 'M' },
+            'Математика': { srcCol: 'AM', dstCol: 'G' },
+            'Бизнис и претприемништво': { srcCol: 'BA', dstCol: 'N' },
+            'Спорт и спортски активности': { srcCol: 'BM', dstCol: 'O' },
+            'Физика': { srcCol: 'BW', dstCol: 'K' },
+            'Хемија': { srcCol: 'CG', dstCol: 'L' },
+            'Биологија': { srcCol: 'CS', dstCol: 'J' }
+        };
+
+        const dstColMap = {
+            'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9, 'K': 10, 'L': 11, 'M': 12, 'N': 13, 'O': 14
+        };
+
+        function extractLastName(fullName) {
+            if (!fullName) return '';
+            const parts = fullName.trim().split(' ');
+            return parts.length > 0 ? parts[0].toLowerCase().trim() : '';
+        }
+
+        function isSimilarLastName(a, b) {
+            if (!a || !b) return false;
+            const aClean = a.toLowerCase().replace(/[^а-шА-Шa-zA-Z]/g, '');
+            const bClean = b.toLowerCase().replace(/[^а-шА-Шa-zA-Z]/g, '');
+            if (aClean === bClean) return true;
+            if (aClean.length >= 5 && bClean.length >= 5) {
+                if (aClean.substring(0, 5) === bClean.substring(0, 5)) return true;
+            }
+            if (aClean.length >= 6 && bClean.length >= 6) {
+                if (aClean.substring(0, 6) === bClean.substring(0, 6)) return true;
+            }
+            return false;
+        }
+
+        function findValueByLabel(row, label) {
+            if (!row) return null;
+            for (let j = 0; j < row.length; j++) {
+                const cell = row[j] ? String(row[j]).trim() : '';
+                if (cell === label) {
+                    if (j + 1 < row.length && row[j+1] !== undefined && row[j+1] !== '') {
+                        const v = parseFloat(row[j+1]);
+                        if (!isNaN(v)) return v;
+                    }
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        function processFiles() {
+            if (!workbook1 || !workbook2) {
+                statusDiv.innerHTML = '❌ Вчитајте ги двете датотеки.';
+                return;
+            }
+
+            let dataType = 'polugodisni';
+            for (let radio of dataTypeRadios) {
+                if (radio.checked) {
+                    dataType = radio.value;
+                    break;
+                }
+            }
+
+            statusDiv.innerHTML = `⏳ Обработка (${dataType})...`;
+            
+            try {
+                const srcSheet = workbook1.Sheets['afGradesAndAbsencesHigh'] || workbook1.Sheets[workbook1.SheetNames[0]];
+                const dstSheet = workbook2.Sheets['IV6'] || workbook2.Sheets[workbook2.SheetNames[0]];
+
+                if (!srcSheet || !dstSheet) {
+                    statusDiv.innerHTML = '❌ Не се пронајдени листови.';
+                    return;
+                }
+
+                const srcData = XLSX.utils.sheet_to_json(srcSheet, { defval: '', header: 1 });
+                const dstData = XLSX.utils.sheet_to_json(dstSheet, { defval: '', header: 1 });
+
+                let debugInfo = [];
+
+                // Пронајди ги колоните за предмети во изворот
+                let colIndexes = {};
+                for (let i = 0; i < srcData.length; i++) {
+                    const row = srcData[i];
+                    if (!row) continue;
+                    for (let j = 0; j < row.length; j++) {
+                        const cell = row[j] ? String(row[j]).trim() : '';
+                        for (let subj in subjectMap) {
+                            if (cell === subj) {
+                                colIndexes[subj] = j;
+                            }
+                        }
+                    }
+                }
+
+                if (Object.keys(colIndexes).length === 0) {
+                    statusDiv.innerHTML = '❌ Не се пронајдени предмети во изворот.';
+                    return;
+                }
+
+                // Направи мапа на ученици од втората датотека
+                const dstMap = {};
+                for (let i = 0; i < dstData.length; i++) {
+                    const row = dstData[i];
+                    if (!row || row.length < 3) continue;
+                    const rowNum = row[1] ? String(row[1]).trim() : '';
+                    const lastName = row[2] ? String(row[2]).trim().toLowerCase() : '';
+                    const firstName = row[3] ? String(row[3]).trim() : '';
+                    
+                    if (!isNaN(rowNum) && rowNum !== '' && lastName) {
+                        dstMap[lastName] = { row: row, index: i, fullName: lastName + ' ' + firstName };
+                        debugInfo.push(`Ученик во одредиште: ${lastName} ${firstName} -> клуч: "${lastName}" (ред ${i})`);
+                    }
+                }
+
+                debugInfo.push(`\n=== ВКУПНО: ${Object.keys(dstMap).length} ученици во одредиштето ===`);
+
+                // Извлечи ги податоците од изворот
+                let dataMap = {};
+                let studentRows = [];
+                for (let i = 0; i < srcData.length; i++) {
+                    const row = srcData[i];
+                    if (!row || row.length === 0) continue;
+                    const col0 = row[0] ? String(row[0]).trim() : '';
+                    const col1 = row[1] ? String(row[1]).trim() : '';
+                    const col2 = row[2] ? String(row[2]).trim() : '';
+                    
+                    if (!isNaN(col0) && col0 !== '' && col1 && col1 !== '') {
+                        if (col2) {
+                            const lastName = extractLastName(col2);
+                            if (lastName) {
+                                studentRows.push({ index: i, lastName: lastName, fullName: col2 });
+                                debugInfo.push(`Пронајден ученик во извор: ${col2} -> презиме: "${lastName}" (ред ${i})`);
+                            }
+                        }
+                    }
+                }
+
+                // За секој ученик, пронајди ги неговите податоци
+                for (let s = 0; s < studentRows.length; s++) {
+                    const student = studentRows[s];
+                    const startIdx = student.index;
+                    const endIdx = (s + 1 < studentRows.length) ? studentRows[s + 1].index : srcData.length;
+                    const lastName = student.lastName;
+                    
+                    if (!dataMap[lastName]) dataMap[lastName] = {};
+                    
+                    for (let i = startIdx + 1; i < endIdx; i++) {
+                        const row = srcData[i];
+                        if (!row || row.length === 0) continue;
+                        
+                        // Провери дали редот има податоци за предмети
+                        let hasSubjectData = false;
+                        let subjectGrades = {};
+                        for (let subj in colIndexes) {
+                            const colIdx = colIndexes[subj];
+                            if (colIdx !== undefined && row[colIdx] !== undefined && row[colIdx] !== '') {
+                                const val = parseFloat(row[colIdx]);
+                                if (!isNaN(val) && val >= 1 && val <= 5) {
+                                    subjectGrades[subj] = val;
+                                    hasSubjectData = true;
+                                }
+                            }
+                        }
+                        
+                        // Провери дали е ред со "Годишни оценки"
+                        let isGodisniRow = false;
+                        for (let j = 0; j < Math.min(row.length, 5); j++) {
+                            const cell = row[j] ? String(row[j]).trim() : '';
+                            if (cell === 'Годишни оценки') {
+                                isGodisniRow = true;
+                                break;
+                            }
+                        }
+                        
+                        // Провери дали е ред со изостаноци
+                        let isOpravdani = false;
+                        let isNeopravdani = false;
+                        for (let j = 0; j < Math.min(row.length, 5); j++) {
+                            const cell = row[j] ? String(row[j]).trim() : '';
+                            if (cell === 'Оправдани') isOpravdani = true;
+                            if (cell === 'Неоправдани') isNeopravdani = true;
+                        }
+                        
+                        // Зачувај ги податоците
+                        if (hasSubjectData) {
+                            if (isGodisniRow && (dataType === 'godisni' || dataType === 'site')) {
+                                dataMap[lastName]['godisni'] = subjectGrades;
+                                debugInfo.push(`   ✅ Годишни за ${student.fullName}: ${JSON.stringify(subjectGrades)}`);
+                            }
+                            else if (!isGodisniRow && (dataType === 'polugodisni' || dataType === 'site')) {
+                                if (Object.keys(subjectGrades).length >= 2) {
+                                    if (!dataMap[lastName]['polugodisni']) {
+                                        dataMap[lastName]['polugodisni'] = {};
+                                    }
+                                    for (let subj in subjectGrades) {
+                                        dataMap[lastName]['polugodisni'][subj] = subjectGrades[subj];
+                                    }
+                                    debugInfo.push(`   ✅ Полугодишни за ${student.fullName}: ${JSON.stringify(subjectGrades)}`);
+                                }
+                            }
+                        }
+                        
+                        // Изостаноци
+                        if ((dataType === 'site') && (isOpravdani || isNeopravdani)) {
+                            let IVal = findValueByLabel(row, 'I полугодие');
+                            if (IVal === null) IVal = findValueByLabel(row, 'I');
+                            let IIVal = findValueByLabel(row, 'II полугодие');
+                            if (IIVal === null) IIVal = findValueByLabel(row, 'II');
+                            let totalVal = findValueByLabel(row, 'Вкупно');
+                            
+                            if (!dataMap[lastName]['absences']) dataMap[lastName]['absences'] = {};
+                            if (isOpravdani && (IVal !== null || IIVal !== null || totalVal !== null)) {
+                                dataMap[lastName]['absences']['opravdani'] = { I: IVal, II: IIVal, total: totalVal };
+                                debugInfo.push(`   ✅ Оправдани за ${student.fullName}: I=${IVal}, II=${IIVal}, Вк=${totalVal}`);
+                            }
+                            if (isNeopravdani && (IVal !== null || IIVal !== null || totalVal !== null)) {
+                                dataMap[lastName]['absences']['neopravdani'] = { I: IVal, II: IIVal, total: totalVal };
+                                debugInfo.push(`   ✅ Неоправдани за ${student.fullName}: I=${IVal}, II=${IIVal}, Вк=${totalVal}`);
+                            }
+                        }
+                    }
+                }
+
+                // Отстрани ги празните записи
+                for (let key in dataMap) {
+                    if (Object.keys(dataMap[key]).length === 0) {
+                        delete dataMap[key];
+                    }
+                }
+
+                debugInfo.push(`\n✅ Пронајдени ${Object.keys(dataMap).length} ученици со податоци во изворот`);
+
+                // Провери кои ученици се совпаѓаат
+                let matchCount = 0;
+                debugInfo.push('\n=== ПРОВЕРКА НА СОВПАЃАЊЕ ===');
+                for (let key in dataMap) {
+                    if (dstMap[key]) {
+                        debugInfo.push(`  ✅ СОВПАЃА: ${key} -> ${dstMap[key].fullName}`);
+                        matchCount++;
+                    } else {
+                        // Пробај слично совпаѓање
+                        let found = false;
+                        for (let dstKey in dstMap) {
+                            if (isSimilarLastName(key, dstKey)) {
+                                debugInfo.push(`  ⚠️ СЛИЧНО: ${key} -> ${dstMap[dstKey].fullName}`);
+                                dstMap[key] = dstMap[dstKey];
+                                found = true;
+                                matchCount++;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            debugInfo.push(`  ❌ НЕ СОВПАЃА: ${key}`);
+                        }
+                    }
+                }
+                debugInfo.push(`\n=== ВКУПНО СОВПАЃАЊА: ${matchCount} од ${Object.keys(dataMap).length} ===`);
+
+                // Префрли ги податоците во втората датотека
+                let updatedCount = 0;
+                let matchedStudents = [];
+                let notFound = [];
+                let updateDetails = [];
+
+                for (let studentKey in dataMap) {
+                    if (dstMap[studentKey]) {
+                        const dstRow = dstMap[studentKey].row;
+                        const studentData = dataMap[studentKey];
+                        
+                        // Полугодишни
+                        if (studentData['polugodisni']) {
+                            for (let subj in studentData['polugodisni']) {
+                                const mapping = subjectMap[subj];
+                                if (!mapping) continue;
+                                const dstColIdx = dstColMap[mapping.dstCol];
+                                if (dstColIdx !== undefined && dstRow.length > dstColIdx) {
+                                    dstRow[dstColIdx] = studentData['polugodisni'][subj];
+                                    updatedCount++;
+                                    updateDetails.push({ student: studentKey, type: 'полугодишна', subject: subj, grade: studentData['polugodisni'][subj] });
+                                }
+                            }
+                        }
+                        
+                        // Годишни
+                        if (studentData['godisni']) {
+                            for (let subj in studentData['godisni']) {
+                                const mapping = subjectMap[subj];
+                                if (!mapping) continue;
+                                const dstColIdx = dstColMap[mapping.dstCol];
+                                if (dstColIdx !== undefined && dstRow.length > dstColIdx) {
+                                    dstRow[dstColIdx] = studentData['godisni'][subj];
+                                    updatedCount++;
+                                    updateDetails.push({ student: studentKey, type: 'годишна', subject: subj, grade: studentData['godisni'][subj] });
+                                }
+                            }
+                        }
+                        
+                        // Изостаноци - Оправдани
+                        if (studentData['absences'] && studentData['absences']['opravdani']) {
+                            const abs = studentData['absences']['opravdani'];
+                            if (abs.I !== null && dstRow.length > 26) { dstRow[26] = abs.I; updatedCount++; }
+                            if (abs.II !== null && dstRow.length > 27) { dstRow[27] = abs.II; updatedCount++; }
+                            if (abs.total !== null && dstRow.length > 28) { dstRow[28] = abs.total; updatedCount++; }
+                            updateDetails.push({ student: studentKey, type: 'оправдани', subject: 'изостаноци', grade: `${abs.I}/${abs.II}/${abs.total}` });
+                        }
+                        
+                        // Изостаноци - Неоправдани
+                        if (studentData['absences'] && studentData['absences']['neopravdani']) {
+                            const abs = studentData['absences']['neopravdani'];
+                            if (abs.I !== null && dstRow.length > 26) { dstRow[26] = abs.I; updatedCount++; }
+                            if (abs.II !== null && dstRow.length > 27) { dstRow[27] = abs.II; updatedCount++; }
+                            if (abs.total !== null && dstRow.length > 28) { dstRow[28] = abs.total; updatedCount++; }
+                            updateDetails.push({ student: studentKey, type: 'неоправдани', subject: 'изостаноци', grade: `${abs.I}/${abs.II}/${abs.total}` });
+                        }
+                        
+                        matchedStudents.push(studentKey);
+                    } else {
+                        notFound.push(studentKey);
+                    }
+                }
+
+                // Зачувај го ажурираниот документ
+                const newSheet = XLSX.utils.aoa_to_sheet(dstData);
+                workbook2.Sheets['IV6'] = newSheet;
+
+                // Прикажи резултат
+                let html = `<div style="margin-top:20px;">
+                    <h3>✅ Префрлени податоци (${dataType})</h3>
+                    <div style="margin: 15px 0;">
+                        <span class="match-info">🎯 Вкупно записи: ${updatedCount}</span>
+                        <span class="match-info">👨‍🎓 Пронајдени ученици: ${matchedStudents.length} од ${Object.keys(dataMap).length}</span>
+                        ${notFound.length > 0 ? `<span class="match-info" style="background:#fee2e2;">⚠️ Непронајдени: ${notFound.length}</span>` : ''}
+                    </div>`;
+
+                if (updateDetails.length > 0) {
+                    html += `<table><tr><th>Ученик</th><th>Тип</th><th>Предмет</th><th>Оценка</th></tr>`;
+                    for (let item of updateDetails.slice(0, 100)) {
+                        html += `<tr><td>${item.student}</td><td>${item.type}</td><td>${item.subject}</td><td><strong>${item.grade}</strong></td></tr>`;
+                    }
+                    if (updateDetails.length > 100) {
+                        html += `<tr><td colspan="4">... и уште ${updateDetails.length - 100} записи</td></tr>`;
+                    }
+                    html += `</table>`;
+                }
+
+                if (notFound.length > 0) {
+                    html += `<div class="not-found-list"><strong>⚠️ Непронајдени во втората датотека:</strong> ${notFound.join(', ')}</div>`;
+                }
+
+                html += `<div class="debug-info">${debugInfo.join('\n')}</div>`;
+
+                html += `<div class="download-section">
+                    <button class="download-btn" id="downloadBtn">⬇️ Преземи ажурирана датотека</button>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #475569;">
+                        Листот <strong>IV6</strong> е ажуриран.
+                    </p>
+                </div>`;
+
+                resultArea.innerHTML = html;
+                statusDiv.innerHTML = `✅ Префрлени ${updatedCount} записи.`;
+
+                document.getElementById('downloadBtn').addEventListener('click', function() {
+                    try {
+                        const wbout = XLSX.write(workbook2, { bookType: 'xlsx', type: 'array' });
+                        const blob = new Blob([wbout], {type: 'application/octet-stream'});
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'statistika_azurirana.xlsx';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        statusDiv.innerHTML = '✅ Датотеката е преземена!';
+                    } catch (err) {
+                        alert('Грешка: ' + err.message);
+                    }
+                });
+
+            } catch (e) {
+                statusDiv.innerHTML = `❌ Грешка: ${e.message}`;
+                console.error(e);
+                resultArea.innerHTML = `<div style="color: #dc2626; padding: 20px; background: #fee2e2; border-radius: 8px;">
+                    <strong>Грешка:</strong> ${e.message}
+                </div>`;
+            }
+        }
+
+        function loadFile(fileInput, callback) {
+            const file = fileInput.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+                    callback(wb);
+                } catch (err) {
+                    statusDiv.innerHTML = `❌ Грешка: ${err.message}`;
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        file1Input.addEventListener('change', function() {
+            loadFile(this, function(wb) {
+                workbook1 = wb;
+                checkReady();
+            });
+        });
+
+        file2Input.addEventListener('change', function() {
+            loadFile(this, function(wb) {
+                workbook2 = wb;
+                checkReady();
+            });
+        });
+
+        function checkReady() {
+            if (workbook1 && workbook2) {
+                processBtn.disabled = false;
+                statusDiv.innerHTML = '✅ Вчитани датотеки. Изберете тип и кликнете на "Префрли податоци".';
+            } else {
+                processBtn.disabled = true;
+                statusDiv.innerHTML = '⏳ Вчитајте ги двете датотеки.';
+            }
+        }
+
+        processBtn.addEventListener('click', processFiles);
+        statusDiv.innerHTML = '📂 Вчитајте ги двете .xlsx датотеки.';
+    })();
+</script>
+</body>
+</html>

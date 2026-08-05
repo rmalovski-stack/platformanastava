@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Програма за работа на класна заедница</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #f0f4f8;
+            padding: 20px;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .header .skola {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: 2px;
+        }
+        .header .naslov {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1e40af;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .header .podnaslov {
+            font-size: 15px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .header .year-display {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .header .year-display .year-badge {
+            background: #dbeafe;
+            padding: 4px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            color: #1e40af;
+            font-size: 14px;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            padding: 16px 20px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+        }
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-success { background: #22c55e; color: white; }
+        .btn-success:hover { background: #16a34a; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-warning:hover { background: #d97706; }
+        .btn-info { background: #8b5cf6; color: white; }
+        .btn-info:hover { background: #7c3aed; }
+        .btn-purple { background: #8b5cf6; color: white; }
+        .btn-purple:hover { background: #7c3aed; }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+        .btn-outline:hover { background: #3b82f6; color: white; }
+        .btn-pink { background: #ec4899; color: white; }
+        .btn-pink:hover { background: #db2777; }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: 0.2s;
+            min-width: 200px;
+        }
+        .search-bar input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .search-bar select {
+            padding: 12px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            background: white;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .statistika {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-karticka {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            transition: 0.2s;
+        }
+        .stat-karticka:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        .stat-karticka .broj {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+        .stat-karticka .label {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 10px 24px;
+            background: transparent;
+            border: none;
+            font-weight: 600;
+            font-size: 15px;
+            color: #64748b;
+            cursor: pointer;
+            transition: 0.2s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+        .tab:hover { color: #1e293b; }
+        .tab.active {
+            color: #1e40af;
+            border-bottom-color: #3b82f6;
+        }
+
+        /* TEMI SECTION */
+        .temi-section {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #e2e8f0;
+        }
+        .temi-section .temi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .temi-section .temi-header h3 {
+            font-size: 18px;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .temi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+        }
+        .tema-card {
+            background: white;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .tema-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .tema-card .tema-ikona {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .tema-card .tema-naslov {
+            font-weight: 600;
+            font-size: 14px;
+            color: #0f172a;
+        }
+        .tema-card .tema-opis {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .tema-card .tema-godina {
+            font-size: 11px;
+            background: #dbeafe;
+            padding: 2px 10px;
+            border-radius: 20px;
+            color: #1e40af;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        .lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 18px;
+            margin: 20px 0;
+        }
+        .karticka {
+            background: #f8fafc;
+            padding: 18px 16px;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .karticka:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            border-color: #3b82f6;
+        }
+        .karticka .naslov {
+            font-weight: 700;
+            font-size: 16px;
+            color: #0f172a;
+        }
+        .karticka .detail {
+            font-size: 14px;
+            color: #334155;
+        }
+        .karticka .detail span {
+            color: #64748b;
+            font-weight: 400;
+        }
+        .karticka .badge {
+            font-size: 11px;
+            background: #dbeafe;
+            padding: 2px 12px;
+            border-radius: 20px;
+            color: #1e40af;
+            display: inline-block;
+            width: fit-content;
+        }
+        .karticka .godina-badge {
+            font-size: 11px;
+            background: #fef3c7;
+            padding: 2px 12px;
+            border-radius: 20px;
+            color: #92400e;
+            display: inline-block;
+            width: fit-content;
+        }
+        .karticka .akcii {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .karticka .akcii .btn {
+            padding: 6px 14px;
+            font-size: 13px;
+            flex: 1;
+            text-align: center;
+        }
+        .karticka .zapisnik-preview {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #334155;
+            border-left: 3px solid #3b82f6;
+            max-height: 100px;
+            overflow: hidden;
+            position: relative;
+        }
+        .karticka .zapisnik-preview::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(transparent, #f8fafc);
+        }
+        .karticka .zapisnik-status {
+            font-size: 12px;
+            color: #22c55e;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .karticka .zapisnik-status.empty {
+            color: #94a3b8;
+        }
+
+        .prazno {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+            grid-column: 1/-1;
+        }
+        .prazno span { font-size: 48px; display: block; margin-bottom: 10px; }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e293b;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 2000;
+        }
+        .toast.show { display: block; animation: fadeInUp 0.3s ease; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal h3 {
+            margin-bottom: 15px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal .form-group { margin-bottom: 12px; }
+        .modal .form-group label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #334155;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .modal .form-group input,
+        .modal .form-group select,
+        .modal .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .modal .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        .modal .form-group input:focus,
+        .modal .form-group select:focus,
+        .modal .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .member-item {
+            background: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .member-item .role-icon { font-size: 20px; }
+        .member-item .member-name { font-weight: 500; }
+        .member-item .member-role { font-size: 12px; color: #64748b; }
+
+        .zapisnik-full {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 700px) {
+            .header .naslov { font-size: 20px; }
+            .lista { grid-template-columns: 1fr; }
+            .container { padding: 15px; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .statistika { grid-template-columns: 1fr 1fr; }
+            .search-bar { flex-direction: column; }
+            .modal { padding: 20px; }
+            .temi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="skola">СОУ "28 Ноември" – Дебар</div>
+        <div class="naslov">📋 Програма за работа на класна заедница</div>
+        <div class="podnaslov">Евиденција на составот, активностите и записниците од состаноците</div>
+        <div class="year-display">
+            <span class="year-badge" id="currentYearDisplay">📅 2026/2027</span>
+            <span class="year-badge" style="background:#fef3c7;color:#92400e;" id="gradeDisplay">IV година</span>
+        </div>
+    </div>
+
+    <!-- STATISTIKA -->
+    <div class="statistika">
+        <div class="stat-karticka">
+            <div class="broj" id="brojSostanoci">0</div>
+            <div class="label">Вкупно состаноци</div>
+        </div>
+        <div class="stat-karticka">
+            <div class="broj" id="brojClenovi">0</div>
+            <div class="label">Членови на КЗ</div>
+        </div>
+        <div class="stat-karticka">
+            <div class="broj" id="brojZapisnici">0</div>
+            <div class="label">Записници</div>
+        </div>
+        <div class="stat-karticka">
+            <div class="broj" id="brojAktivnosti">0</div>
+            <div class="label">Активности</div>
+        </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+        <div style="font-weight:600;font-size:16px;">📁 Управување со класна заедница</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="otvoriForma('sostav')">➕ Нов состав</button>
+            <button class="btn btn-success" onclick="otvoriForma('zapisnik')">📝 Нов записник</button>
+            <button class="btn btn-info" onclick="otvoriClenovi()">👥 Членови на КЗ</button>
+            <button class="btn btn-pink" onclick="otvoriTemi()">💡 Темы за дискусија</button>
+            <button class="btn btn-danger" onclick="izbrisiSite()">🗑 Избриши сѐ</button>
+        </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 Пребарувај по наслов, опис, записник..." oninput="renderLista()">
+        <select id="filterGodina" onchange="renderLista()">
+            <option value="">📅 Сите учебни години</option>
+        </select>
+        <select id="filterTip" onchange="renderLista()">
+            <option value="">📋 Сите записи</option>
+            <option value="sostav">👥 Состави</option>
+            <option value="zapisnik">📝 Записници</option>
+        </select>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab active" data-tab="site" onclick="switchTab('site', this)">📂 Сите</button>
+        <button class="tab" data-tab="sostav" onclick="switchTab('sostav', this)">👥 Состави</button>
+        <button class="tab" data-tab="zapisnik" onclick="switchTab('zapisnik', this)">📝 Записници</button>
+    </div>
+
+    <!-- LISTA -->
+    <div id="listaContainer" class="lista"></div>
+
+</div>
+
+<!-- MODAL ZA TEMI -->
+<div class="modal-overlay" id="modalTemi">
+    <div class="modal" style="max-width:700px;">
+        <h3>💡 Предлози за теми за дискусија во класната заедница</h3>
+        <div style="margin-bottom:15px;font-size:14px;color:#64748b;">
+            Изберете година за да ги видите соодветните теми:
+            <select id="temiGodinaFilter" onchange="prikaziTemi()" style="margin-left:10px;padding:6px 14px;border-radius:8px;border:2px solid #e2e8f0;">
+                <option value="I">I година</option>
+                <option value="II">II година</option>
+                <option value="III">III година</option>
+                <option value="IV" selected>IV година</option>
+            </select>
+        </div>
+        <div id="temiLista" class="temi-grid">
+            <!-- динамички -->
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-danger" onclick="zatvoriModal('modalTemi')">Затвори</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ZA CLENOVI -->
+<div class="modal-overlay" id="modalClenovi">
+    <div class="modal">
+        <h3>👥 Членови на класната заедница</h3>
+        <div id="clenoviLista"><p style="color:#94a3b8;">Нема запишани членови</p></div>
+        <div class="modal-actions">
+            <button class="btn btn-danger" onclick="zatvoriModal('modalClenovi')">Затвори</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalSostav">
+    <div class="modal">
+        <h3 id="modalNaslov">📝 Нов состав на класна заедница</h3>
+        <div class="form-group">
+            <label>Учебна година</label>
+            <select id="formGodina"></select>
+        </div>
+        <div class="form-group">
+            <label>Датум</label>
+            <input type="date" id="formDatum">
+        </div>
+        <div class="form-group">
+            <label>Наслов / Тема</label>
+            <input type="text" id="formNaslov" placeholder="Внесете наслов...">
+        </div>
+        <div class="form-group" id="zapisnikGroup" style="display:none;">
+            <label>Записник од состанокот</label>
+            <textarea id="formZapisnik" placeholder="Внесете детален записник од одржаниот состанок..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Опис / Забелешки</label>
+            <input type="text" id="formOpis" placeholder="Дополнителни информации...">
+        </div>
+        <div class="form-group" id="clenoviGroup">
+            <label>Претседател</label>
+            <input type="text" id="formPret" placeholder="Име и презиме">
+        </div>
+        <div class="form-group" id="clenoviGroup2">
+            <label>Заменик-претседател</label>
+            <input type="text" id="formZam" placeholder="Име и презиме">
+        </div>
+        <div class="form-group" id="clenoviGroup3">
+            <label>Членови (оддели, запишани со запирка)</label>
+            <input type="text" id="formClenovi" placeholder="Пример: 3-1, 3-2, 4-1">
+        </div>
+        <div class="form-group" id="clenoviGroup4">
+            <label>Член на училишна заедница</label>
+            <input type="text" id="formUcilisna" placeholder="Име и презиме">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-success" onclick="zapisi()">💾 Зачувај</button>
+            <button class="btn btn-danger" onclick="zatvoriModal('modalSostav')">Откажи</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+    const STORAGE_KEY = 'klasna_zaednica';
+    let currentTab = 'site';
+    let editingId = null;
+    let formType = 'sostav';
+
+    // ---- ТЕМИ ЗА ДИСКУСИЈА ПО ГОДИНИ ----
+    const temiPoGodini = {
+        'I': {
+            label: 'I година (14-15 години)',
+            temi: [
+                { ikona: '🏫', naslov: 'Адаптација во средно училиште', opis: 'Како да се прилагодиме на новото училиште, новите предмети и новите другари.' },
+                { ikona: '📚', naslov: 'Организација на учењето', opis: 'Како да си го организираме времето за учење, како да учиме ефикасно.' },
+                { ikona: '🤝', naslov: 'Другарство и врснички односи', opis: 'Како да градиме здрави пријателства, справување со конфликти.' },
+                { ikona: '📱', naslov: 'Безбедност на интернет', opis: 'Како безбедно да користиме интернет, социјални мрежи и заштита на лични податоци.' },
+                { ikona: '🧠', naslov: 'Справување со стресот', opis: 'Како да се справиме со стресот од новите обврски и очекувања.' },
+                { ikona: '🎯', naslov: 'Поставување цели', opis: 'Како да си поставиме реални цели за успех во новата средина.' },
+                { ikona: '👨‍👩‍👧', naslov: 'Комуникација со родители', opis: 'Како да комуницираме со родителите за училишните обврски и проблеми.' },
+                { ikona: '🧘', naslov: 'Здрави навики', opis: 'Важноста на редовното спиење, исхрана и физичка активност.' }
+            ]
+        },
+        'II': {
+            label: 'II година (15-16 години)',
+            temi: [
+                { ikona: '📈', naslov: 'Напредок во учењето', opis: 'Анализа на успехот од првата година и како да го подобриме учењето.' },
+                { ikona: '💼', naslov: 'Избор на профил/струка', opis: 'Размислување за иднината - кој профил или струка не интересира.' },
+                { ikona: '🤝', naslov: 'Тимска работа и соработка', opis: 'Како да работиме во тим, групни проекти и соработка со соученици.' },
+                { ikona: '🧠', naslov: 'Критичко размислување', opis: 'Како да развиеме критичко размислување и да ги проверуваме информациите.' },
+                { ikona: '💪', naslov: 'Самодоверба и самопочит', opis: 'Како да градиме самодоверба и позитивна слика за себе.' },
+                { ikona: '🌍', naslov: 'Еколошка свест', opis: 'Како да бидеме еколошки свесни и да придонесеме за заштита на животната средина.' },
+                { ikona: '⚖️', naslov: 'Права и обврски на учениците', opis: 'Што се правата и обврските на учениците во училиштето.' },
+                { ikona: '🎨', naslov: 'Креативност и иновативност', opis: 'Како да ја развиваме креативноста преку различни активности.' }
+            ]
+        },
+        'III': {
+            label: 'III година (16-17 години)',
+            temi: [
+                { ikona: '🎓', naslov: 'Подготовка за матура', opis: 'Како да се подготвиме за матурата, стратегии за учење и планирање.' },
+                { ikona: '💼', naslov: 'Кариерно насочување', opis: 'Истражување на можни професии, кариерни патеки и барања на пазарот на труд.' },
+                { ikona: '🧠', naslov: 'Ментално здравје', opis: 'Препознавање и справување со анксиозност, стрес и депресија кај младите.' },
+                { ikona: '💻', naslov: 'Дигитална писменост', opis: 'Како да користиме дигитални алатки за учење и работа.' },
+                { ikona: '🗣️', naslov: 'Јавно говорење и презентации', opis: 'Како да се подготвиме за јавно говорење и успешно презентирање.' },
+                { ikona: '🤝', naslov: 'Волонтерство и ангажман', opis: 'Важноста на волонтерството и учеството во заедницата.' },
+                { ikona: '💰', naslov: 'Финансиска писменост', opis: 'Основи на финансиското управување - буџетирање, штедење, трошење.' },
+                { ikona: '⚖️', naslov: 'Медиумска писменост', opis: 'Како да препознаваме лажни вести и да бидеме медиумски писмени.' }
+            ]
+        },
+        'IV': {
+            label: 'IV година (17-18 години)',
+            temi: [
+                { ikona: '🎓', naslov: 'Подготовка за матура и завршни испити', opis: 'Стратегии за успешно полагање на матурата и завршните испити.' },
+                { ikona: '🏛️', naslov: 'Избор на факултет или кариера', opis: 'Како да избереме факултет, професија или кариерен пат по средното училиште.' },
+                { ikona: '🧠', naslov: 'Управување со стрес и притисок', opis: 'Како да се справиме со стресот од матурата и одлуките за иднината.' },
+                { ikona: '💼', naslov: 'Вештини за вработување', opis: 'Како да напишеме CV, мотивационо писмо и како да се подготвиме за интервју.' },
+                { ikona: '🌍', naslov: 'Самостоен живот', opis: 'Што нè очекува по средното - животни вештини, самостојност, одговорност.' },
+                { ikona: '💻', naslov: 'Дигитална безбедност и приватност', opis: 'Како да ги заштитиме личните податоци и да бидеме безбедни онлајн.' },
+                { ikona: '🤝', naslov: 'Справување со одбивање и неуспех', opis: 'Како да се справиме со одбивањето и неуспехот - издржливост и истрајност.' },
+                { ikona: '🌟', naslov: 'Личен развој и самореализација', opis: 'Како да работиме на себе, да ги развиваме талентите и да се реализираме.' }
+            ]
+        }
+    };
+
+    // ---- ГЕНЕРИРАЊЕ НА УЧЕБНИ ГОДИНИ (8 години нанапред од 2026) ----
+    function generateUcebniGodini() {
+        const godini = [];
+        const startYear = 2026;
+        const brojGodini = 8;
+        for (let i = 0; i < brojGodini; i++) {
+            const year = startYear + i;
+            godini.push(`${year}/${year + 1}`);
+        }
+        return godini;
+    }
+
+    // ---- ПОПОЛНИ ГО SELECTОТ СО УЧЕБНИ ГОДИНИ ----
+    function populateGodini() {
+        const godini = generateUcebniGodini();
+        const selects = ['formGodina', 'filterGodina'];
+        selects.forEach(id => {
+            const select = document.getElementById(id);
+            if (!select) return;
+            select.innerHTML = id === 'filterGodina' ? '<option value="">📅 Сите учебни години</option>' : '';
+            godini.forEach(g => {
+                const option = document.createElement('option');
+                option.value = g;
+                option.textContent = g;
+                select.appendChild(option);
+            });
+            if (id === 'formGodina') select.value = godini[0];
+        });
+
+        const currentYear = document.getElementById('currentYearDisplay');
+        if (currentYear) {
+            currentYear.textContent = '📅 ' + godini[0];
+        }
+    }
+
+    // ---- ПОМОШНИ ----
+    function getData() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+    }
+    function setData(data) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+    function generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+    }
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+    function formatDate(iso) {
+        if (!iso) return '';
+        const d = new Date(iso);
+        return d.toLocaleDateString('mk-MK', { day:'2-digit', month:'2-digit', year:'numeric' });
+    }
+    function escHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ---- TABS ----
+    function switchTab(tab, el) {
+        currentTab = tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        if (el) el.classList.add('active');
+        renderLista();
+    }
+
+    // ---- МОДАЛИ ----
+    function otvoriForma(type) {
+        formType = type;
+        editingId = null;
+        const modal = document.getElementById('modalSostav');
+        const title = document.getElementById('modalNaslov');
+        const zapisnikGroup = document.getElementById('zapisnikGroup');
+        const clenoviGroups = ['clenoviGroup', 'clenoviGroup2', 'clenoviGroup3', 'clenoviGroup4'];
+        
+        if (type === 'zapisnik') {
+            title.textContent = '📝 Нов записник од состанок';
+            zapisnikGroup.style.display = 'block';
+            clenoviGroups.forEach(id => document.getElementById(id).style.display = 'none');
+        } else {
+            title.textContent = '👥 Нов состав на класна заедница';
+            zapisnikGroup.style.display = 'none';
+            clenoviGroups.forEach(id => document.getElementById(id).style.display = 'block');
+        }
+
+        document.getElementById('formNaslov').value = '';
+        document.getElementById('formOpis').value = '';
+        document.getElementById('formPret').value = '';
+        document.getElementById('formZam').value = '';
+        document.getElementById('formClenovi').value = '';
+        document.getElementById('formUcilisna').value = '';
+        document.getElementById('formZapisnik').value = '';
+        document.getElementById('formDatum').value = new Date().toISOString().split('T')[0];
+        document.getElementById('formGodina').value = generateUcebniGodini()[0];
+        
+        modal.classList.add('active');
+    }
+
+    function otvoriClenovi() {
+        document.getElementById('modalClenovi').classList.add('active');
+        renderClenovi();
+    }
+
+    function otvoriTemi() {
+        document.getElementById('modalTemi').classList.add('active');
+        prikaziTemi();
+    }
+
+    function zatvoriModal(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+        el.addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
+    });
+
+    // ---- ПРИКАЖИ ТЕМИ ----
+    function prikaziTemi() {
+        const filter = document.getElementById('temiGodinaFilter').value;
+        const data = temiPoGodini[filter];
+        const container = document.getElementById('temiLista');
+        
+        if (!data) {
+            container.innerHTML = '<p style="color:#94a3b8;grid-column:1/-1;">Нема теми за избраната година.</p>';
+            return;
+        }
+
+        container.innerHTML = data.temi.map(tema => `
+            <div class="tema-card" onclick="vnesiTema('${escHtml(tema.naslov)}', '${escHtml(tema.opis)}', '${filter}')">
+                <div class="tema-ikona">${tema.ikona}</div>
+                <div class="tema-naslov">${escHtml(tema.naslov)}</div>
+                <div class="tema-opis">${escHtml(tema.opis)}</div>
+                <span class="tema-godina">${data.label}</span>
+            </div>
+        `).join('');
+    }
+
+    // ---- ВНЕСИ ТЕМА КАКО НОВ ЗАПИСНИК ----
+    function vnesiTema(naslov, opis, godina) {
+        zatvoriModal('modalTemi');
+        
+        // Отвори форма за записник
+        formType = 'zapisnik';
+        editingId = null;
+        const modal = document.getElementById('modalSostav');
+        const title = document.getElementById('modalNaslov');
+        const zapisnikGroup = document.getElementById('zapisnikGroup');
+        const clenoviGroups = ['clenoviGroup', 'clenoviGroup2', 'clenoviGroup3', 'clenoviGroup4'];
+        
+        title.textContent = '📝 Нов записник - ' + naslov;
+        zapisnikGroup.style.display = 'block';
+        clenoviGroups.forEach(id => document.getElementById(id).style.display = 'none');
+        
+        document.getElementById('formNaslov').value = naslov;
+        document.getElementById('formOpis').value = opis;
+        document.getElementById('formPret').value = '';
+        document.getElementById('formZam').value = '';
+        document.getElementById('formClenovi').value = '';
+        document.getElementById('formUcilisna').value = '';
+        document.getElementById('formZapisnik').value = '';
+        document.getElementById('formDatum').value = new Date().toISOString().split('T')[0];
+        document.getElementById('formGodina').value = generateUcebniGodini()[0];
+        
+        modal.classList.add('active');
+        showToast('💡 Внесете записник за темата: ' + naslov);
+    }
+
+    // ---- ЗАПИШИ ----
+    function zapisi() {
+        const godina = document.getElementById('formGodina').value;
+        const datum = document.getElementById('formDatum').value;
+        const naslov = document.getElementById('formNaslov').value.trim();
+        const opis = document.getElementById('formOpis').value.trim();
+        const pret = document.getElementById('formPret').value.trim();
+        const zam = document.getElementById('formZam').value.trim();
+        const clenovi = document.getElementById('formClenovi').value.trim();
+        const ucilisna = document.getElementById('formUcilisna').value.trim();
+        const zapisnik = document.getElementById('formZapisnik').value.trim();
+
+        if (!naslov) { showToast('❌ Внесете наслов'); return; }
+        if (formType === 'sostav' && (!pret || !zam)) {
+            showToast('❌ Внесете претседател и заменик');
+            return;
+        }
+
+        let data = getData();
+        const newItem = {
+            id: editingId || generateId(),
+            tip: formType,
+            godina: godina,
+            datum: datum || new Date().toISOString(),
+            naslov: naslov,
+            opis: opis,
+            pret: pret,
+            zam: zam,
+            clenovi: clenovi ? clenovi.split(',').map(c => c.trim()).filter(c => c) : [],
+            ucilisna: ucilisna,
+            zapisnik: zapisnik,
+            createdAt: new Date().toISOString()
+        };
+
+        if (editingId) {
+            const index = data.findIndex(d => d.id === editingId);
+            if (index !== -1) data[index] = { ...data[index], ...newItem };
+            else data.push(newItem);
+        } else {
+            data.push(newItem);
+        }
+
+        setData(data);
+        renderLista();
+        updateStatistika();
+        zatvoriModal('modalSostav');
+        showToast(editingId ? '✅ Успешно ажурирано' : '✅ Успешно зачувано');
+    }
+
+    // ---- ПРИКАЖИ ЛИСТА ----
+    function renderLista() {
+        const data = getData();
+        const container = document.getElementById('listaContainer');
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const filterGodina = document.getElementById('filterGodina').value;
+        const filterTip = document.getElementById('filterTip').value;
+
+        let filtered = data;
+
+        if (currentTab === 'sostav') filtered = filtered.filter(item => item.tip === 'sostav');
+        else if (currentTab === 'zapisnik') filtered = filtered.filter(item => item.tip === 'zapisnik');
+
+        if (searchTerm) {
+            filtered = filtered.filter(item =>
+                item.naslov.toLowerCase().includes(searchTerm) ||
+                (item.opis && item.opis.toLowerCase().includes(searchTerm)) ||
+                (item.zapisnik && item.zapisnik.toLowerCase().includes(searchTerm)) ||
+                (item.pret && item.pret.toLowerCase().includes(searchTerm)) ||
+                (item.zam && item.zam.toLowerCase().includes(searchTerm))
+            );
+        }
+
+        if (filterGodina) {
+            filtered = filtered.filter(item => item.godina === filterGodina);
+        }
+
+        if (filterTip) {
+            filtered = filtered.filter(item => item.tip === filterTip);
+        }
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<div class="prazno"><span>📭</span>Нема записи.<br>Кликни <strong>"Нов состав"</strong> или <strong>"Нов записник"</strong> за да додадеш.<br>Можеш да користиш и <strong>"Теми за дискусија"</strong> за предлози.</div>`;
+            return;
+        }
+
+        const sortirani = [...filtered].sort((a, b) => new Date(b.datum || b.createdAt) - new Date(a.datum || a.createdAt));
+
+        container.innerHTML = sortirani.map(item => {
+            const isSostav = item.tip === 'sostav';
+            const clenoviText = item.clenovi && item.clenovi.length > 0 ? item.clenovi.join(', ') : 'Нема';
+            const tipIcon = isSostav ? '👥' : '📝';
+            const tipLabel = isSostav ? 'Состав' : 'Записник';
+            const hasZapisnik = item.zapisnik && item.zapisnik.length > 0;
+            
+            return `
+            <div class="karticka">
+                <div class="naslov">${tipIcon} ${escHtml(item.naslov)}</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <span class="godina-badge">📅 ${escHtml(item.godina || 'Н/П')}</span>
+                    <span class="badge">${tipLabel}</span>
+                    ${!isSostav ? (hasZapisnik ? '<span class="badge" style="background:#dcfce7;color:#166534;">✅ Има записник</span>' : '<span class="badge" style="background:#fee2e2;color:#991b1b;">❌ Нема записник</span>') : ''}
+                </div>
+                <div class="detail">📅 ${formatDate(item.datum || item.createdAt)}</div>
+                ${item.opis ? `<div class="detail">📝 ${escHtml(item.opis)}</div>` : ''}
+                ${isSostav ? `
+                    <div class="detail">👤 Претседател: <span>${escHtml(item.pret)}</span></div>
+                    <div class="detail">👤 Заменик: <span>${escHtml(item.zam)}</span></div>
+                    <div class="detail">👥 Членови: <span>${escHtml(clenoviText)}</span></div>
+                    ${item.ucilisna ? `<div class="detail">🏫 Член на училишна заедница: <span>${escHtml(item.ucilisna)}</span></div>` : ''}
+                    <div class="badge">${item.clenovi ? item.clenovi.length + 1 : 1} членови</div>
+                ` : `
+                    ${hasZapisnik ? `
+                        <div class="zapisnik-preview">${escHtml(item.zapisnik.substring(0, 200))}${item.zapisnik.length > 200 ? '...' : ''}</div>
+                        <button class="btn btn-info" onclick="prikaziZapisnik('${item.id}')" style="font-size:12px;padding:4px 12px;">📖 Прочитај цел записник</button>
+                    ` : '<div class="detail" style="color:#94a3b8;">❌ Нема внесен записник</div>'}
+                `}
+                <div class="akcii">
+                    <button class="btn btn-warning" onclick="editItem('${item.id}')">✏️ Уреди</button>
+                    <button class="btn btn-danger" onclick="izbrisiEdna('${item.id}')">🗑</button>
+                </div>
+            </div>
+        `}).join('');
+    }
+
+    // ---- ПРИКАЖИ ЗАПИСНИК ВО МОДАЛ ----
+    function prikaziZapisnik(id) {
+        const data = getData();
+        const item = data.find(d => d.id === id);
+        if (!item || !item.zapisnik) {
+            showToast('❌ Нема записник за приказ');
+            return;
+        }
+        
+        const modal = document.getElementById('modalClenovi');
+        const title = document.querySelector('#modalClenovi h3');
+        const oldTitle = title.textContent;
+        title.textContent = '📖 Записник од состанок';
+        
+        document.getElementById('clenoviLista').innerHTML = `
+            <div class="zapisnik-full">${escHtml(item.zapisnik)}</div>
+            <div style="margin-top:10px;font-size:13px;color:#64748b;padding:10px;background:#f1f5f9;border-radius:8px;">
+                <strong>Наслов:</strong> ${escHtml(item.naslov)}<br>
+                <strong>Датум:</strong> ${formatDate(item.datum || item.createdAt)}<br>
+                <strong>Учебна година:</strong> ${escHtml(item.godina || 'Н/П')}
+            </div>
+        `;
+        modal.classList.add('active');
+        
+        const closeHandler = function() {
+            title.textContent = oldTitle;
+            document.getElementById('modalClenovi').removeEventListener('click', closeHandler);
+        };
+        document.getElementById('modalClenovi').addEventListener('click', closeHandler);
+    }
+
+    // ---- ПРИКАЖИ ЧЛЕНОВИ ----
+    function renderClenovi() {
+        const data = getData();
+        const container = document.getElementById('clenoviLista');
+        const members = {};
+        data.forEach(item => {
+            if (item.pret) members[item.pret] = 'Претседател';
+            if (item.zam) members[item.zam] = 'Заменик-претседател';
+            if (item.ucilisna) members[item.ucilisna] = 'Член на училишна заедница';
+            if (item.clenovi) item.clenovi.forEach(c => { if (!members[c]) members[c] = 'Член'; });
+        });
+
+        const entries = Object.entries(members);
+        if (entries.length === 0) {
+            container.innerHTML = `<p style="color:#94a3b8;">Нема запишани членови</p>`;
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="members-grid">
+                ${entries.map(([name, role]) => `
+                    <div class="member-item">
+                        <div class="role-icon">${role === 'Претседател' ? '👑' : role === 'Заменик-претседател' ? '⭐' : role === 'Член на училишна заедница' ? '🏫' : '👤'}</div>
+                        <div><div class="member-name">${escHtml(name)}</div><div class="member-role">${role}</div></div>
+                    </div>
+                `).join('')}
+            </div>
+            <div style="margin-top:15px;padding:10px;background:#f1f5f9;border-radius:8px;">
+                <strong>Вкупно членови:</strong> ${entries.length}
+            </div>
+        `;
+    }
+
+    // ---- АЖУРИРАЈ СТАТИСТИКА ----
+    function updateStatistika() {
+        const data = getData();
+        document.getElementById('brojSostanoci').textContent = data.length;
+        
+        const members = new Set();
+        const zapisnici = data.filter(item => item.tip === 'zapisnik' && item.zapisnik && item.zapisnik.length > 0);
+        data.forEach(item => {
+            if (item.pret) members.add(item.pret);
+            if (item.zam) members.add(item.zam);
+            if (item.ucilisna) members.add(item.ucilisna);
+            if (item.clenovi) item.clenovi.forEach(c => members.add(c));
+        });
+        document.getElementById('brojClenovi').textContent = members.size;
+        document.getElementById('brojZapisnici').textContent = zapisnici.length;
+        document.getElementById('brojAktivnosti').textContent = data.filter(item => item.opis && item.opis.length > 0).length;
+    }
+
+    // ---- УРЕДИ ----
+    function editItem(id) {
+        const data = getData();
+        const item = data.find(d => d.id === id);
+        if (!item) { showToast('❌ Ставката не е пронајдена'); return; }
+
+        editingId = id;
+        formType = item.tip || 'sostav';
+        const modal = document.getElementById('modalSostav');
+        const title = document.getElementById('modalNaslov');
+        const zapisnikGroup = document.getElementById('zapisnikGroup');
+        const clenoviGroups = ['clenoviGroup', 'clenoviGroup2', 'clenoviGroup3', 'clenoviGroup4'];
+
+        if (item.tip === 'zapisnik') {
+            title.textContent = '✏️ Уреди записник';
+            zapisnikGroup.style.display = 'block';
+            clenoviGroups.forEach(id => document.getElementById(id).style.display = 'none');
+        } else {
+            title.textContent = '✏️ Уреди состав';
+            zapisnikGroup.style.display = 'none';
+            clenoviGroups.forEach(id => document.getElementById(id).style.display = 'block');
+        }
+
+        document.getElementById('formGodina').value = item.godina || '';
+        document.getElementById('formDatum').value = item.datum ? item.datum.split('T')[0] : '';
+        document.getElementById('formNaslov').value = item.naslov || '';
+        document.getElementById('formOpis').value = item.opis || '';
+        document.getElementById('formPret').value = item.pret || '';
+        document.getElementById('formZam').value = item.zam || '';
+        document.getElementById('formClenovi').value = item.clenovi ? item.clenovi.join(', ') : '';
+        document.getElementById('formUcilisna').value = item.ucilisna || '';
+        document.getElementById('formZapisnik').value = item.zapisnik || '';
+
+        modal.classList.add('active');
+    }
+
+    // ---- ИЗБРИШИ ----
+    function izbrisiEdna(id) {
+        if (!confirm('Да ја избришеме оваа ставка?')) return;
+        let data = getData();
+        data = data.filter(item => item.id !== id);
+        setData(data);
+        renderLista();
+        updateStatistika();
+        showToast('🗑 Избришано');
+    }
+
+    function izbrisiSite() {
+        if (!confirm('Сигурен? Ќе ги избришеш СИТЕ податоци.')) return;
+        setData([]);
+        renderLista();
+        updateStatistika();
+        showToast('🗑 Сите избришани');
+    }
+
+    // ---- ИНИЦИЈАЛИЗАЦИЈА ----
+    function initSample() {
+        const data = getData();
+        if (data.length === 0) {
+            const godini = generateUcebniGodini();
+            const samples = [{
+                id: generateId(),
+                tip: 'sostav',
+                godina: godini[0],
+                datum: new Date().toISOString(),
+                naslov: 'Прв состав на класна заедница',
+                opis: 'Избор на претседател, заменик и членови за учебната ' + godini[0],
+                pret: 'Ана Петрова',
+                zam: 'Марко Стојановски',
+                clenovi: ['3-1', '3-2', '4-1', '4-2'],
+                ucilisna: 'Елена Димитрова',
+                zapisnik: '',
+                createdAt: new Date().toISOString()
+            }, {
+                id: generateId(),
+                tip: 'zapisnik',
+                godina: godini[0],
+                datum: new Date(Date.now() - 86400000).toISOString(),
+                naslov: 'Записник од првиот состанок',
+                opis: 'Договор за распоред на дежурства',
+                pret: '',
+                zam: '',
+                clenovi: [],
+                ucilisna: '',
+                zapisnik: `Присутни: Ана Петрова (претседател), Марко Стојановски (заменик), претставници од одделите 3-1, 3-2, 4-1, 4-2.
+
+Дневен ред:
+1. Избор на дежурни за месецот
+2. Организирање на час по класен раководител
+3. Разно
+
+Точка 1: Договорено е дежурствата да се ротираат секоја недела.
+
+Точка 2: Одлучено е час по класен раководител да се одржи на 15.09.2026 со тема "Училишни правила".
+
+Точка 3: Разговарано за организирање на есенска екскурзија.
+
+Записникот е завршен во 12:30 часот.`,
+                createdAt: new Date().toISOString()
+            }];
+            setData(samples);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        populateGodini();
+        initSample();
+        renderLista();
+        updateStatistika();
+        
+        const godini = generateUcebniGodini();
+        const yearDisplay = document.getElementById('currentYearDisplay');
+        if (yearDisplay) {
+            yearDisplay.textContent = '📅 ' + godini[0];
+        }
+        
+        // Постави IV година како стандардна за приказ
+        document.getElementById('gradeDisplay').textContent = 'IV година';
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Број на ученици во клас I-7</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #ffffff; display: flex; justify-content: center; padding: 0.5rem; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        .container { max-width: 1200px; width: 100%; background: white; padding: 0.5rem 0.8rem 0.8rem 0.8rem; }
+        
+        .school-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a6b; padding-bottom: 0.4rem; margin-bottom: 0.6rem; }
+        .school-header h1 { font-size: 1.3rem; font-weight: 600; color: #0b2a4a; }
+        .school-header .sub { font-size: 0.85rem; font-weight: 500; color: #2c3e5a; background: #e9edf5; padding: 0.2rem 1rem; border-radius: 40px; }
+        
+        .controls { display: flex; flex-wrap: wrap; gap: 0.8rem 1.5rem; background: #f0f4fe; padding: 0.4rem 1rem; border-radius: 40px; margin-bottom: 0.8rem; align-items: center; font-size: 0.8rem; }
+        .controls .group { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+        .controls label { font-weight: 600; color: #1f3a5f; font-size: 0.8rem; }
+        .controls select { background: white; border: 1px solid #bcc9dd; border-radius: 30px; padding: 0.2rem 0.7rem; font-size: 0.8rem; font-weight: 500; color: #1f3a5f; cursor: pointer; outline: none; }
+        .btn-sync { background: #28a745; color: white; border: none; border-radius: 30px; padding: 0.2rem 1rem; font-weight: 600; cursor: pointer; font-size: 0.8rem; }
+        .btn-sync:hover { background: #218838; }
+        .btn-print { background: #1a73e8; color: white; border: none; border-radius: 30px; padding: 0.2rem 1rem; font-weight: 600; cursor: pointer; font-size: 0.8rem; }
+        .btn-print:hover { background: #1557b0; }
+        .sync-status { font-size: 0.75rem; color: #1a3a5a; margin-left: 0.5rem; }
+        
+        .table-wrapper { overflow-x: auto; margin-top: 0.3rem; border: 1px solid #dde4ef; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.7rem; background: white; min-width: 1000px; }
+        th { background: #eef3fc; color: #1f3a5f; font-weight: 600; padding: 4px 4px; border: 1px solid #ccd7e8; text-align: center; vertical-align: middle; font-size: 0.65rem; }
+        td { padding: 3px 4px; border: 1px solid #d7e0ed; text-align: center; vertical-align: middle; background-color: white; font-size: 0.65rem; }
+        .section-title { background: #e3ebf7; font-weight: 600; color: #0b2a4a; text-align: left; padding-left: 8px; font-size: 0.7rem; }
+        .subheader { background: #f2f7ff; font-weight: 500; color: #1f3a5f; font-size: 0.65rem; }
+        .sum-cell { background: #eef5fc; font-weight: 600; color: #00337a; }
+        .v-label { font-weight: 600; color: #1f3a5f; background: #e8effa; font-size: 0.65rem; }
+        .data-input { background: #ffffff; border: 1px solid #d0dbea; border-radius: 3px; padding: 2px 3px; width: 100%; max-width: 45px; text-align: center; font-size: 0.65rem; }
+        .footer-note { margin-top: 0.5rem; font-size: 0.65rem; color: #3b4f6b; text-align: right; border-top: 1px dashed #b8cae0; padding-top: 0.4rem; }
+        .no-print { display: block; }
+        .sum-display { font-weight: 700; color: #00337a; background: #eef5fc; padding: 1px 5px; border-radius: 3px; display: inline-block; min-width: 20px; font-size: 0.7rem; }
+        
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0.1cm; margin: 0; }
+            .container { padding: 0.1cm; max-width: 100%; box-shadow: none; }
+            .controls { display: none !important; }
+            .data-input { border: none !important; background: transparent !important; }
+            .table-wrapper { border: 1px solid #aaa; }
+            th { background: #eef3fc !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .section-title { background: #e3ebf7 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .subheader { background: #f2f7ff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .sum-cell { background: #eef5fc !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .sum-display { background: #eef5fc !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .btn-print { display: none !important; }
+            table { font-size: 0.55rem; }
+            td, th { padding: 2px 3px; font-size: 0.5rem; }
+            .data-input { font-size: 0.5rem; max-width: 30px; }
+            .school-header h1 { font-size: 0.9rem; }
+            .school-header .sub { font-size: 0.6rem; padding: 0.1rem 0.6rem; }
+            .section-title { font-size: 0.55rem; }
+            .sum-display { font-size: 0.55rem; padding: 0px 3px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Хедер -->
+    <div class="school-header">
+        <h1>СОУ „28 Ноември“ - Дебар</h1>
+        <span class="sub">Класен раководител: проф. Решат Маловски</span>
+    </div>
+
+    <!-- Контроли -->
+    <div class="controls no-print">
+        <div class="group">
+            <label for="classYear">Година:</label>
+            <select id="classYear">
+                <option value="I">I</option><option value="II">II</option>
+                <option value="III">III</option><option value="IV" selected>IV</option>
+            </select>
+        </div>
+        <div class="group">
+            <label for="parallel">Паралелка:</label>
+            <select id="parallel">
+                <option value="6">6</option><option value="7" selected>7</option>
+            </select>
+        </div>
+        <div class="group">
+            <label for="schoolYear">Учебна година:</label>
+            <select id="schoolYear">
+                <option value="2026/2027" selected>2026/2027</option>
+                <option value="2027/2028">2027/2028</option>
+                <option value="2028/2029">2028/2029</option>
+                <option value="2029/2030">2029/2030</option>
+                <option value="2030/2031">2030/2031</option>
+                <option value="2031/2032">2031/2032</option>
+                <option value="2032/2033">2032/2033</option>
+                <option value="2033/2034">2033/2034</option>
+                <option value="2034/2035">2034/2035</option>
+            </select>
+        </div>
+        <div class="group" style="margin-left: auto;">
+            <button class="btn-sync" onclick="vleciPodatoci()">Синхронизирај</button>
+            <span class="sync-status" id="syncStatus">нема податоци</span>
+            <button class="btn-print" onclick="window.print()">Печати</button>
+        </div>
+    </div>
+
+    <!-- Табела -->
+    <div class="table-wrapper">
+        <table>
+            <tr>
+                <td colspan="14" style="background: #e3ebf7; font-weight: 700; font-size: 0.85rem; text-align: left; padding-left: 10px;">
+                    Клас <span id="classDisplay">I-7</span> · Гимназиско образование
+                </td>
+            </tr>
+            <tr>
+                <td colspan="14" style="background: #eef3fc; font-weight: 600; text-align: left; padding-left: 10px; font-size: 0.7rem;">
+                    ПОДАТОЦИ ЗА БРОЈОТ НА ЗАПИШАНИТЕ УЧЕНИЦИ ВО УЧЕБНАТА <span id="yearDisplay">2026/2027</span> ГОД.
+                </td>
+            </tr>
+            <tr><td colspan="14" style="background: white; height: 2px;"></td></tr>
+
+            <!-- 1. ЗАПИШАНИ УЧЕНИЦИ -->
+            <tr><td colspan="14" class="section-title">Запишани ученици</td></tr>
+            <tr>
+                <td colspan="3" class="subheader">Вкупно</td>
+                <td colspan="2" class="subheader">Ученички</td>
+                <td colspan="9" style="background: #f4f9ff;"></td>
+            </tr>
+            <tr>
+                <td colspan="3"><input type="text" class="data-input" id="totalStudents" value="0"></td>
+                <td colspan="2"><input type="text" class="data-input" id="femaleStudents" value="0"></td>
+                <td colspan="9"></td>
+            </tr>
+            <tr><td colspan="14" style="height: 3px;"></td></tr>
+
+            <!-- 2. УСПЕХ -->
+            <tr><td colspan="14" class="section-title">Ученици по успех од претходната година</td></tr>
+            <tr>
+                <td>Одлични</td><td>Многу добри</td><td>Добри</td><td>Доволни</td>
+                <td>Повторувач</td>
+                <td class="subheader">Вкупно</td>
+                <td colspan="3" class="subheader">Повторувачи</td>
+                <td colspan="3" class="subheader">Вкупно</td>
+                <td class="subheader">Ученички</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="data-input" id="excellent" value="0"></td>
+                <td><input type="text" class="data-input" id="veryGood" value="0"></td>
+                <td><input type="text" class="data-input" id="good" value="0"></td>
+                <td><input type="text" class="data-input" id="sufficient" value="0"></td>
+                <td><input type="text" class="data-input" id="repeater" value="0"></td>
+                <td class="sum-cell"><span class="sum-display" id="sumGrades">0</span></td>
+                <td colspan="3"><span class="sum-display" id="repeatersTotal">0</span></td>
+                <td colspan="3"><span class="sum-display" id="repeatersFemale">0</span></td>
+                <td><span class="sum-display" id="repeatersFemaleDisplay">0</span></td>
+                <td></td>
+            </tr>
+            <tr><td colspan="14" style="height: 3px;"></td></tr>
+
+            <!-- 3. НАЦИОНАЛНОСТ -->
+            <tr><td colspan="14" class="section-title">Ученици според изјаснувањето за национална припадност и полот</td></tr>
+            <tr>
+                <td>Македонци</td><td>Албанци</td><td>Турци</td><td>Роми</td><td>Мак.Мусл</td>
+                <td>Муслим</td><td>Срби</td><td>Бошњаци</td><td>Други</td>
+                <td colspan="2" class="subheader">Вкупно</td>
+                <td colspan="3"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="data-input" id="natMac" value="0"></td>
+                <td><input type="text" class="data-input" id="natAlb" value="0"></td>
+                <td><input type="text" class="data-input" id="natTur" value="0"></td>
+                <td><input type="text" class="data-input" id="natRom" value="0"></td>
+                <td><input type="text" class="data-input" id="natMacMus" value="0"></td>
+                <td><input type="text" class="data-input" id="natMus" value="0"></td>
+                <td><input type="text" class="data-input" id="natSrb" value="0"></td>
+                <td><input type="text" class="data-input" id="natBos" value="0"></td>
+                <td><input type="text" class="data-input" id="natOther" value="0"></td>
+                <td class="sum-cell"><span class="sum-display" id="natTotal1">0</span></td>
+                <td class="sum-cell"><span class="sum-display" id="natTotal2">0</span></td>
+                <td colspan="3"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="data-input" id="natMacF" value="0"></td>
+                <td><input type="text" class="data-input" id="natAlbF" value="0"></td>
+                <td><input type="text" class="data-input" id="natTurF" value="0"></td>
+                <td><input type="text" class="data-input" id="natRomF" value="0"></td>
+                <td><input type="text" class="data-input" value="0"></td>
+                <td><input type="text" class="data-input" id="natMusF" value="0"></td>
+                <td><input type="text" class="data-input" value="0"></td>
+                <td><input type="text" class="data-input" value="0"></td>
+                <td><input type="text" class="data-input" value="0"></td>
+                <td class="sum-cell"><span class="sum-display" id="natTotalF">0</span></td>
+                <td class="subheader">Ученички</td>
+                <td colspan="3"></td>
+            </tr>
+            <tr><td colspan="14" style="height: 3px;"></td></tr>
+
+            <!-- 4. ДРЖАВЈАНСТВО -->
+            <tr><td colspan="14" class="section-title">Ученици според државјанството и полот</td></tr>
+            <tr>
+                <td colspan="2" class="subheader">Од Р.Македонија</td>
+                <td colspan="2" class="subheader">Од други држава</td>
+                <td class="subheader">Вкупно</td>
+                <td colspan="9"></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="text" class="data-input" id="drzMkd" value="0"></td>
+                <td colspan="2"><input type="text" class="data-input" id="drzOther" value="0"></td>
+                <td class="sum-cell"><span class="sum-display" id="drzTotal">0</span></td>
+                <td class="v-label">Вкупно</td>
+                <td colspan="8"></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="text" class="data-input" id="drzMkdF" value="0"></td>
+                <td colspan="2"><input type="text" class="data-input" id="drzOtherF" value="0"></td>
+                <td class="sum-cell"><span class="sum-display" id="drzTotalF">0</span></td>
+                <td class="v-label">Ученички</td>
+                <td colspan="8"></td>
+            </tr>
+            <tr><td colspan="14" style="height: 3px;"></td></tr>
+
+            <!-- 5. СТРАНСКИ ЈАЗИЦИ -->
+            <tr><td colspan="14" class="section-title">Ученици според учењето на странски јазици</td></tr>
+            <tr>
+                <td colspan="2" class="subheader">Странски јазик</td>
+                <td class="subheader">Англиски</td>
+                <td class="subheader">Германски</td>
+                <td class="subheader">Француски</td>
+                <td class="subheader">Италијански</td>
+                <td class="subheader">Руски</td>
+                <td class="subheader">Шпански</td>
+                <td class="subheader">Вкупно</td>
+                <td class="subheader">Ученички</td>
+                <td colspan="4"></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="v-label">Прв странски јазик</td>
+                <td><input type="text" class="data-input" id="lang1Eng" value="0"></td>
+                <td><input type="text" class="data-input" id="lang1Ger" value="0"></td>
+                <td><input type="text" class="data-input" id="lang1Fra" value="0"></td>
+                <td><input type="text" class="data-input" id="lang1Ita" value="0"></td>
+                <td><input type="text" class="data-input" id="lang1Rus" value="0"></td>
+                <td><input type="text" class="data-input" id="lang1Spa" value="0"></td>
+                <td class="sum-cell"><span class="sum-display" id="lang1Total">0</span></td>
+                <td class="sum-cell"><span class="sum-display" id="lang1Female">0</span></td>
+                <td colspan="4"></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="v-label">Втор странски јазик</td>
+                <td><input type="text" class="data-input" id="lang2Eng" value="0"></td>
+                <td><input type="text" class="data-input" id="lang2Ger" value="0"></td>
+                <td><input type="text" class="data-input" id="lang2Fra" value="0"></td>
+                <td><input type="text" class="data-input" id="lang2Ita" value="0"></td>
+                <td><input type="text" class="data-input" id="lang2Rus" value="0"></td>
+                <td><input type="text" class="data-input" id="lang2Spa" value="0"></td>
+                <td class="sum-cell"><span class="sum-display" id="lang2Total">0</span></td>
+                <td class="sum-cell"><span class="sum-display" id="lang2Female">0</span></td>
+                <td colspan="4"></td>
+            </tr>
+            <tr><td colspan="14" style="height: 3px;"></td></tr>
+
+            <!-- 6. ВОЗРАСТ -->
+            <tr><td colspan="14" class="section-title">Ученици по години на раѓање и пол</td></tr>
+            <tr>
+                <td>14 год</td><td>15 год</td><td>16 год</td><td>17 год</td><td>18 год</td><td>19 год</td>
+                <td>20+ год</td>
+                <td class="subheader">Вкупно</td>
+                <td colspan="6"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="data-input" id="age14" value="0"></td>
+                <td><input type="text" class="data-input" id="age15" value="0"></td>
+                <td><input type="text" class="data-input" id="age16" value="0"></td>
+                <td><input type="text" class="data-input" id="age17" value="0"></td>
+                <td><input type="text" class="data-input" id="age18" value="0"></td>
+                <td><input type="text" class="data-input" id="age19" value="0"></td>
+                <td><input type="text" class="data-input" id="age20" value="0"></td>
+                <td class="sum-cell"><span class="sum-display" id="ageTotal">0</span></td>
+                <td class="v-label">Вкупно</td>
+                <td colspan="5"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="data-input" id="age14F" value="0"></td>
+                <td><input type="text" class="data-input" id="age15F" value="0"></td>
+                <td><input type="text" class="data-input" id="age16F" value="0"></td>
+                <td><input type="text" class="data-input" id="age17F" value="0"></td>
+                <td><input type="text" class="data-input" id="age18F" value="0"></td>
+                <td><input type="text" class="data-input" id="age19F" value="0"></td>
+                <td><input type="text" class="data-input" id="age20F" value="0"></td>
+                <td class="sum-cell"><span class="sum-display" id="ageTotalF">0</span></td>
+                <td class="v-label">Ученички</td>
+                <td colspan="5"></td>
+            </tr>
+            <tr><td colspan="14" style="height: 3px;"></td></tr>
+
+            <!-- 7. ОБРАЗОВАНИЕ НА РОДИТЕЛИ -->
+            <tr><td colspan="14" class="section-title">Стручна подготовка на родителот</td></tr>
+            <tr>
+                <td>Високо</td><td>Виша</td><td>Средно</td><td>Основно</td><td>Квали.</td><td>Неква.</td>
+                <td>Други</td>
+                <td class="subheader">Вкупно</td>
+                <td colspan="6"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="data-input" id="parentHigh" value="0"></td>
+                <td><input type="text" class="data-input" id="parentHigher" value="0"></td>
+                <td><input type="text" class="data-input" id="parentSec" value="0"></td>
+                <td><input type="text" class="data-input" id="parentPrim" value="0"></td>
+                <td><input type="text" class="data-input" id="parentQual" value="0"></td>
+                <td><input type="text" class="data-input" id="parentNonQual" value="0"></td>
+                <td><input type="text" class="data-input" id="parentOther" value="0"></td>
+                <td class="sum-cell"><span class="sum-display" id="parentTotal">0</span></td>
+                <td colspan="6"></td>
+            </tr>
+            <tr><td colspan="14" style="height: 3px;"></td></tr>
+
+            <!-- 8. ОПШТИНА -->
+            <tr>
+                <td colspan="2" class="subheader">Општина Дебар</td>
+                <td colspan="2" class="subheader">Од други општини</td>
+                <td colspan="2" class="subheader">Од други држави</td>
+                <td class="subheader">Вкупно</td>
+                <td colspan="7"></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="text" class="data-input" id="opstDebar" value="0"></td>
+                <td colspan="2"><input type="text" class="data-input" id="opstOther" value="0"></td>
+                <td colspan="2"><input type="text" class="data-input" id="opstForeign" value="0"></td>
+                <td class="sum-cell"><span class="sum-display" id="opstTotal">0</span></td>
+                <td colspan="7"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer-note">
+        * Вредностите се автоматски пресметуваат од влечените податоци.<br>
+        * Прв странски јазик: Англиски | Втор странски јазик: Германски
+    </div>
+</div>
+
+<script>
+    // ========== КОНФИГУРАЦИЈА ==========
+    const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyVIpYl-fYikUkYoBYJ_1QBXQUy4kq6lRC9j9C1WcXttOLeZ5OLM_Izl6JKYXpvoz5rSg/exec';
+
+    // ========== JSONP ВЛЕЧЕЊЕ ==========
+    function vleciPodatoci() {
+        const statusEl = document.getElementById('syncStatus');
+        const btn = document.querySelector('.btn-sync');
+        
+        btn.disabled = true;
+        statusEl.textContent = 'влечам...';
+
+        const script = document.createElement('script');
+        script.src = GOOGLE_SHEETS_URL + '?callback=prikaziPodatoci';
+        
+        script.onerror = function() {
+            statusEl.textContent = 'грешка';
+            btn.disabled = false;
+            processData([]);
+        };
+        
+        const timeout = setTimeout(function() {
+            statusEl.textContent = 'пречекорување';
+            btn.disabled = false;
+            processData([]);
+        }, 15000);
+        
+        window.prikaziPodatoci = function(data) {
+            clearTimeout(timeout);
+            if (data && Array.isArray(data) && data.length > 0) {
+                statusEl.textContent = 'влечени ' + data.length;
+                processData(data);
+            } else {
+                statusEl.textContent = 'нема податоци';
+                processData([]);
+            }
+            btn.disabled = false;
+            document.body.removeChild(script);
+        };
+        
+        document.body.appendChild(script);
+    }
+
+    // ========== ГЛАВНА ОБРАБОТКА ==========
+    function processData(students) {
+        if (!students || !Array.isArray(students)) {
+            students = [];
+        }
+
+        const debarVillages = [
+            "горно косоврасти", "долно косоврасти", "отишани", "могорче", 
+            "баниште", "бомово", "горно мелничани", "долно мелничани", 
+            "јевла", "конари", "кривци", "рајчица", "спас", 
+            "турје", "хоме", "џепиште", "дебар"
+        ];
+
+        function isInDebar(location) {
+            if (!location) return false;
+            const loc = location.trim().toLowerCase();
+            if (loc === '') return false;
+            return debarVillages.some(v => loc.includes(v) || v.includes(loc));
+        }
+
+        const totalStudents = students.length;
+        let femaleCount = 0;
+        
+        let excellent = 0, veryGood = 0, good = 0, sufficient = 0, repeater = 0;
+        let repeatersTotal = 0, repeatersFemale = 0;
+        
+        let natCounts = { македонец: 0, албанец: 0, турчин: 0, ром: 0, макмусл: 0, муслим: 0, србин: 0, бошњак: 0, друго: 0 };
+        let femaleNatCounts = { македонец: 0, албанец: 0, турчин: 0, ром: 0, макмусл: 0, муслим: 0, србин: 0, бошњак: 0, друго: 0 };
+        
+        let drzMkd = 0, drzMkdF = 0;
+        
+        let ageCounts = { 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0 };
+        let ageCountsF = { 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0 };
+        
+        let parentHigh = 0, parentHigher = 0, parentSec = 0, parentPrim = 0, 
+            parentQual = 0, parentNonQual = 0, parentOther = 0;
+        
+        let opstDebar = 0, opstOther = 0;
+
+        students.forEach(student => {
+            const pol = student['пол'] || student['Пол'] || '';
+            const isFemale = pol.toLowerCase().includes('ж') || 
+                            pol === 'женски' || 
+                            pol === 'female' ||
+                            pol === 'женско';
+            if (isFemale) femaleCount++;
+
+            const uspeh = student['Успех'] || student['успех'] || '';
+            if (uspeh.toLowerCase().includes('одличен')) excellent++;
+            else if (uspeh.toLowerCase().includes('многу добар')) veryGood++;
+            else if (uspeh.toLowerCase().includes('добар')) good++;
+            else if (uspeh.toLowerCase().includes('доволен')) sufficient++;
+            else if (uspeh.toLowerCase().includes('повторувач') || uspeh.toLowerCase().includes('repeater')) {
+                repeater++;
+                repeatersTotal++;
+                if (isFemale) repeatersFemale++;
+            }
+
+            const nat = student['Националност'] || student['националност'] || '';
+            let natKey = 'друго';
+            if (nat.toLowerCase().includes('македонец')) natKey = 'македонец';
+            else if (nat.toLowerCase().includes('албанец')) natKey = 'албанец';
+            else if (nat.toLowerCase().includes('турчин')) natKey = 'турчин';
+            else if (nat.toLowerCase().includes('ром')) natKey = 'ром';
+            else if (nat.toLowerCase().includes('макмусл') || nat.toLowerCase().includes('македонски муслиман')) natKey = 'макмусл';
+            else if (nat.toLowerCase().includes('муслим')) natKey = 'муслим';
+            else if (nat.toLowerCase().includes('србин')) natKey = 'србин';
+            else if (nat.toLowerCase().includes('бошњак')) natKey = 'бошњак';
+            
+            natCounts[natKey] = (natCounts[natKey] || 0) + 1;
+            if (isFemale) {
+                femaleNatCounts[natKey] = (femaleNatCounts[natKey] || 0) + 1;
+            }
+
+            const drzava = student['Државјанство'] || student['државјанство'] || '';
+            if (drzava.toLowerCase().includes('македонија') || drzava === '') {
+                drzMkd++;
+                if (isFemale) drzMkdF++;
+            }
+
+            let age = 0;
+            const datum = student['Датум на раѓање'] || student['датум на раѓање'] || '';
+            if (datum) {
+                try {
+                    let birthDate;
+                    if (datum.includes('.')) {
+                        const parts = datum.split('.');
+                        birthDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    } else {
+                        birthDate = new Date(datum);
+                    }
+                    if (!isNaN(birthDate.getTime())) {
+                        const now = new Date();
+                        age = now.getFullYear() - birthDate.getFullYear();
+                        if (now.getMonth() < birthDate.getMonth() || 
+                            (now.getMonth() === birthDate.getMonth() && now.getDate() < birthDate.getDate())) {
+                            age--;
+                        }
+                    }
+                } catch(e) {}
+            }
+            
+            let ageKey = 20;
+            if (age >= 14 && age <= 19) ageKey = age;
+            ageCounts[ageKey] = (ageCounts[ageKey] || 0) + 1;
+            if (isFemale) {
+                ageCountsF[ageKey] = (ageCountsF[ageKey] || 0) + 1;
+            }
+
+            let obraz = student['Образование на таткото'] || student['образование на таткото'] || '';
+            if (!obraz) {
+                obraz = student['Образование на мајката'] || student['образование на мајката'] || '';
+            }
+            
+            if (obraz.toLowerCase().includes('високо')) parentHigh++;
+            else if (obraz.toLowerCase().includes('виша')) parentHigher++;
+            else if (obraz.toLowerCase().includes('средно')) parentSec++;
+            else if (obraz.toLowerCase().includes('основно')) parentPrim++;
+            else if (obraz.toLowerCase().includes('квалификуван')) parentQual++;
+            else if (obraz.toLowerCase().includes('неквалификуван')) parentNonQual++;
+            else if (obraz) parentOther++;
+            else parentOther++;
+
+            const mestoZiveenje = student['Место на живеење'] || student['место на живеење'] || '';
+            if (isInDebar(mestoZiveenje) || mestoZiveenje === "Могорче") {
+                opstDebar++;
+            } else if (mestoZiveenje && mestoZiveenje.trim() !== '') {
+                opstOther++;
+            } else {
+                opstOther++;
+            }
+        });
+
+        function setVal(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.value = val;
+        }
+        function setSpan(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val;
+        }
+
+        setVal('totalStudents', totalStudents);
+        setVal('femaleStudents', femaleCount);
+
+        setVal('excellent', excellent);
+        setVal('veryGood', veryGood);
+        setVal('good', good);
+        setVal('sufficient', sufficient);
+        setVal('repeater', repeater);
+        setSpan('sumGrades', excellent + veryGood + good + sufficient + repeater);
+        
+        setSpan('repeatersTotal', repeatersTotal);
+        setSpan('repeatersFemale', repeatersFemale);
+        setSpan('repeatersFemaleDisplay', repeatersFemale);
+        
+        setVal('natMac', natCounts['македонец'] || 0);
+        setVal('natAlb', natCounts['албанец'] || 0);
+        setVal('natTur', natCounts['турчин'] || 0);
+        setVal('natRom', natCounts['ром'] || 0);
+        setVal('natMacMus', natCounts['макмусл'] || 0);
+        setVal('natMus', natCounts['муслим'] || 0);
+        setVal('natSrb', natCounts['србин'] || 0);
+        setVal('natBos', natCounts['бошњак'] || 0);
+        setVal('natOther', natCounts['друго'] || 0);
+        
+        const natTotal = Object.values(natCounts).reduce((a, b) => a + b, 0);
+        setSpan('natTotal1', natTotal);
+        setSpan('natTotal2', natTotal);
+        
+        setVal('natMacF', femaleNatCounts['македонец'] || 0);
+        setVal('natAlbF', femaleNatCounts['албанец'] || 0);
+        setVal('natTurF', femaleNatCounts['турчин'] || 0);
+        setVal('natRomF', femaleNatCounts['ром'] || 0);
+        setVal('natMusF', femaleNatCounts['муслим'] || 0);
+        setSpan('natTotalF', Object.values(femaleNatCounts).reduce((a, b) => a + b, 0));
+        
+        setVal('drzMkd', drzMkd);
+        setVal('drzOther', 0);
+        setSpan('drzTotal', drzMkd);
+        setVal('drzMkdF', drzMkdF);
+        setVal('drzOtherF', 0);
+        setSpan('drzTotalF', drzMkdF);
+        
+        setVal('lang1Eng', totalStudents);
+        setVal('lang1Ger', 0);
+        setVal('lang1Fra', 0);
+        setVal('lang1Ita', 0);
+        setVal('lang1Rus', 0);
+        setVal('lang1Spa', 0);
+        setSpan('lang1Total', totalStudents);
+        setSpan('lang1Female', femaleCount);
+        
+        setVal('lang2Eng', 0);
+        setVal('lang2Ger', totalStudents);
+        setVal('lang2Fra', 0);
+        setVal('lang2Ita', 0);
+        setVal('lang2Rus', 0);
+        setVal('lang2Spa', 0);
+        setSpan('lang2Total', totalStudents);
+        setSpan('lang2Female', femaleCount);
+        
+        setVal('age14', ageCounts[14] || 0);
+        setVal('age15', ageCounts[15] || 0);
+        setVal('age16', ageCounts[16] || 0);
+        setVal('age17', ageCounts[17] || 0);
+        setVal('age18', ageCounts[18] || 0);
+        setVal('age19', ageCounts[19] || 0);
+        setVal('age20', ageCounts[20] || 0);
+        setSpan('ageTotal', Object.values(ageCounts).reduce((a, b) => a + b, 0));
+        
+        setVal('age14F', ageCountsF[14] || 0);
+        setVal('age15F', ageCountsF[15] || 0);
+        setVal('age16F', ageCountsF[16] || 0);
+        setVal('age17F', ageCountsF[17] || 0);
+        setVal('age18F', ageCountsF[18] || 0);
+        setVal('age19F', ageCountsF[19] || 0);
+        setVal('age20F', ageCountsF[20] || 0);
+        setSpan('ageTotalF', Object.values(ageCountsF).reduce((a, b) => a + b, 0));
+        
+        setVal('parentHigh', parentHigh);
+        setVal('parentHigher', parentHigher);
+        setVal('parentSec', parentSec);
+        setVal('parentPrim', parentPrim);
+        setVal('parentQual', parentQual);
+        setVal('parentNonQual', parentNonQual);
+        setVal('parentOther', parentOther);
+        setSpan('parentTotal', parentHigh + parentHigher + parentSec + parentPrim + parentQual + parentNonQual + parentOther);
+        
+        setVal('opstDebar', opstDebar);
+        setVal('opstOther', opstOther);
+        setVal('opstForeign', 0);
+        setSpan('opstTotal', opstDebar + opstOther);
+    }
+
+    // ========== ХЕДЕР ==========
+    const classYear = document.getElementById('classYear');
+    const parallel = document.getElementById('parallel');
+    const schoolYear = document.getElementById('schoolYear');
+    const classDisplay = document.getElementById('classDisplay');
+    const yearDisplay = document.getElementById('yearDisplay');
+
+    function updateHeader() {
+        classDisplay.textContent = classYear.value + '-' + parallel.value;
+        yearDisplay.textContent = schoolYear.value;
+    }
+    classYear.addEventListener('change', updateHeader);
+    parallel.addEventListener('change', updateHeader);
+    schoolYear.addEventListener('change', updateHeader);
+    updateHeader();
+
+    // ========== ИНИЦИЈАЛИЗАЦИЈА ==========
+    processData([]);
+    
+    window.addEventListener('load', function() {
+        setTimeout(vleciPodatoci, 500);
+    });
+</script>
+</body>
+</html>

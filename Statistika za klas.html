@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статистика – оценки и изостаноци</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4fa;
+            margin: 20px;
+            color: #1a2a3a;
+        }
+        .print-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .header-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 2px solid #1a73e8;
+            margin-bottom: 20px;
+        }
+        .header-info div {
+            font-size: 0.95rem;
+        }
+        .header-info strong {
+            color: #1a3650;
+        }
+        .header-info input {
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: #1a3650;
+            font-size: 1rem;
+            width: 180px;
+        }
+        .header-info input:focus {
+            outline: 2px solid #1a73e8;
+            border-radius: 4px;
+            background: #fff;
+        }
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 20px;
+            padding: 12px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e5ed;
+        }
+        .filter-bar label {
+            font-weight: 500;
+            margin-right: 6px;
+        }
+        .filter-bar select {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid #bcc9db;
+            background: white;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+        .btn {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #1557b0; }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #1e7e34; }
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #b02a37; }
+        .btn-warning { background: #ffc107; color: #1a2a3a; }
+        .btn-warning:hover { background: #e0a800; }
+        .btn-print { background: #6c757d; }
+        .btn-print:hover { background: #5a6268; }
+        .btn-close { background: #dc3545; }
+        .btn-close:hover { background: #b02a37; }
+        .btn-import { background: #17a2b8; }
+        .btn-import:hover { background: #138496; }
+        .table-wrap {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        table {
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            width: 100%;
+            white-space: nowrap;
+        }
+        th, td {
+            border: 1px solid #cdd7e4;
+            padding: 4px 6px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        thead th {
+            background: #dce4ef;
+            color: #1a3650;
+            font-weight: 600;
+        }
+        .subject-header, .section-header { background: #c8d4e3; }
+        .student-name {
+            background: #eef3fa;
+            font-weight: 500;
+            text-align: left;
+            padding-left: 10px;
+            min-width: 190px;
+        }
+        .even-row { background: #ffffff; }
+        .odd-row { background: #f7faff; }
+        .total-row { background: #e2e8f0; font-weight: 600; }
+        .behavior-cell { text-align: left; font-size: 0.7rem; min-width: 80px; }
+        .footer {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            color: #3a5a7a;
+        }
+        .stats-title {
+            margin-top: 30px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #0b2b4a;
+        }
+        .avg-cell { font-weight: 600; color: #1a3650; }
+        .subject-avg-row { background: #e8edf5; font-weight: 500; }
+        .class-avg-row { background: #dce4ef; font-weight: 700; }
+        .total-count-row { background: #f0f4fc; font-weight: 600; }
+        .overall-grade {
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .grade-odlichen { background: #d4edda; color: #155724; }
+        .grade-mnogu-dobar { background: #cce5ff; color: #004085; }
+        .grade-dobar { background: #fff3cd; color: #856404; }
+        .grade-dovolen { background: #f8d7da; color: #721c24; }
+        .grade-neocenet { background: #e2e3e5; color: #383d41; }
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e5ed;
+        }
+        .input-group select {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #bcc9db;
+            font-size: 0.85rem;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        .question-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 12px 18px;
+            margin: 5px 0;
+        }
+        .question-box label { font-weight: 500; }
+
+        @page {
+            size: landscape;
+            margin: 12mm;
+        }
+        @media print {
+            body { background: #fff; margin: 0; }
+            .print-container { box-shadow: none; padding: 8px; max-width: 100%; }
+            .no-print, .filter-bar, .action-buttons, .question-box, .input-group, .btn, .btn-print, .btn-close, .btn-import { display: none !important; }
+            .table-wrap { overflow-x: visible; margin-bottom: 10px; }
+            table { font-size: 0.6rem; }
+            th, td { padding: 2px 3px; }
+            .header-info { border-bottom: 2px solid #000; }
+            .header-info input { border: none; background: transparent; }
+            .stats-title { margin-top: 12px; font-size: 0.9rem; }
+            .overall-grade { background: none !important; color: #000 !important; font-weight: 600; }
+            .even-row, .odd-row { background: #fff; }
+            .total-row { background: #f0f0f0; }
+            .subject-avg-row { background: #f0f0f0; }
+            .class-avg-row { background: #e0e0e0; }
+            .total-count-row { background: #f0f0f0; }
+            
+            .print-page-1 {
+                display: block;
+                page-break-after: always;
+            }
+            .print-page-2 {
+                display: block;
+            }
+            .print-page-1, .print-page-2 {
+                display: block !important;
+            }
+        }
+        .print-page-1, .print-page-2 {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="print-container" id="printArea">
+    <!-- Наслов -->
+    <div class="header-info">
+        <div><strong>Класен раководител:</strong> <span id="teacherDisplay">проф. Решат Маловски</span></div>
+        <div><strong>Учебна година:</strong> <span id="yearDisplay">2025/2026</span></div>
+        <div><strong>Паралелка:</strong> <span id="classDisplay">IV-7</span></div>
+        <div><strong>Период:</strong> <span id="periodDisplay">I полугодие</span></div>
+    </div>
+
+    <!-- Контроли (не се печатат) -->
+    <div class="no-print">
+        <div class="filter-bar">
+            <div>
+                <label for="yearSelect">Година:</label>
+                <select id="yearSelect">
+                    <option value="I">I</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV" selected>IV</option>
+                </select>
+            </div>
+            <div>
+                <label for="classSelect">Паралелка:</label>
+                <select id="classSelect">
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7" selected>7</option>
+                </select>
+            </div>
+            <div>
+                <label for="semesterSelect">Полугодие:</label>
+                <select id="semesterSelect">
+                    <option value="I">I полугодие</option>
+                    <option value="II">II полугодие</option>
+                    <option value="Год">Годишни</option>
+                </select>
+            </div>
+            <button class="btn" onclick="exportExcel()">📥 Извези во Excel</button>
+            <button class="btn btn-import" onclick="document.getElementById('fileInput').click()">📤 Увези од Excel</button>
+            <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="importExcel(event)">
+            <button class="btn btn-print" onclick="window.print()">🖨️ Печати</button>
+            <button class="btn btn-close" onclick="window.close()">✖ Затвори</button>
+        </div>
+
+        <!-- Прашања за статистика -->
+        <div style="background:#fff; padding:15px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom:20px;">
+            <div style="font-weight:600; margin-bottom:10px;">📝 Внесување на статистички податоци</div>
+            <div class="question-box">
+                <label>❓ Дали има нови ученици запишани во тек на годината?</label>
+                <div class="input-group" style="margin-top:8px;">
+                    <select id="newNat">
+                        <option value="МАК">Македонец</option>
+                        <option value="АЛБ">Албанец</option>
+                        <option value="ТУР">Турчин</option>
+                        <option value="РОМ">Ром</option>
+                        <option value="МУС">Муслиман</option>
+                        <option value="ММУС">Мак.Муслиман</option>
+                        <option value="ДРУГО">Друго</option>
+                    </select>
+                    <select id="newGender">
+                        <option value="M">Машки</option>
+                        <option value="F">Женски</option>
+                    </select>
+                    <button class="btn btn-success" onclick="addNewStudent()">➕ Додади нов ученик</button>
+                </div>
+            </div>
+            <div class="question-box">
+                <label>❓ Дали некој ученик ја напуштил паралелката?</label>
+                <div class="input-group" style="margin-top:8px;">
+                    <select id="leftNat">
+                        <option value="МАК">Македонец</option>
+                        <option value="АЛБ">Албанец</option>
+                        <option value="ТУР">Турчин</option>
+                        <option value="РОМ">Ром</option>
+                        <option value="МУС">Муслиман</option>
+                        <option value="ММУС">Мак.Муслиман</option>
+                        <option value="ДРУГО">Друго</option>
+                    </select>
+                    <select id="leftGender">
+                        <option value="M">Машки</option>
+                        <option value="F">Женски</option>
+                    </select>
+                    <button class="btn btn-danger" onclick="addLeftStudent()">➖ Додади напуштил</button>
+                </div>
+            </div>
+            <div class="question-box">
+                <label>❓ Дали има повторувачи во паралелката?</label>
+                <div class="input-group" style="margin-top:8px;">
+                    <select id="repeatNat">
+                        <option value="МАК">Македонец</option>
+                        <option value="АЛБ">Албанец</option>
+                        <option value="ТУР">Турчин</option>
+                        <option value="РОМ">Ром</option>
+                        <option value="МУС">Муслиман</option>
+                        <option value="ММУС">Мак.Муслиман</option>
+                        <option value="ДРУГО">Друго</option>
+                    </select>
+                    <select id="repeatGender">
+                        <option value="M">Машки</option>
+                        <option value="F">Женски</option>
+                    </select>
+                    <button class="btn btn-warning" onclick="addRepeatStudent()">🔄 Додади повторувач</button>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn" onclick="resetStats()" style="background:#6c757d;">🔄 Ресетирај ги сите внесени податоци</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- СТРАНА 1: УЧЕНИЦИ -->
+    <div class="print-page-1">
+        <div class="stats-title">📋 Список на ученици со оценки</div>
+        <div class="table-wrap">
+            <table id="gradesTable">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="min-width:150px;">Ученик</th>
+                        <th colspan="10" class="subject-header">Предмети</th>
+                        <th rowspan="2">Бр. на 1</th>
+                        <th rowspan="2">Општ успех</th>
+                        <th rowspan="2">Просек</th>
+                        <th colspan="3" class="section-header">Оправдани</th>
+                        <th colspan="3" class="section-header">Неоправдани</th>
+                        <th rowspan="2">Поведение</th>
+                    </tr>
+                    <tr>
+                        <th>Мак.</th>
+                        <th>Мат.</th>
+                        <th>Анг.</th>
+                        <th>Гер.</th>
+                        <th>Био.</th>
+                        <th>Физ.</th>
+                        <th>Хем.</th>
+                        <th>Фил.</th>
+                        <th>Биз.</th>
+                        <th>Спорт</th>
+                        <th>I</th><th>II</th><th>Вк</th>
+                        <th>I</th><th>II</th><th>Вк</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- СТРАНА 2: СТАТИСТИКА ПО НАЦИОНАЛНОСТ + РАСПРЕДЕЛБА -->
+    <div class="print-page-2">
+        <div class="stats-title">📈 Статистика по националност</div>
+        <div class="table-wrap" id="statsWrap">
+            <table id="statsTable">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Националност</th>
+                        <th colspan="2" class="section-header">Почеток на год.</th>
+                        <th colspan="2" class="section-header">Нови (запишани)</th>
+                        <th colspan="2" class="section-header">Напуштиле</th>
+                        <th colspan="2" class="section-header">Повторувачи</th>
+                        <th colspan="2" class="section-header">Останале на крај</th>
+                        <th colspan="4" class="section-header">Општ успех</th>
+                        <th colspan="1" class="section-header">Неоценети</th>
+                        <th colspan="3" class="section-header">Единици (слаби)</th>
+                        <th colspan="3" class="section-header">Изостаноци</th>
+                        <th colspan="3" class="section-header">Поведение</th>
+                    </tr>
+                    <tr>
+                        <th>М</th><th>Ж</th>
+                        <th>М</th><th>Ж</th>
+                        <th>М</th><th>Ж</th>
+                        <th>М</th><th>Ж</th>
+                        <th>М</th><th>Ж</th>
+                        <th>Одл.</th><th>Мн.доб.</th><th>Доб.</th><th>Дов.</th>
+                        <th>Бр.</th>
+                        <th>Со 1</th><th>Со 2</th><th>Со 3+</th>
+                        <th>Опр.</th><th>Неопр.</th><th>Вк.</th>
+                        <th>Прим.</th><th>Доб.</th><th>Незад.</th>
+                    </tr>
+                </thead>
+                <tbody id="statsBody"></tbody>
+            </table>
+        </div>
+
+        <div class="stats-title" style="margin-top:20px;">📊 Распределба на оценки по предмети</div>
+        <div class="table-wrap">
+            <table id="distributionTable">
+                <thead>
+                    <tr>
+                        <th>Оценка</th>
+                        <th>Македонски</th>
+                        <th>Математика</th>
+                        <th>Англиски</th>
+                        <th>Германски</th>
+                        <th>Биологија</th>
+                        <th>Физика</th>
+                        <th>Хемија</th>
+                        <th>Филозофија</th>
+                        <th>Бизнис</th>
+                        <th>Спорт</th>
+                    </tr>
+                </thead>
+                <tbody id="distributionBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer no-print">
+        <strong>Напомена:</strong> Статистиката се пресметува врз основа на избраното полугодие.<br>
+        <span style="color:#1a73e8;">Почеток</span> се прилагодува според нови/напуштиле. <span style="color:#28a745;">Останале на крај</span> е фиксен број од табелата.
+    </div>
+</div>
+
+<script>
+    // ---- ПОДАТОЦИ ЗА УЧЕНИЦИТЕ (НОВ ФОРМАТ) ----
+    // Секој предмет има низа од 3 оценки: [I полугодие, II полугодие, Годишна]
+    const studentsIV7 = [
+        { 
+            name: "Абазоска Музамед Алдина", 
+            gender: 0, 
+            nationality: "ТУР", 
+            grades: [
+                [4, 4, 4], // Македонски
+                [1, 2, 2], // Математика
+                [2, 3, 3], // Англиски
+                [4, 5, 5], // Германски
+                [5, 5, 5], // Биологија
+                [2, 3, 3], // Физика
+                [2, 3, 3], // Хемија
+                [3, 3, 3], // Филозофија
+                [3, 4, 4], // Бизнис
+                [4, 2, 4]  // Спорт
+            ],
+            behavior: "Примерно", 
+            excused: { I:8, II:31, вк:39 }, 
+            unexcused: { I:7, II:5, вк:12 } 
+        },
+        { 
+            name: "Елмазоски Рамадан Елмаз", 
+            gender: 1, 
+            nationality: "ТУР", 
+            grades: [
+                [3, 4, 4],
+                [2, 3, 3],
+                [3, 4, 4],
+                [2, 3, 3],
+                [3, 4, 4],
+                [2, 3, 3],
+                [2, 3, 3],
+                [2, 3, 3],
+                [3, 5, 5],
+                [4, 4, 4]
+            ],
+            behavior: "Примерно", 
+            excused: { I:4, II:24, вк:28 }, 
+            unexcused: { I:7, II:4, вк:11 } 
+        },
+        { 
+            name: "Иловска Марко Таса", 
+            gender: 0, 
+            nationality: "МАК", 
+            grades: [
+                [5, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5]
+            ],
+            behavior: "Примерно", 
+            excused: { I:3, II:5, вк:8 }, 
+            unexcused: { I:1, II:1, вк:2 } 
+        },
+        { 
+            name: "Иса Наим Амар", 
+            gender: 1, 
+            nationality: "ТУР", 
+            grades: [
+                [2, 3, 3],
+                [1, 2, 2],
+                [3, 4, 4],
+                [3, 2, 2],
+                [2, 2, 2],
+                [1, 2, 2],
+                [2, 2, 2],
+                [1, 2, 2],
+                [2, 4, 4],
+                [4, 5, 5]
+            ],
+            behavior: "Незадоволително", 
+            excused: { I:15, II:21, вк:36 }, 
+            unexcused: { I:18, II:10, вк:28 } 
+        },
+        { 
+            name: "Јакуповски Латив Бајрам", 
+            gender: 1, 
+            nationality: "ТУР", 
+            grades: [
+                [2, 2, 2],
+                [1, 2, 2],
+                [2, 3, 3],
+                [1, 2, 2],
+                [2, 2, 2],
+                [1, 2, 2],
+                [2, 2, 2],
+                [1, 2, 2],
+                [2, 2, 2],
+                [3, 4, 4]
+            ],
+            behavior: "Незадоволително", 
+            excused: { I:16, II:56, вк:72 }, 
+            unexcused: { I:18, II:12, вк:30 } 
+        },
+        { 
+            name: "Јосифовска Јосиф Михаела", 
+            gender: 0, 
+            nationality: "МАК", 
+            grades: [
+                [5, 5, 5],
+                [2, 4, 4],
+                [5, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5],
+                [3, 4, 4],
+                [4, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5]
+            ],
+            behavior: "Примерно", 
+            excused: { I:16, II:7, вк:23 }, 
+            unexcused: { I:1, II:1, вк:2 } 
+        },
+        { 
+            name: "Камбероска Мунтекин Азра", 
+            gender: 0, 
+            nationality: "ТУР", 
+            grades: [
+                [2, 3, 3],
+                [1, 2, 2],
+                [1, 2, 2],
+                [2, 2, 2],
+                [2, 2, 2],
+                [2, 2, 2],
+                [2, 2, 2],
+                [2, 2, 2],
+                [2, 2, 2],
+                [2, 3, 3]
+            ],
+            behavior: "Примерно", 
+            excused: { I:4, II:4, вк:8 }, 
+            unexcused: { I:1, II:1, вк:2 } 
+        },
+        { 
+            name: "Лазри Асан Јасмина", 
+            gender: 0, 
+            nationality: "АЛБ", 
+            grades: [
+                [2, 3, 3],
+                [1, 2, 2],
+                [2, 3, 3],
+                [3, 3, 3],
+                [5, 5, 5],
+                [1, 3, 3],
+                [2, 3, 3],
+                [3, 3, 3],
+                [3, 4, 4],
+                [4, 4, 4]
+            ],
+            behavior: "Примерно", 
+            excused: { I:14, II:18, вк:32 }, 
+            unexcused: { I:2, II:5, вк:7 } 
+        },
+        { 
+            name: "Маловски Веби Ертан", 
+            gender: 1, 
+            nationality: "ТУР", 
+            grades: [
+                [2, 3, 3],
+                [1, 2, 2],
+                [1, 2, 2],
+                [1, 2, 2],
+                [2, 3, 3],
+                [1, 2, 2],
+                [2, 2, 2],
+                [1, 2, 2],
+                [2, 3, 3],
+                [3, 4, 4]
+            ],
+            behavior: "Примерно", 
+            excused: { I:14, II:24, вк:38 }, 
+            unexcused: { I:4, II:3, вк:7 } 
+        },
+        { 
+            name: "Муслиоска Алија Анита", 
+            gender: 0, 
+            nationality: "ТУР", 
+            grades: [
+                [4, 4, 4],
+                [2, 4, 4],
+                [3, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5],
+                [3, 5, 5],
+                [3, 4, 4],
+                [4, 4, 4],
+                [4, 5, 5],
+                [5, 5, 5]
+            ],
+            behavior: "Примерно", 
+            excused: { I:1, II:4, вк:5 }, 
+            unexcused: { I:4, II:1, вк:5 } 
+        },
+        { 
+            name: "Османовски Алит Един", 
+            gender: 1, 
+            nationality: "ТУР", 
+            grades: [
+                [2, 2, 2],
+                [1, 2, 2],
+                [2, 3, 3],
+                [1, 2, 2],
+                [2, 3, 3],
+                [1, 2, 2],
+                [2, 2, 2],
+                [1, 2, 2],
+                [3, 4, 4],
+                [5, 5, 5]
+            ],
+            behavior: "Примерно", 
+            excused: { I:5, II:10, вк:15 }, 
+            unexcused: { I:4, II:8, вк:12 } 
+        },
+        { 
+            name: "Равманоска Муамет Едија", 
+            gender: 0, 
+            nationality: "АЛБ", 
+            grades: [
+                [3, 4, 4],
+                [1, 2, 2],
+                [4, 5, 5],
+                [4, 5, 5],
+                [5, 5, 5],
+                [1, 3, 3],
+                [3, 3, 3],
+                [3, 3, 3],
+                [3, 4, 4],
+                [5, 5, 5]
+            ],
+            behavior: "Примерно", 
+            excused: { I:7, II:24, вк:31 }, 
+            unexcused: { I:5, II:7, вк:12 } 
+        },
+        { 
+            name: "Равмански Беким Мирсен", 
+            gender: 1, 
+            nationality: "ТУР", 
+            grades: [
+                [2, 3, 3],
+                [1, 3, 3],
+                [3, 4, 4],
+                [4, 5, 5],
+                [5, 5, 5],
+                [1, 3, 3],
+                [3, 3, 3],
+                [3, 3, 3],
+                [3, 4, 4],
+                [5, 5, 5]
+            ],
+            behavior: "Примерно", 
+            excused: { I:1, II:16, вк:17 }, 
+            unexcused: { I:3, II:7, вк:10 } 
+        },
+        { 
+            name: "Рамадановска Мирсад Ајлин", 
+            gender: 0, 
+            nationality: "ТУР", 
+            grades: [
+                [4, 4, 4],
+                [1, 3, 3],
+                [5, 5, 5],
+                [5, 5, 5],
+                [5, 5, 5],
+                [2, 3, 3],
+                [3, 4, 4],
+                [3, 4, 4],
+                [4, 5, 5],
+                [5, 5, 5]
+            ],
+            behavior: "Примерно", 
+            excused: { I:9, II:14, вк:23 }, 
+            unexcused: { I:6, II:7, вк:13 } 
+        },
+        { 
+            name: "Сулоска Ерхан Сениха", 
+            gender: 0, 
+            nationality: "ТУР", 
+            grades: [
+                [3, 4, 4],
+                [1, 2, 2],
+                [2, 3, 3],
+                [4, 5, 5],
+                [5, 5, 5],
+                [3, 4, 4],
+                [3, 4, 4],
+                [3, 3, 3],
+                [3, 4, 4],
+                [4, 4, 4]
+            ],
+            behavior: "Примерно", 
+            excused: { I:8, II:11, вк:19 }, 
+            unexcused: { I:0, II:1, вк:1 } 
+        }
+    ];
+
+    // Симулирани податоци за други паралелки/години
+    function adjustGrades(grades, offset) {
+        return grades.map(subj => subj.map(g => Math.max(1, g - offset)));
+    }
+
+    const studentsIV6 = studentsIV7.map(s => ({ 
+        ...s, 
+        name: s.name.replace("7", "6"), 
+        grades: adjustGrades(s.grades, 1)
+    }));
+    const studentsIV5 = studentsIV7.map(s => ({ 
+        ...s, 
+        name: s.name.replace("7", "5"), 
+        grades: adjustGrades(s.grades, 2)
+    }));
+    const studentsIII7 = studentsIV7.map(s => ({ 
+        ...s, 
+        name: s.name.replace("IV", "III"), 
+        grades: adjustGrades(s.grades, 1)
+    }));
+
+    const dataMap = {
+        'I-5': studentsIV5.map(s => ({...s, name: s.name.replace("IV", "I").replace("7", "5")})),
+        'I-6': studentsIV6.map(s => ({...s, name: s.name.replace("IV", "I").replace("7", "6")})),
+        'I-7': studentsIV7.map(s => ({...s, name: s.name.replace("IV", "I")})),
+        'II-5': studentsIV5.map(s => ({...s, name: s.name.replace("IV", "II").replace("7", "5")})),
+        'II-6': studentsIV6.map(s => ({...s, name: s.name.replace("IV", "II").replace("7", "6")})),
+        'II-7': studentsIV7.map(s => ({...s, name: s.name.replace("IV", "II")})),
+        'III-5': studentsIV5.map(s => ({...s, name: s.name.replace("IV", "III").replace("7", "5")})),
+        'III-6': studentsIV6.map(s => ({...s, name: s.name.replace("IV", "III").replace("7", "6")})),
+        'III-7': studentsIV7.map(s => ({...s, name: s.name.replace("IV", "III")})),
+        'IV-5': studentsIV5.map(s => ({...s, name: s.name.replace("7", "5")})),
+        'IV-6': studentsIV6.map(s => ({...s, name: s.name.replace("7", "6")})),
+        'IV-7': studentsIV7
+    };
+
+    // ---- БАЗНИ СТАТИСТИЧКИ ПОДАТОЦИ (АВТОМАТСКИ ПРЕСМЕТАНИ) ----
+    function calculateBaseEndStats(students) {
+        const stats = {};
+        const allNats = ['МАК', 'АЛБ', 'ТУР', 'РОМ', 'МУС', 'ММУС', 'ДРУГО'];
+        allNats.forEach(nat => stats[nat] = { endM: 0, endF: 0 });
+        students.forEach(s => {
+            if (stats[s.nationality]) {
+                if (s.gender === 1) stats[s.nationality].endM++;
+                else stats[s.nationality].endF++;
+            }
+        });
+        return stats;
+    }
+
+    // ---- ПРОМЕНЛИВИ ЗА ВНЕСЕНИ ПОДАТОЦИ ----
+    let dynamicStats = {
+        'МАК': { 'I': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 },
+                 'II': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 } },
+        'АЛБ': { 'I': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 },
+                 'II': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 } },
+        'ТУР': { 'I': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 },
+                 'II': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 } },
+        'РОМ': { 'I': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 },
+                 'II': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 } },
+        'МУС': { 'I': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 },
+                 'II': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 } },
+        'ММУС': { 'I': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 },
+                  'II': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 } },
+        'ДРУГО': { 'I': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 },
+                   'II': { enrolledM: 0, enrolledF: 0, leftM: 0, leftF: 0, repeatM: 0, repeatF: 0 } }
+    };
+
+    // ---- РЕФЕРЕНЦИ ----
+    const yearSelect = document.getElementById('yearSelect');
+    const classSelect = document.getElementById('classSelect');
+    const semesterSelect = document.getElementById('semesterSelect');
+    const classDisplay = document.getElementById('classDisplay');
+    const periodDisplay = document.getElementById('periodDisplay');
+    const teacherDisplay = document.getElementById('teacherDisplay');
+    const yearDisplay = document.getElementById('yearDisplay');
+    const tbody = document.getElementById('tableBody');
+    const statsBody = document.getElementById('statsBody');
+    const distributionBody = document.getElementById('distributionBody');
+
+    // ---- ПОМОШНИ ФУНКЦИИ ----
+    function getSemesterIndex(semester) {
+        return semester === 'I' ? 0 : semester === 'II' ? 1 : 2;
+    }
+
+    function getGradesForSemester(student, semester) {
+        const idx = getSemesterIndex(semester);
+        return student.grades.map(subj => subj[idx]);
+    }
+
+    function getOverallGrade(grades) {
+        const nonZero = grades.filter(g => g > 0);
+        const failed = grades.filter(g => g === 0).length;
+        if (failed > 0) return "Неоценет";
+        const sum = nonZero.reduce((a,b) => a + b, 0);
+        const avg = sum / nonZero.length;
+        if (avg >= 4.5) return "Одличен";
+        else if (avg >= 3.5) return "Многу добар";
+        else if (avg >= 2.5) return "Добар";
+        else return "Доволен";
+    }
+
+    function getAbsence(student, semester, type) {
+        const key = type === 'excused' ? 'excused' : 'unexcused';
+        if (semester === 'Год') return student[key]['вк'];
+        else return student[key][semester];
+    }
+
+    function getFailedCount(grades) { 
+        return grades.filter(g => g === 0).length; 
+    }
+    
+    function countOnes(grades) { 
+        return grades.filter(g => g === 1).length; 
+    }
+    
+    function calculateAverage(grades) {
+        const nonZero = grades.filter(g => g > 0);
+        if (nonZero.length === 0) return 0;
+        const sum = nonZero.reduce((a,b) => a + b, 0);
+        return Math.round((sum / nonZero.length) * 100) / 100;
+    }
+
+    function getStudents() {
+        const year = yearSelect.value;
+        const cls = classSelect.value;
+        const key = `${year}-${cls}`;
+        return dataMap[key] || studentsIV7;
+    }
+
+    function getTotalByNationality(students, semester) {
+        const natMap = {};
+        const allNats = ['МАК', 'АЛБ', 'ТУР', 'РОМ', 'МУС', 'ММУС', 'ДРУГО'];
+        allNats.forEach(nat => natMap[nat] = { M: 0, F: 0 });
+        students.forEach(s => {
+            if (natMap[s.nationality]) {
+                if (s.gender === 1) natMap[s.nationality].M++;
+                else natMap[s.nationality].F++;
+            }
+        });
+        return natMap;
+    }
+
+    // ---- ФУНКЦИИ ЗА АЖУРИРАЊЕ ----
+    function addNewStudent() {
+        const nat = document.getElementById('newNat').value;
+        const gender = document.getElementById('newGender').value;
+        const semester = semesterSelect.value;
+        if (gender === 'M') dynamicStats[nat][semester].enrolledM += 1;
+        else dynamicStats[nat][semester].enrolledF += 1;
+        renderAll();
+    }
+
+    function addLeftStudent() {
+        const nat = document.getElementById('leftNat').value;
+        const gender = document.getElementById('leftGender').value;
+        const semester = semesterSelect.value;
+        if (gender === 'M') dynamicStats[nat][semester].leftM += 1;
+        else dynamicStats[nat][semester].leftF += 1;
+        renderAll();
+    }
+
+    function addRepeatStudent() {
+        const nat = document.getElementById('repeatNat').value;
+        const gender = document.getElementById('repeatGender').value;
+        const semester = semesterSelect.value;
+        if (gender === 'M') dynamicStats[nat][semester].repeatM += 1;
+        else dynamicStats[nat][semester].repeatF += 1;
+        renderAll();
+    }
+
+    function resetStats() {
+        const semester = semesterSelect.value;
+        const nats = ['МАК', 'АЛБ', 'ТУР', 'РОМ', 'МУС', 'ММУС', 'ДРУГО'];
+        nats.forEach(nat => {
+            dynamicStats[nat][semester].enrolledM = 0;
+            dynamicStats[nat][semester].enrolledF = 0;
+            dynamicStats[nat][semester].leftM = 0;
+            dynamicStats[nat][semester].leftF = 0;
+            dynamicStats[nat][semester].repeatM = 0;
+            dynamicStats[nat][semester].repeatF = 0;
+        });
+        renderAll();
+    }
+
+    // ---- ФУНКЦИЈА ЗА УВОЗ ОД EXCEL ----
+    function importExcel(event) {
+        const file = event.target.files[0];
+        if (!file) {
+            alert('Ве молиме изберете Excel датотека!');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                const sheet = workbook.Sheets['Оценки'];
+                if (!sheet) {
+                    alert('Грешка: Не е пронајден листот "Оценки" во Excel датотеката!');
+                    return;
+                }
+                
+                const jsonData = XLSX.utils.sheet_to_json(sheet);
+                
+                if (!jsonData || jsonData.length === 0) {
+                    alert('Грешка: Датотеката е празна или нема валидни податоци!');
+                    return;
+                }
+                
+                // Конвертирај ги податоците во нов формат
+                const importedStudents = jsonData.map(row => {
+                    const grades = [];
+                    const subjectNames = ['Македонски', 'Математика', 'Англиски', 'Германски', 'Биологија', 'Физика', 'Хемија', 'Филозофија', 'Бизнис', 'Спорт'];
+                    
+                    subjectNames.forEach((subject, idx) => {
+                        const colIndex = idx + 1; // Првата колона е име
+                        const keys = Object.keys(row);
+                        if (colIndex < keys.length) {
+                            const val = row[keys[colIndex]];
+                            if (Array.isArray(val) && val.length === 3) {
+                                grades.push(val.map(v => Number(v) || 0));
+                            } else {
+                                // Ако е единечна вредност, распореди ја во сите три периоди
+                                const grade = Number(val) || 0;
+                                grades.push([grade, grade, grade]);
+                            }
+                        } else {
+                            grades.push([0, 0, 0]);
+                        }
+                    });
+                    
+                    const name = row['Ученик'] || 'Непознат';
+                    const excUsedI = Number(row['Оправдани I']) || 0;
+                    const excUsedII = Number(row['Оправдани II']) || 0;
+                    const excUsedVk = Number(row['Оправдани Вк']) || 0;
+                    const unexcUsedI = Number(row['Неоправдани I']) || 0;
+                    const unexcUsedII = Number(row['Неоправдани II']) || 0;
+                    const unexcUsedVk = Number(row['Неоправдани Вк']) || 0;
+                    const behavior = row['Поведение'] || 'Примерно';
+                    
+                    return {
+                        name: name,
+                        gender: 0,
+                        nationality: 'ТУР',
+                        grades: grades,
+                        behavior: behavior,
+                        excused: { I: excUsedI, II: excUsedII, вк: excUsedVk },
+                        unexcused: { I: unexcUsedI, II: unexcUsedII, вк: unexcUsedVk }
+                    };
+                });
+                
+                dataMap['IV-7'] = importedStudents;
+                renderAll();
+                alert('✅ Успешно увезени ' + importedStudents.length + ' ученици!');
+                
+            } catch(err) {
+                alert('❌ Грешка при читање на Excel датотеката: ' + err.message);
+                console.error(err);
+            }
+        };
+        
+        reader.onerror = function() {
+            alert('❌ Грешка при читање на датотеката!');
+        };
+        
+        reader.readAsArrayBuffer(file);
+        event.target.value = '';
+    }
+
+    // ---- ГЛАВНА ФУНКЦИЈА ЗА РЕНДЕРИРАЊЕ ----
+    function renderAll() {
+        const students = getStudents();
+        const semester = semesterSelect.value;
+        const year = yearSelect.value;
+        const cls = classSelect.value;
+
+        // Ажурирај наслов
+        classDisplay.textContent = `${year}-${cls}`;
+        periodDisplay.textContent = semester === 'Год' ? 'Годишни' : semester + ' полугодие';
+        teacherDisplay.textContent = 'проф. Решат Маловски';
+        yearDisplay.textContent = '2025/2026';
+
+        // ---- ТАБЕЛА СО УЧЕНИЦИ (Страна 1) ----
+        let htmlGrades = '';
+        students.forEach((student, index) => {
+            const rowClass = index % 2 === 0 ? 'even-row' : 'odd-row';
+            const grades = getGradesForSemester(student, semester);
+            const exc = student.excused;
+            const unexc = student.unexcused;
+            const avg = calculateAverage(grades);
+            const ones = countOnes(grades);
+            const overall = getOverallGrade(grades);
+            const overallClass = 'grade-' + overall.toLowerCase().replace(/ /g, '-');
+
+            htmlGrades += `<tr class="${rowClass}">
+                <td class="student-name">${student.name}</td>`;
+            for (let g of grades) htmlGrades += `<td>${g !== undefined ? g : '-'}</td>`;
+            htmlGrades += `<td>${ones}</td>
+                <td><span class="overall-grade ${overallClass}">${overall}</span></td>
+                <td class="avg-cell">${avg.toFixed(2)}</td>
+                <td>${exc.I}</td><td>${exc.II}</td><td>${exc.вк}</td>
+                <td>${unexc.I}</td><td>${unexc.II}</td><td>${unexc.вк}</td>
+                <td class="behavior-cell">${student.behavior}</td>
+            </tr>`;
+        });
+        tbody.innerHTML = htmlGrades;
+
+        // ---- СТАТИСТИКА ПО НАЦИОНАЛНОСТ (Страна 2) ----
+        const totalMap = getTotalByNationality(students, semester);
+        const baseEndStats = calculateBaseEndStats(students);
+        const natOrder = ["МАК", "АЛБ", "ТУР", "РОМ", "МУС", "ММУС", "ДРУГО"];
+        const natLabels = { "МАК":"Македонци", "АЛБ":"Албанци", "ТУР":"Турци", "РОМ":"Роми", "МУС":"Муслимани", "ММУС":"Мак.Муслимани", "ДРУГО":"Друго" };
+
+        let statsRows = '';
+        let totals = { startM:0, startF:0, enrolledM:0, enrolledF:0, leftM:0, leftF:0, repeatM:0, repeatF:0, endM:0, endF:0,
+                       excellent:0, veryGood:0, good:0, sufficient:0, ungraded:0,
+                       ones1:0, ones2:0, ones3plus:0, excused:0, unexcused:0,
+                       behavior_ex:0, behavior_good:0, behavior_bad:0 };
+
+        natOrder.forEach(nat => {
+            const baseEnd = baseEndStats[nat] || { endM:0, endF:0 };
+            const dyn = dynamicStats[nat]?.[semester] || { enrolledM:0, enrolledF:0, leftM:0, leftF:0, repeatM:0, repeatF:0 };
+
+            const endM = totalMap[nat] ? totalMap[nat].M : 0;
+            const endF = totalMap[nat] ? totalMap[nat].F : 0;
+            const startM = endM - dyn.enrolledM + dyn.leftM;
+            const startF = endF - dyn.enrolledF + dyn.leftF;
+            const enrolledM = dyn.enrolledM;
+            const enrolledF = dyn.enrolledF;
+            const leftM = dyn.leftM;
+            const leftF = dyn.leftF;
+            const repeatM = dyn.repeatM;
+            const repeatF = dyn.repeatF;
+
+            let stats = { excellent:0, veryGood:0, good:0, sufficient:0, ungraded:0,
+                          ones1:0, ones2:0, ones3plus:0,
+                          excused:0, unexcused:0,
+                          behavior_ex:0, behavior_good:0, behavior_bad:0 };
+
+            students.filter(s => s.nationality === nat).forEach(s => {
+                const grades = getGradesForSemester(s, semester);
+                const overall = getOverallGrade(grades);
+                if (overall === "Одличен") stats.excellent++;
+                else if (overall === "Многу добар") stats.veryGood++;
+                else if (overall === "Добар") stats.good++;
+                else if (overall === "Доволен") stats.sufficient++;
+                if (getFailedCount(grades) > 0) stats.ungraded++;
+                const ones = countOnes(grades);
+                if (ones === 1) stats.ones1++;
+                else if (ones === 2) stats.ones2++;
+                else if (ones >= 3) stats.ones3plus++;
+                stats.excused += s.excused['вк'];
+                stats.unexcused += s.unexcused['вк'];
+                if (s.behavior === "Примерно") stats.behavior_ex++;
+                else if (s.behavior === "Добро") stats.behavior_good++;
+                else if (s.behavior === "Незадоволително") stats.behavior_bad++;
+            });
+
+            totals.startM += startM; totals.startF += startF;
+            totals.enrolledM += enrolledM; totals.enrolledF += enrolledF;
+            totals.leftM += leftM; totals.leftF += leftF;
+            totals.repeatM += repeatM; totals.repeatF += repeatF;
+            totals.endM += endM; totals.endF += endF;
+            totals.excellent += stats.excellent; totals.veryGood += stats.veryGood;
+            totals.good += stats.good; totals.sufficient += stats.sufficient;
+            totals.ungraded += stats.ungraded;
+            totals.ones1 += stats.ones1; totals.ones2 += stats.ones2; totals.ones3plus += stats.ones3plus;
+            totals.excused += stats.excused; totals.unexcused += stats.unexcused;
+            totals.behavior_ex += stats.behavior_ex; totals.behavior_good += stats.behavior_good;
+            totals.behavior_bad += stats.behavior_bad;
+
+            statsRows += `<tr class="${natOrder.indexOf(nat) % 2 === 0 ? 'even-row' : 'odd-row'}">
+                <td><strong>${natLabels[nat]}</strong></td>
+                <td>${startM}</td><td>${startF}</td>
+                <td>${enrolledM}</td><td>${enrolledF}</td>
+                <td>${leftM}</td><td>${leftF}</td>
+                <td>${repeatM}</td><td>${repeatF}</td>
+                <td>${endM}</td><td>${endF}</td>
+                <td>${stats.excellent}</td><td>${stats.veryGood}</td><td>${stats.good}</td><td>${stats.sufficient}</td>
+                <td>${stats.ungraded}</td>
+                <td>${stats.ones1}</td><td>${stats.ones2}</td><td>${stats.ones3plus}</td>
+                <td>${stats.excused}</td><td>${stats.unexcused}</td><td>${stats.excused + stats.unexcused}</td>
+                <td>${stats.behavior_ex}</td><td>${stats.behavior_good}</td><td>${stats.behavior_bad}</td>
+            </tr>`;
+        });
+
+        statsRows += `<tr class="total-row">
+            <td><strong>ВКУПНО</strong></td>
+            <td>${totals.startM}</td><td>${totals.startF}</td>
+            <td>${totals.enrolledM}</td><td>${totals.enrolledF}</td>
+            <td>${totals.leftM}</td><td>${totals.leftF}</td>
+            <td>${totals.repeatM}</td><td>${totals.repeatF}</td>
+            <td>${totals.endM}</td><td>${totals.endF}</td>
+            <td>${totals.excellent}</td><td>${totals.veryGood}</td><td>${totals.good}</td><td>${totals.sufficient}</td>
+            <td>${totals.ungraded}</td>
+            <td>${totals.ones1}</td><td>${totals.ones2}</td><td>${totals.ones3plus}</td>
+            <td>${totals.excused}</td><td>${totals.unexcused}</td><td>${totals.excused + totals.unexcused}</td>
+            <td>${totals.behavior_ex}</td><td>${totals.behavior_good}</td><td>${totals.behavior_bad}</td>
+        </tr>`;
+        statsBody.innerHTML = statsRows;
+
+        // ---- РАСПРЕДЕЛБА НА ОЦЕНКИ (Страна 2) ----
+        const subjectNames = ["Македонски", "Математика", "Англиски", "Германски", "Биологија", "Физика", "Хемија", "Филозофија", "Бизнис", "Спорт"];
+        const gradeLabels = ['5', '4', '3', '2', '1', '0'];
+        let distData = {};
+        subjectNames.forEach(subj => distData[subj] = { 5:0, 4:0, 3:0, 2:0, 1:0, 0:0 });
+
+        students.forEach(s => {
+            const grades = getGradesForSemester(s, semester);
+            subjectNames.forEach((subj, idx) => {
+                const grade = grades[idx];
+                if (grade !== undefined && grade >= 0 && grade <= 5) {
+                    distData[subj][grade] = (distData[subj][grade] || 0) + 1;
+                }
+            });
+        });
+
+        // Пресметка на среден успех по предмет
+        let subjectSums = {};
+        let subjectCounts = {};
+        subjectNames.forEach(subj => { subjectSums[subj] = 0; subjectCounts[subj] = 0; });
+        students.forEach(s => {
+            const grades = getGradesForSemester(s, semester);
+            subjectNames.forEach((subj, idx) => {
+                const grade = grades[idx];
+                if (grade !== undefined && grade > 0) {
+                    subjectSums[subj] += grade;
+                    subjectCounts[subj] += 1;
+                }
+            });
+        });
+
+        let distRows = '';
+        gradeLabels.forEach(gradeLabel => {
+            const gradeNum = parseInt(gradeLabel);
+            const rowClass = gradeLabels.indexOf(gradeLabel) % 2 === 0 ? 'even-row' : 'odd-row';
+            distRows += `<tr class="${rowClass}">
+                <td><strong>${gradeLabel}</strong></td>`;
+            subjectNames.forEach(subj => {
+                const count = distData[subj][gradeNum] || 0;
+                distRows += `<td>${count}</td>`;
+            });
+            distRows += `</tr>`;
+        });
+
+        // Ред: Вкупно оценки
+        const totalStudents = students.length;
+        distRows += `<tr class="total-count-row">
+            <td><strong>Вкупно оценки</strong></td>`;
+        subjectNames.forEach(() => {
+            distRows += `<td>${totalStudents}</td>`;
+        });
+        distRows += `</tr>`;
+
+        // Ред: Среден успех по предмет
+        distRows += `<tr class="subject-avg-row">
+            <td><strong>Среден успех</strong></td>`;
+        subjectNames.forEach(subj => {
+            const avg = subjectCounts[subj] > 0 ? Math.round((subjectSums[subj] / subjectCounts[subj]) * 100) / 100 : 0;
+            distRows += `<td class="avg-cell">${avg.toFixed(2)}</td>`;
+        });
+        distRows += `</tr>`;
+
+        // Ред: Среден успех на класот
+        let classSum = 0, classCount = 0;
+        subjectNames.forEach(subj => {
+            classSum += subjectSums[subj];
+            classCount += subjectCounts[subj];
+        });
+        const classAvg = classCount > 0 ? Math.round((classSum / classCount) * 100) / 100 : 0;
+        distRows += `<tr class="class-avg-row">
+            <td><strong>Среден успех на класот</strong></td>`;
+        for (let i = 0; i < subjectNames.length - 1; i++) {
+            distRows += `<td></td>`;
+        }
+        distRows += `<td class="avg-cell"><strong>${classAvg.toFixed(2)}</strong></td>
+        </tr>`;
+
+        distributionBody.innerHTML = distRows;
+    }
+
+    // ---- ИЗВОЗ ВО EXCEL ----
+    function exportExcel() {
+        const students = getStudents();
+        const semester = semesterSelect.value;
+        const year = yearSelect.value;
+        const cls = classSelect.value;
+        const wb = XLSX.utils.book_new();
+
+        // Лист 1: Оценки
+        const gradesData = [];
+        const headerGrades = ['Ученик', 'Македонски', 'Математика', 'Англиски', 'Германски', 'Биологија', 'Физика', 'Хемија', 'Филозофија', 'Бизнис', 'Спорт', 'Бр. на 1', 'Општ успех', 'Просек', 'Оправдани I', 'Оправдани II', 'Оправдани Вк', 'Неоправдани I', 'Неоправдани II', 'Неоправдани Вк', 'Поведение'];
+        gradesData.push(headerGrades);
+        students.forEach(s => {
+            const grades = getGradesForSemester(s, semester);
+            const avg = calculateAverage(grades);
+            const ones = countOnes(grades);
+            const overall = getOverallGrade(grades);
+            const row = [s.name, ...grades, ones, overall, avg, s.excused.I, s.excused.II, s.excused.вк, s.unexcused.I, s.unexcused.II, s.unexcused.вк, s.behavior];
+            gradesData.push(row);
+        });
+        const wsGrades = XLSX.utils.aoa_to_sheet(gradesData);
+        XLSX.utils.book_append_sheet(wb, wsGrades, "Оценки");
+
+        // Лист 2: Статистика
+        const baseEndStats = calculateBaseEndStats(students);
+        const totalMap = getTotalByNationality(students, semester);
+        const statsData = [];
+        const headerStats = ['Националност', 'Почеток М', 'Почеток Ж', 'Нови М', 'Нови Ж', 'Напуштиле М', 'Напуштиле Ж', 'Повторувачи М', 'Повторувачи Ж', 'Останале М', 'Останале Ж', 'Одлични', 'Мн.добри', 'Добри', 'Доволни', 'Неоценети', 'Ед.1', 'Ед.2', 'Ед.3+', 'Оправдани', 'Неоправдани', 'Вкупно', 'Примерно', 'Добро', 'Незадов.'];
+        statsData.push(headerStats);
+        const natOrder = ["МАК", "АЛБ", "ТУР", "РОМ", "МУС", "ММУС", "ДРУГО"];
+        const natLabels = { "МАК":"Македонци", "АЛБ":"Албанци", "ТУР":"Турци", "РОМ":"Роми", "МУС":"Муслимани", "ММУС":"Мак.Муслимани", "ДРУГО":"Друго" };
+        let totalRowStats = { startM:0, startF:0, enrolledM:0, enrolledF:0, leftM:0, leftF:0, repeatM:0, repeatF:0, endM:0, endF:0, excellent:0, veryGood:0, good:0, sufficient:0, ungraded:0, ones1:0, ones2:0, ones3plus:0, excused:0, unexcused:0, behavior_ex:0, behavior_good:0, behavior_bad:0 };
+
+        natOrder.forEach(nat => {
+            const baseEnd = baseEndStats[nat] || { endM:0, endF:0 };
+            const dyn = dynamicStats[nat]?.[semester] || { enrolledM:0, enrolledF:0, leftM:0, leftF:0, repeatM:0, repeatF:0 };
+            const endM = totalMap[nat] ? totalMap[nat].M : 0;
+            const endF = totalMap[nat] ? totalMap[nat].F : 0;
+            const startM = endM - dyn.enrolledM + dyn.leftM;
+            const startF = endF - dyn.enrolledF + dyn.leftF;
+            const enrolledM = dyn.enrolledM; const enrolledF = dyn.enrolledF;
+            const leftM = dyn.leftM; const leftF = dyn.leftF;
+            const repeatM = dyn.repeatM; const repeatF = dyn.repeatF;
+
+            let st = { excellent:0, veryGood:0, good:0, sufficient:0, ungraded:0, ones1:0, ones2:0, ones3plus:0, excused:0, unexcused:0, behavior_ex:0, behavior_good:0, behavior_bad:0 };
+            students.filter(s => s.nationality === nat).forEach(s => {
+                const grades = getGradesForSemester(s, semester);
+                const overall = getOverallGrade(grades);
+                if (overall === "Одличен") st.excellent++;
+                else if (overall === "Многу добар") st.veryGood++;
+                else if (overall === "Добар") st.good++;
+                else if (overall === "Доволен") st.sufficient++;
+                if (getFailedCount(grades) > 0) st.ungraded++;
+                const ones = countOnes(grades);
+                if (ones === 1) st.ones1++;
+                else if (ones === 2) st.ones2++;
+                else if (ones >= 3) st.ones3plus++;
+                st.excused += s.excused['вк'];
+                st.unexcused += s.unexcused['вк'];
+                if (s.behavior === "Примерно") st.behavior_ex++;
+                else if (s.behavior === "Добро") st.behavior_good++;
+                else if (s.behavior === "Незадоволително") st.behavior_bad++;
+            });
+            totalRowStats.startM += startM; totalRowStats.startF += startF;
+            totalRowStats.enrolledM += enrolledM; totalRowStats.enrolledF += enrolledF;
+            totalRowStats.leftM += leftM; totalRowStats.leftF += leftF;
+            totalRowStats.repeatM += repeatM; totalRowStats.repeatF += repeatF;
+            totalRowStats.endM += endM; totalRowStats.endF += endF;
+            totalRowStats.excellent += st.excellent; totalRowStats.veryGood += st.veryGood;
+            totalRowStats.good += st.good; totalRowStats.sufficient += st.sufficient;
+            totalRowStats.ungraded += st.ungraded;
+            totalRowStats.ones1 += st.ones1; totalRowStats.ones2 += st.ones2; totalRowStats.ones3plus += st.ones3plus;
+            totalRowStats.excused += st.excused; totalRowStats.unexcused += st.unexcused;
+            totalRowStats.behavior_ex += st.behavior_ex; totalRowStats.behavior_good += st.behavior_good;
+            totalRowStats.behavior_bad += st.behavior_bad;
+
+            statsData.push([natLabels[nat], startM, startF, enrolledM, enrolledF, leftM, leftF, repeatM, repeatF, endM, endF,
+                st.excellent, st.veryGood, st.good, st.sufficient, st.ungraded,
+                st.ones1, st.ones2, st.ones3plus,
+                st.excused, st.unexcused, st.excused + st.unexcused,
+                st.behavior_ex, st.behavior_good, st.behavior_bad]);
+        });
+        statsData.push(["ВКУПНО", totalRowStats.startM, totalRowStats.startF, totalRowStats.enrolledM, totalRowStats.enrolledF,
+            totalRowStats.leftM, totalRowStats.leftF, totalRowStats.repeatM, totalRowStats.repeatF,
+            totalRowStats.endM, totalRowStats.endF,
+            totalRowStats.excellent, totalRowStats.veryGood, totalRowStats.good, totalRowStats.sufficient,
+            totalRowStats.ungraded,
+            totalRowStats.ones1, totalRowStats.ones2, totalRowStats.ones3plus,
+            totalRowStats.excused, totalRowStats.unexcused, totalRowStats.excused + totalRowStats.unexcused,
+            totalRowStats.behavior_ex, totalRowStats.behavior_good, totalRowStats.behavior_bad]);
+        const wsStats = XLSX.utils.aoa_to_sheet(statsData);
+        XLSX.utils.book_append_sheet(wb, wsStats, "Статистика");
+
+        // Лист 3: Распределба
+        const subjectNames = ["Македонски", "Математика", "Англиски", "Германски", "Биологија", "Физика", "Хемија", "Филозофија", "Бизнис", "Спорт"];
+        const gradeLabels = ['5', '4', '3', '2', '1', '0'];
+        let distDataExcel = [];
+        const headerDist = ['Оценка', ...subjectNames];
+        distDataExcel.push(headerDist);
+        let distCounts = {};
+        subjectNames.forEach(subj => distCounts[subj] = { 5:0, 4:0, 3:0, 2:0, 1:0, 0:0 });
+        students.forEach(s => {
+            const grades = getGradesForSemester(s, semester);
+            subjectNames.forEach((subj, idx) => {
+                const grade = grades[idx];
+                if (grade !== undefined && grade >= 0 && grade <= 5) {
+                    distCounts[subj][grade] = (distCounts[subj][grade] || 0) + 1;
+                }
+            });
+        });
+        let subjectSumsExcel = {}, subjectCountsExcel = {};
+        subjectNames.forEach(subj => { subjectSumsExcel[subj] = 0; subjectCountsExcel[subj] = 0; });
+        students.forEach(s => {
+            const grades = getGradesForSemester(s, semester);
+            subjectNames.forEach((subj, idx) => {
+                const grade = grades[idx];
+                if (grade !== undefined && grade > 0) {
+                    subjectSumsExcel[subj] += grade;
+                    subjectCountsExcel[subj] += 1;
+                }
+            });
+        });
+
+        gradeLabels.forEach(gradeLabel => {
+            const gradeNum = parseInt(gradeLabel);
+            const row = [gradeLabel];
+            subjectNames.forEach(subj => {
+                row.push(distCounts[subj][gradeNum] || 0);
+            });
+            distDataExcel.push(row);
+        });
+        const totalStudents = students.length;
+        const totalRowDist = ['Вкупно оценки', ...subjectNames.map(() => totalStudents)];
+        distDataExcel.push(totalRowDist);
+        const avgRow = ['Среден успех'];
+        subjectNames.forEach(subj => {
+            const avg = subjectCountsExcel[subj] > 0 ? Math.round((subjectSumsExcel[subj] / subjectCountsExcel[subj]) * 100) / 100 : 0;
+            avgRow.push(avg);
+        });
+        distDataExcel.push(avgRow);
+        let classSumExcel = 0, classCountExcel = 0;
+        subjectNames.forEach(subj => {
+            classSumExcel += subjectSumsExcel[subj];
+            classCountExcel += subjectCountsExcel[subj];
+        });
+        const classAvgExcel = classCountExcel > 0 ? Math.round((classSumExcel / classCountExcel) * 100) / 100 : 0;
+        const classRow = ['Среден успех на класот', ...subjectNames.map(() => ''), classAvgExcel];
+        distDataExcel.push(classRow);
+
+        const wsDist = XLSX.utils.aoa_to_sheet(distDataExcel);
+        XLSX.utils.book_append_sheet(wb, wsDist, "Распределба");
+
+        const semesterLabel = semester === 'Год' ? 'Годишни' : semester + ' полугодие';
+        XLSX.writeFile(wb, `${year}-${cls}_${semesterLabel}_статистика.xlsx`);
+    }
+
+    // ---- НАСТАНИ ----
+    yearSelect.addEventListener('change', renderAll);
+    classSelect.addEventListener('change', renderAll);
+    semesterSelect.addEventListener('change', renderAll);
+
+    // ---- ИНИЦИЈАЛИЗАЦИЈА ----
+    renderAll();
+</script>
+</body>
+</html>

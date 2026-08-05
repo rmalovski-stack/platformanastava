@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Библиотека – Контролни тестови и писмени (Математика)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            padding: 15px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 4px solid #1a237e;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .header .school { font-size: 28px; font-weight: 700; color: #1a237e; }
+        .header .teacher { font-size: 24px; font-weight: 700; color: #0d47a1; }
+        .header .subject { font-size: 22px; font-weight: 700; color: #1a237e; }
+        .header .subtitle { font-size: 18px; color: #555; margin-top: 5px; }
+
+        .year-selector {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            background: #e8eaf6;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .year-selector label {
+            font-weight: 700;
+            color: #1a237e;
+            font-size: 16px;
+        }
+        .year-selector select {
+            padding: 8px 16px;
+            border: 1px solid #c5cae9;
+            border-radius: 6px;
+            font-size: 15px;
+            background: white;
+            min-width: 120px;
+        }
+        .year-selector button {
+            padding: 8px 20px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .year-selector button:hover { background: #283593; }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .topic-card {
+            background: #f8faff;
+            border: 2px solid #dde3ed;
+            border-radius: 8px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .topic-card:hover {
+            background: #e3e8f7;
+            border-color: #1a237e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .topic-card .topic-name { font-weight: 500; color: #1e2a3a; }
+        .topic-card .topic-badge {
+            background: #1a237e;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .topic-card .doc-count { font-size: 12px; color: #6f7d95; margin-left: 8px; }
+        .no-topics { color: #888; font-style: italic; padding: 20px; text-align: center; }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #e8eaf6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .filters label { font-weight: 600; color: #1a237e; font-size: 13px; display: block; margin-bottom: 2px; }
+        .filters select, .filters input {
+            padding: 6px 10px;
+            border: 1px solid #c5cae9;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+            min-width: 100px;
+        }
+        .filters .filter-group { display: flex; flex-direction: column; }
+        .filters button {
+            padding: 6px 16px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+            height: 34px;
+        }
+        .filters button:hover { background: #283593; }
+        .filters .btn-success { background: #2e7d32; }
+        .filters .btn-success:hover { background: #388e3c; }
+        .filters .btn-danger { background: #c62828; }
+        .filters .btn-danger:hover { background: #b71c1c; }
+        .filters .btn-warning { background: #f57c00; }
+        .filters .btn-warning:hover { background: #e65100; }
+        .filters .btn-import { background: #6c757d; }
+        .filters .btn-import:hover { background: #5a6268; }
+        #csvInput { display: none; }
+
+        .table-wrap { overflow-x: auto; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th {
+            background: #1a237e;
+            color: white;
+            padding: 8px 5px;
+            text-align: center;
+            border: 1px solid #0d1445;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            white-space: nowrap;
+        }
+        td {
+            padding: 6px 4px;
+            text-align: center;
+            border: 1px solid #c5cae9;
+            vertical-align: middle;
+        }
+        tr:nth-child(even) { background: #f8f9ff; }
+        tr:hover { background: #e3e8f7; }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .summary-card {
+            background: #e8eaf6;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .summary-card .number { font-size: 22px; font-weight: 700; color: #1a237e; }
+        .summary-card .label { font-size: 12px; color: #555; }
+
+        .form-container {
+            background: #f5f7ff;
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid #c5cae9;
+            margin: 15px 0;
+            display: none;
+        }
+        .form-container.show { display: block; }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .form-row label { font-weight: 600; min-width: 120px; }
+        .form-row input, .form-row select, .form-row textarea {
+            padding: 6px 10px;
+            border: 1px solid #c5cae9;
+            border-radius: 6px;
+            font-size: 13px;
+            flex: 1;
+            min-width: 150px;
+        }
+        .form-row textarea { min-height: 60px; resize: vertical; }
+        .form-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+
+        .upload-area {
+            border: 2px dashed #9fa8da;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 5px 0;
+            background: #fafbff;
+            flex: 1;
+        }
+        .upload-area input[type="file"] { display: none; }
+        .upload-area label {
+            background: #1a237e;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-block;
+        }
+        .upload-area label:hover { background: #283593; }
+
+        .btn-sm {
+            padding: 3px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 1px;
+        }
+        .btn-edit { background: #cce5ff; color: #004085; }
+        .btn-edit:hover { background: #b8d4f0; }
+        .btn-delete { background: #f8d7da; color: #721c24; }
+        .btn-delete:hover { background: #f1c0c0; }
+
+        .file-link {
+            color: #0d47a1;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .file-link:hover { text-decoration: underline; }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1a237e;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 999;
+            display: none;
+            font-size: 14px;
+        }
+        .toast.show { display: block; }
+        .toast.success { background: #2e7d32; }
+        .toast.error { background: #c62828; }
+
+        .footer {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #c5cae9;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #777;
+            flex-wrap: wrap;
+        }
+        @media print {
+            .filters, .form-container, .upload-area, .no-print, .summary, .year-selector, .topics-grid { display: none !important; }
+            body { background: white; padding: 10px; }
+            .container { box-shadow: none; }
+            th { background: #1a237e !important; color: white !important; }
+        }
+        .doc-type-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .type-test { background: #e3f2fd; color: #0d47a1; }
+        .type-pismena { background: #fff3e0; color: #e65100; }
+
+        .topic-radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex: 1;
+        }
+        .topic-radio-group label {
+            font-weight: 400;
+            min-width: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            background: #f0f4ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid #c5cae9;
+        }
+        .topic-radio-group label:hover { background: #e3e8f7; }
+        .topic-radio-group input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+            flex: 0;
+            cursor: pointer;
+        }
+        .topic-radio-group label.selected { background: #d4edda; border-color: #2e7d32; }
+
+        .topic-checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            flex: 1;
+        }
+        .topic-checkbox-group label {
+            font-weight: 400;
+            min-width: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            background: #f0f4ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid #c5cae9;
+        }
+        .topic-checkbox-group label:hover { background: #e3e8f7; }
+        .topic-checkbox-group label.checked { background: #d4edda; border-color: #2e7d32; }
+        .topic-checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+            flex: 0;
+            cursor: pointer;
+        }
+        .selected-info { font-size: 12px; color: #555; margin-top: 4px; font-style: italic; }
+    </style>
+</head>
+<body>
+<div class="container" id="appContainer">
+    <div class="header">
+        <div class="school">СОУ „28 Ноември“ - Дебар</div>
+        <div class="teacher">Проф. Решат Маловски</div>
+        <div class="subject">Математика</div>
+        <div class="subtitle">📚 Библиотека на контролни тестови и писмени работи</div>
+    </div>
+
+    <!-- ============ ИЗБОР НА ГОДИНА + ТЕМИ ============ -->
+    <div class="year-selector">
+        <label>🎓 Избери наставна година:</label>
+        <select id="yearSelect" onchange="onYearChange()">
+            <option value="I">I година (прва)</option>
+            <option value="II">II година (втора)</option>
+            <option value="III">III година (трета)</option>
+            <option value="IV" selected>IV година (четврта)</option>
+        </select>
+        <button onclick="showForm()">➕ Нов документ</button>
+    </div>
+
+    <div id="topicsContainer" class="topics-grid">
+        <!-- се полни од JavaScript -->
+    </div>
+
+    <!-- ============ СУМАРНИ КАРТИЧКИ ============ -->
+    <div class="summary" id="summaryCards">
+        <div class="summary-card"><div class="number" id="docCount">0</div><div class="label">📄 Вкупно документи</div></div>
+        <div class="summary-card"><div class="number" id="fileCount">0</div><div class="label">📎 Со датотека</div></div>
+        <div class="summary-card"><div class="number" id="latestDate">-</div><div class="label">📅 Последен</div></div>
+    </div>
+
+    <!-- ============ ФИЛТРИ ============ -->
+    <div class="filters">
+        <div class="filter-group">
+            <label>📅 Учебна година</label>
+            <select id="filterYear">
+                <option value="">Сите</option>
+                <option value="2026/2027" selected>2026/2027</option>
+                <option value="2027/2028">2027/2028</option>
+                <option value="2028/2029">2028/2029</option>
+                <option value="2029/2030">2029/2030</option>
+                <option value="2030/2031">2030/2031</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>🎓 Наставна година</label>
+            <select id="filterNastavna" onchange="applyFilters()">
+                <option value="">Сите</option>
+                <option value="I">I</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>📚 Паралелка</label>
+            <select id="filterParalelka">
+                <option value="">Сите</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>📋 Тип</label>
+            <select id="filterType">
+                <option value="">Сите</option>
+                <option value="тест">Контролен тест</option>
+                <option value="писмена">Контролна писмена</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>🔍 Пребарај</label>
+            <input type="text" id="filterSearch" placeholder="наслов..." style="min-width:120px;">
+        </div>
+        <button onclick="applyFilters()">🔍 Прикажи</button>
+        <button class="btn-warning" onclick="clearFilters()">🔄 Исчисти</button>
+        <button class="btn-success" onclick="exportCSV()">📥 Извези CSV</button>
+        <button class="btn-import" onclick="document.getElementById('csvInput').click()">📤 Увези CSV</button>
+        <input type="file" id="csvInput" accept=".csv" onchange="importCSV(event)">
+    </div>
+
+    <!-- ============ ФОРМА ЗА ДОДАВАЊЕ/УРЕДУВАЊЕ ============ -->
+    <div class="form-container" id="formContainer">
+        <h3 id="formTitle">Додади нов документ</h3>
+        <div class="form-row">
+            <label>Учебна година</label>
+            <select id="formYear">
+                <option value="2026/2027">2026/2027</option>
+                <option value="2027/2028">2027/2028</option>
+                <option value="2028/2029">2028/2029</option>
+                <option value="2029/2030">2029/2030</option>
+                <option value="2030/2031">2030/2031</option>
+            </select>
+            <label>Наставна година</label>
+            <select id="formNastavna" onchange="updateFormTopics()">
+                <option value="I">I</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+            </select>
+            <label>Паралелка</label>
+            <select id="formParalelka">
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label>Тип на работа</label>
+            <select id="formType" onchange="toggleTopicSelection()">
+                <option value="тест">📋 Контролен тест (1 тема)</option>
+                <option value="писмена">📝 Контролна писмена (1-3 теми)</option>
+            </select>
+        </div>
+        <div class="form-row" id="topicSelectionRow">
+            <label id="topicLabel">Избери тема</label>
+            <div id="topicSelectionContainer">
+                <!-- се полнат динамички -->
+            </div>
+        </div>
+        <div class="form-row">
+            <label>Наслов</label>
+            <input type="text" id="formNaslov" placeholder="Наслов на документот" style="flex:2;">
+        </div>
+        <div class="form-row">
+            <label>Опис / содржина</label>
+            <textarea id="formOpis" placeholder="Краток опис, упатства..."></textarea>
+        </div>
+        <div class="form-row">
+            <label>Прикачи датотека</label>
+            <div class="upload-area">
+                <label for="fileInput">📎 Избери PDF или Word</label>
+                <input type="file" id="fileInput" accept=".doc,.docx,.pdf">
+                <span id="fileNameDisplay" style="margin-left:12px;font-size:13px;color:#555;">Нема избрано</span>
+                <button type="button" onclick="clearFileSelection()" style="background:#dc3545;color:white;border:none;border-radius:4px;padding:2px 10px;margin-left:10px;cursor:pointer;">✕</button>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn-success" onclick="saveDocument()">💾 Зачувај</button>
+            <button class="btn-danger" onclick="hideForm()">❌ Откажи</button>
+            <button onclick="deleteCurrent()" id="deleteBtn" style="display:none;background:#c62828;color:white;border:none;border-radius:4px;padding:6px 16px;cursor:pointer;">🗑️ Избриши</button>
+        </div>
+    </div>
+
+    <!-- ============ ТАБЕЛА ============ -->
+    <div class="table-wrap">
+        <table id="docTable">
+            <thead>
+                <tr>
+                    <th>Р.б.</th>
+                    <th>Учебна година</th>
+                    <th>Наставна година</th>
+                    <th>Паралелка</th>
+                    <th>Тип</th>
+                    <th>Теми</th>
+                    <th>Наслов</th>
+                    <th>Датум</th>
+                    <th>Датотека</th>
+                    <th>Акции</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <div style="margin-top:15px;text-align:center;color:#888;font-size:11px;">
+        * Сите податоци се чуваат локално во прелистувачот (localStorage).<br>
+        Датотеките до 5MB се чуваат како base64. При извоз CSV, датотеките не се вклучени.
+    </div>
+
+    <div class="footer">
+        <span>© 2026 СОУ „28 Ноември“ - Дебар</span>
+        <span>Проф. Решат Маловски</span>
+        <span>Верзија 9.3</span>
+    </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+    // ============================================================
+    // === ТЕМИ ПО ГОДИНИ ===
+    // ============================================================
+    const TOPICS_BY_YEAR = {
+        'I': [
+            'Броеви и операции со броеви',
+            'Алгебарски рационални изрази',
+            'Функција, равенка, систем од две равенки и неравенка',
+            'Геометрија (вектори, тригонометрија, 2Д форми, сличност)',
+            'Мерење (2Д и 3Д)',
+            'Работа со податоци'
+        ],
+        'II': [
+            'Корени и комплексни броеви',
+            'Квадратни равенки и равенки што се сведуваат на квадратни',
+            'Квадратна функција, квадратна неравенка и систем квадратни неравенки',
+            'Елементи од веројатност',
+            'Геометрија (тригонометрија, права и рамнина, пресеци)',
+            'Мерење (2Д и 3Д)'
+        ],
+        'III': [
+            'Експоненцијална и логаритамска функција',
+            'Тригонометрија',
+            'Елементи од комбинаторика и веројатност',
+            'Аналитичка геометрија'
+        ],
+        'IV': [
+            'Низи и прогресии',
+            'Функции и гранични вредности на функции',
+            'Диференцијално сметање (извод и примена)',
+            'Веројатност',
+            'Статистика'
+        ]
+    };
+
+    const YEAR_NAMES = {
+        'I': 'Прва година',
+        'II': 'Втора година',
+        'III': 'Трета година',
+        'IV': 'Четврта година'
+    };
+
+    // ============ DATA ============
+    let documents = [];
+    let nextId = 1;
+    let editingId = null;
+    let selectedFileData = null;
+    let currentYearFilter = 'IV';
+
+    // ============ LOAD / SAVE ============
+    function loadData() {
+        try {
+            const data = localStorage.getItem('docs_math_v9');
+            const id = localStorage.getItem('docs_math_v9_id');
+            if (data) {
+                documents = JSON.parse(data);
+                nextId = id ? parseInt(id) : documents.length + 1;
+            } else {
+                documents = [];
+                let demoId = 1;
+                for (const [yr, topics] of Object.entries(TOPICS_BY_YEAR)) {
+                    topics.forEach((tema, idx) => {
+                        const tip = idx % 2 === 0 ? 'тест' : 'писмена';
+                        const tipLabel = tip === 'тест' ? 'Контролен тест' : 'Контролна писмена';
+                        documents.push({
+                            id: demoId++,
+                            year: '2026/2027',
+                            nastavna: yr,
+                            paralelka: '7',
+                            type: tip,
+                            topics: [tema],
+                            naslov: `Демо: ${tema} (${tipLabel})`,
+                            opis: `Пример за темата "${tema}" од ${yr}. година.`,
+                            datum: new Date().toLocaleDateString('mk-MK'),
+                            fileName: '',
+                            fileData: '',
+                            fileType: ''
+                        });
+                    });
+                }
+                nextId = demoId;
+                saveData();
+            }
+        } catch(e) { documents = []; nextId = 1; }
+        
+        currentYearFilter = document.getElementById('yearSelect').value || 'IV';
+        renderTopics();
+        renderLibrary();
+        updateFormTopics();
+    }
+
+    function saveData() {
+        try {
+            localStorage.setItem('docs_math_v9', JSON.stringify(documents));
+            localStorage.setItem('docs_math_v9_id', nextId);
+        } catch(e) { showToast('Грешка при зачувување!', 'error'); }
+    }
+
+    // ============ ПРОМЕНА НА ГОДИНА ============
+    function onYearChange() {
+        currentYearFilter = document.getElementById('yearSelect').value;
+        document.getElementById('filterNastavna').value = currentYearFilter;
+        renderTopics();
+        renderLibrary();
+    }
+
+    // ============ ПРЕГЛЕД НА ТЕМИ ============
+    function renderTopics() {
+        const container = document.getElementById('topicsContainer');
+        const year = document.getElementById('yearSelect').value;
+        const topics = TOPICS_BY_YEAR[year] || [];
+        
+        if (topics.length === 0) {
+            container.innerHTML = `<div class="no-topics">Нема дефинирани теми за ${YEAR_NAMES[year] || year}.</div>`;
+            return;
+        }
+
+        let html = '';
+        topics.forEach(tema => {
+            const broj = documents.filter(d => d.nastavna === year && d.topics && d.topics.includes(tema)).length;
+            html += `
+                <div class="topic-card" onclick="openFormForTopic('${year}', '${tema.replace(/'/g, "\\'")}')">
+                    <span class="topic-name">${tema}</span>
+                    <span>
+                        <span class="doc-count">${broj} документи</span>
+                        <span class="topic-badge">📄</span>
+                    </span>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    function openFormForTopic(year, topic) {
+        document.getElementById('formNastavna').value = year;
+        updateFormTopics();
+        showForm();
+        
+        const type = document.getElementById('formType').value;
+        if (type === 'тест') {
+            const radios = document.querySelectorAll('input[name="formTopicRadio"]');
+            radios.forEach(r => {
+                if (r.value === topic) r.checked = true;
+            });
+        } else {
+            const checks = document.querySelectorAll('input[name="formTopicCheck"]');
+            checks.forEach(c => {
+                if (c.value === topic) c.checked = true;
+            });
+        }
+        updateTopicSelectionUI();
+        showToast(`Додавање за тема: ${topic}`, 'success');
+        document.getElementById('formContainer').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ============ ФОРМА - ТЕМИ ============
+    function updateFormTopics() {
+        const nastavna = document.getElementById('formNastavna').value;
+        const topics = TOPICS_BY_YEAR[nastavna] || [];
+        const type = document.getElementById('formType').value;
+        const container = document.getElementById('topicSelectionContainer');
+        const label = document.getElementById('topicLabel');
+
+        if (topics.length === 0) {
+            container.innerHTML = '<span style="color:#888;">Нема теми за оваа година</span>';
+            return;
+        }
+
+        let html = '';
+        if (type === 'тест') {
+            label.textContent = 'Избери тема (само 1):';
+            html = `<div class="topic-radio-group">`;
+            topics.forEach(t => {
+                html += `
+                    <label>
+                        <input type="radio" name="formTopicRadio" value="${t}" onchange="updateTopicSelectionUI()">
+                        ${t}
+                    </label>
+                `;
+            });
+            html += `</div>`;
+        } else {
+            label.textContent = 'Избери 1-3 теми (чекни):';
+            html = `<div class="topic-checkbox-group">`;
+            topics.forEach(t => {
+                html += `
+                    <label>
+                        <input type="checkbox" name="formTopicCheck" value="${t}" onchange="updateTopicSelectionUI()">
+                        ${t}
+                    </label>
+                `;
+            });
+            html += `</div>`;
+            html += `<div class="selected-info" id="checkboxInfo">Избрани: 0 теми</div>`;
+        }
+        container.innerHTML = html;
+        updateTopicSelectionUI();
+    }
+
+    function toggleTopicSelection() {
+        updateFormTopics();
+    }
+
+    function updateTopicSelectionUI() {
+        const type = document.getElementById('formType').value;
+        if (type === 'тест') {
+            document.querySelectorAll('.topic-radio-group label').forEach(label => {
+                const radio = label.querySelector('input[type="radio"]');
+                if (radio && radio.checked) {
+                    label.classList.add('selected');
+                } else {
+                    label.classList.remove('selected');
+                }
+            });
+        } else {
+            const checks = document.querySelectorAll('input[name="formTopicCheck"]');
+            const selected = Array.from(checks).filter(c => c.checked).map(c => c.value);
+            const info = document.getElementById('checkboxInfo');
+            if (info) {
+                info.textContent = `Избрани: ${selected.length} теми`;
+                if (selected.length > 3) {
+                    info.style.color = '#c62828';
+                    info.textContent += ' ⚠️ Максимум 3!';
+                } else {
+                    info.style.color = '#555';
+                }
+            }
+            document.querySelectorAll('.topic-checkbox-group label').forEach(label => {
+                const check = label.querySelector('input[type="checkbox"]');
+                if (check && check.checked) {
+                    label.classList.add('checked');
+                } else {
+                    label.classList.remove('checked');
+                }
+            });
+        }
+    }
+
+    // ============ ФОРМА - ПРИКАЖИ / СКРИЈ ============
+    function showForm(data) {
+        const container = document.getElementById('formContainer');
+        container.classList.add('show');
+        if (data) {
+            document.getElementById('formTitle').textContent = 'Уреди документ';
+            document.getElementById('formYear').value = data.year || '2026/2027';
+            document.getElementById('formNastavna').value = data.nastavna || 'I';
+            document.getElementById('formParalelka').value = data.paralelka || '7';
+            document.getElementById('formType').value = data.type || 'тест';
+            document.getElementById('formNaslov').value = data.naslov || '';
+            document.getElementById('formOpis').value = data.opis || '';
+            document.getElementById('deleteBtn').style.display = 'inline-block';
+            editingId = data.id;
+            updateFormTopics();
+            const type = data.type || 'тест';
+            if (type === 'тест') {
+                const radios = document.querySelectorAll('input[name="formTopicRadio"]');
+                radios.forEach(r => {
+                    if (data.topics && data.topics.includes(r.value)) {
+                        r.checked = true;
+                    }
+                });
+            } else {
+                const checks = document.querySelectorAll('input[name="formTopicCheck"]');
+                checks.forEach(c => {
+                    if (data.topics && data.topics.includes(c.value)) {
+                        c.checked = true;
+                    }
+                });
+            }
+            updateTopicSelectionUI();
+            if (data.fileName) {
+                document.getElementById('fileNameDisplay').textContent = data.fileName + ' (зачувано)';
+                selectedFileData = { name: data.fileName, data: data.fileData, type: data.fileType };
+            } else {
+                document.getElementById('fileNameDisplay').textContent = 'Нема избрано';
+                selectedFileData = null;
+            }
+        } else {
+            document.getElementById('formTitle').textContent = 'Додади нов документ';
+            document.getElementById('formYear').value = '2026/2027';
+            document.getElementById('formNastavna').value = document.getElementById('yearSelect').value || 'I';
+            document.getElementById('formParalelka').value = '7';
+            document.getElementById('formType').value = 'тест';
+            document.getElementById('formNaslov').value = '';
+            document.getElementById('formOpis').value = '';
+            document.getElementById('deleteBtn').style.display = 'none';
+            editingId = null;
+            selectedFileData = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileNameDisplay').textContent = 'Нема избрано';
+            updateFormTopics();
+        }
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function hideForm() {
+        document.getElementById('formContainer').classList.remove('show');
+        editingId = null;
+        selectedFileData = null;
+        document.getElementById('fileInput').value = '';
+        document.getElementById('fileNameDisplay').textContent = 'Нема избрано';
+    }
+
+    function clearFileSelection() {
+        document.getElementById('fileInput').value = '';
+        document.getElementById('fileNameDisplay').textContent = 'Нема избрано';
+        selectedFileData = null;
+    }
+
+    // ============ ПРИКАЧУВАЊЕ ДАТОТЕКА ============
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('Датотеката е преголема (макс 5MB)!', 'error');
+            this.value = '';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const base64 = ev.target.result.split(',')[1] || '';
+            selectedFileData = { name: file.name, data: base64, type: file.type };
+            document.getElementById('fileNameDisplay').textContent = file.name + ' (зачувано)';
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // ============ ЗАЧУВАЈ ДОКУМЕНТ ============
+    function saveDocument() {
+        const year = document.getElementById('formYear').value;
+        const nastavna = document.getElementById('formNastavna').value;
+        const paralelka = document.getElementById('formParalelka').value;
+        const type = document.getElementById('formType').value;
+        const naslov = document.getElementById('formNaslov').value.trim();
+        const opis = document.getElementById('formOpis').value.trim();
+
+        let selectedTopics = [];
+        if (type === 'тест') {
+            const radios = document.querySelectorAll('input[name="formTopicRadio"]');
+            radios.forEach(r => { if (r.checked) selectedTopics.push(r.value); });
+        } else {
+            const checks = document.querySelectorAll('input[name="formTopicCheck"]');
+            checks.forEach(c => { if (c.checked) selectedTopics.push(c.value); });
+        }
+
+        if (!naslov) { showToast('Насловот е задолжителен!', 'error'); return; }
+        if (selectedTopics.length === 0) { showToast('Избери барем една тема!', 'error'); return; }
+        if (selectedTopics.length > 3) { showToast('Максимум 3 теми!', 'error'); return; }
+
+        const datum = new Date().toLocaleDateString('mk-MK');
+
+        if (editingId) {
+            const idx = documents.findIndex(d => d.id === editingId);
+            if (idx === -1) { showToast('Грешка', 'error'); return; }
+            documents[idx].year = year;
+            documents[idx].nastavna = nastavna;
+            documents[idx].paralelka = paralelka;
+            documents[idx].type = type;
+            documents[idx].topics = selectedTopics;
+            documents[idx].naslov = naslov;
+            documents[idx].opis = opis;
+            if (selectedFileData) {
+                documents[idx].fileName = selectedFileData.name;
+                documents[idx].fileData = selectedFileData.data;
+                documents[idx].fileType = selectedFileData.type;
+            }
+            showToast('Ажурирано!', 'success');
+        } else {
+            documents.push({
+                id: nextId++,
+                year, nastavna, paralelka, type, topics: selectedTopics,
+                naslov, opis, datum,
+                fileName: selectedFileData ? selectedFileData.name : '',
+                fileData: selectedFileData ? selectedFileData.data : '',
+                fileType: selectedFileData ? selectedFileData.type : ''
+            });
+            showToast('Додадено!', 'success');
+        }
+        saveData();
+        hideForm();
+        renderTopics();
+        renderLibrary();
+    }
+
+    function deleteCurrent() {
+        if (!editingId) return;
+        if (confirm('Избриши?')) deleteDocument(editingId);
+        hideForm();
+    }
+
+    function deleteDocument(id) {
+        if (!confirm('Избриши?')) return;
+        documents = documents.filter(d => d.id !== id);
+        saveData();
+        renderTopics();
+        renderLibrary();
+        showToast('Избришано.', 'success');
+    }
+
+    function editDocument(id) {
+        const doc = documents.find(d => d.id === id);
+        if (doc) showForm(doc);
+    }
+
+    // ============ ОТВОРАЊЕ НА ДАТОТЕКА ============
+    function previewFile(id) {
+        const d = documents.find(d => d.id === id);
+        if (!d || !d.fileData) { 
+            showToast('Нема прикачена датотека.', 'error'); 
+            return; 
+        }
+        try {
+            const mime = d.fileType || 'application/octet-stream';
+            const dataUrl = `data:${mime};base64,${d.fileData}`;
+            const win = window.open('', '_blank');
+            if (win) {
+                win.document.write(`<iframe src="${dataUrl}" style="width:100%;height:100%;border:none;"></iframe>`);
+                win.document.title = d.fileName || 'Преглед';
+                showToast('Датотеката е отворена во нов прозорец.', 'success');
+            } else {
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = d.fileName || 'document';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                showToast('Датотеката се презема (popup блокиран).', 'success');
+            }
+        } catch(e) { 
+            showToast('Грешка при отварање: ' + e.message, 'error'); 
+        }
+    }
+
+    // ============ БИБЛИОТЕКА - RENDER ============
+    function renderLibrary() {
+        const tbody = document.getElementById('tableBody');
+        const fYear = document.getElementById('filterYear').value;
+        const fNast = document.getElementById('filterNastavna').value || currentYearFilter;
+        const fPar = document.getElementById('filterParalelka').value;
+        const fType = document.getElementById('filterType').value;
+        const fSearch = document.getElementById('filterSearch').value.toLowerCase();
+
+        let filtered = documents.filter(d => {
+            if (fYear && d.year !== fYear) return false;
+            if (fNast && d.nastavna !== fNast) return false;
+            if (fPar && d.paralelka !== fPar) return false;
+            if (fType && d.type !== fType) return false;
+            if (fSearch && !d.naslov.toLowerCase().includes(fSearch)) return false;
+            return true;
+        });
+        filtered.sort((a,b) => b.id - a.id);
+
+        tbody.innerHTML = '';
+        filtered.forEach((d, idx) => {
+            const hasFile = d.fileData && d.fileData.length > 0;
+            const fileDisplay = hasFile ? 
+                `<a class="file-link" onclick="previewFile(${d.id})">📄 ${d.fileName || 'Датотека'}</a>` :
+                '<span style="color:#999;">нема</span>';
+            
+            const typeLabel = d.type === 'тест' ? 'Контролен тест' : 'Контролна писмена';
+            const typeClass = d.type === 'тест' ? 'type-test' : 'type-pismena';
+            const topicsStr = (d.topics && d.topics.length > 0) ? d.topics.join(', ') : '-';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${idx+1}</td>
+                <td>${d.year}</td>
+                <td>${d.nastavna}</td>
+                <td>${d.paralelka}</td>
+                <td><span class="doc-type-badge ${typeClass}">${typeLabel}</span></td>
+                <td style="text-align:left;font-size:12px;max-width:200px;">${topicsStr}</td>
+                <td style="text-align:left;max-width:180px;">${d.naslov}</td>
+                <td>${d.datum || '-'}</td>
+                <td>${fileDisplay}</td>
+                <td>
+                    <button class="btn-sm btn-edit" onclick="editDocument(${d.id})">✏️</button>
+                    <button class="btn-sm btn-delete" onclick="deleteDocument(${d.id})">🗑️</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('docCount').textContent = documents.length;
+        document.getElementById('fileCount').textContent = documents.filter(d => d.fileData && d.fileData.length > 0).length;
+        const latest = documents.reduce((max, d) => {
+            if (!d.datum) return max;
+            const parts = d.datum.split('.');
+            const dt = new Date(parts[2], parts[1]-1, parts[0]);
+            return dt > max ? dt : max;
+        }, new Date(0));
+        document.getElementById('latestDate').textContent = latest.getFullYear() > 2000 ? latest.toLocaleDateString('mk-MK') : '-';
+    }
+
+    // ============ ФИЛТРИ ============
+    function applyFilters() { renderLibrary(); }
+    function clearFilters() {
+        document.getElementById('filterYear').value = '2026/2027';
+        document.getElementById('filterParalelka').value = '';
+        document.getElementById('filterType').value = '';
+        document.getElementById('filterSearch').value = '';
+        renderLibrary();
+    }
+
+    // ============ CSV ИЗВОЗ ============
+    function exportCSV() {
+        if (documents.length === 0) { showToast('Нема податоци.', 'error'); return; }
+        const headers = ['id','year','nastavna','paralelka','type','topics','naslov','opis','datum','fileName','fileType'];
+        const rows = documents.map(d => [
+            d.id, d.year, d.nastavna, d.paralelka, d.type, 
+            (d.topics && d.topics.length > 0) ? d.topics.join('|') : '',
+            d.naslov, d.opis || '', d.datum || '', d.fileName || '', d.fileType || ''
+        ]);
+        const csv = headers.join(',') + '\n' + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `biblioteka_${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('CSV извезен!', 'success');
+    }
+
+    // ============ CSV УВОЗ ============
+    function importCSV(event) {
+        const file = event.target.files[0];
+        if (!file) { showToast('Нема избрано датотека.', 'error'); return; }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const text = e.target.result;
+                const lines = text.split('\n').filter(l => l.trim() !== '');
+                if (lines.length < 2) { showToast('Празен CSV.', 'error'); return; }
+                const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+                const idx = {
+                    id: headers.indexOf('id'),
+                    year: headers.indexOf('year'),
+                    nastavna: headers.indexOf('nastavna'),
+                    paralelka: headers.indexOf('paralelka'),
+                    type: headers.indexOf('type'),
+                    topics: headers.indexOf('topics'),
+                    naslov: headers.indexOf('naslov'),
+                    opis: headers.indexOf('opis'),
+                    datum: headers.indexOf('datum'),
+                    fileName: headers.indexOf('fileName'),
+                    fileType: headers.indexOf('fileType')
+                };
+                let added = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+                    const year = idx.year >= 0 ? (cols[idx.year] || '2026/2027') : '2026/2027';
+                    const nastavna = idx.nastavna >= 0 ? (cols[idx.nastavna] || 'I') : 'I';
+                    const paralelka = idx.paralelka >= 0 ? (cols[idx.paralelka] || '7') : '7';
+                    const type = idx.type >= 0 ? (cols[idx.type] || 'тест') : 'тест';
+                    const topicsStr = idx.topics >= 0 ? (cols[idx.topics] || '') : '';
+                    const topics = topicsStr ? topicsStr.split('|').filter(t => t.trim() !== '') : [];
+                    const naslov = idx.naslov >= 0 ? (cols[idx.naslov] || 'Без наслов') : 'Без наслов';
+                    const opis = idx.opis >= 0 ? (cols[idx.opis] || '') : '';
+                    const datum = idx.datum >= 0 ? (cols[idx.datum] || new Date().toLocaleDateString('mk-MK')) : new Date().toLocaleDateString('mk-MK');
+                    const fileName = idx.fileName >= 0 ? (cols[idx.fileName] || '') : '';
+                    const fileType = idx.fileType >= 0 ? (cols[idx.fileType] || '') : '';
+                    let id = null;
+                    if (idx.id >= 0 && cols[idx.id] && !isNaN(cols[idx.id])) {
+                        id = parseInt(cols[idx.id]);
+                        const existing = documents.find(d => d.id === id);
+                        if (existing) {
+                            existing.year = year; existing.nastavna = nastavna; existing.paralelka = paralelka;
+                            existing.type = type; existing.topics = topics; existing.naslov = naslov;
+                            existing.opis = opis; existing.datum = datum; existing.fileName = fileName;
+                            existing.fileType = fileType;
+                            added++; continue;
+                        }
+                    }
+                    documents.push({
+                        id: nextId++, year, nastavna, paralelka, type, topics, naslov, opis, datum,
+                        fileName, fileData: '', fileType
+                    });
+                    added++;
+                }
+                saveData();
+                renderTopics();
+                renderLibrary();
+                showToast(`Увезени ${added} записи.`, 'success');
+            } catch(err) {
+                showToast('Грешка при увоз: ' + err.message, 'error');
+            }
+        };
+        reader.readAsText(file, 'UTF-8');
+        event.target.value = '';
+    }
+
+    // ============ TOAST ============
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = 'toast show ' + type;
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    // ============ INIT ============
+    loadData();
+</script>
+</body>
+</html>
