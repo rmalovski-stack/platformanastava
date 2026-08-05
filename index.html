@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Платформа за настава (LocalForage)</title>
+    <!-- LocalForage библиотека -->
+    <script src="https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js">
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f8;
+            padding: 16px;
+            max-width: 1000px;
+            margin: 0 auto;
+            color: #0f172a;
+        }
+        h1 {
+            font-size: 24px;
+            color: #1e40af;
+            margin: 8px 0 4px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+        .subtitle2 {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+        .cats,
+        .subs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0 10px;
+        }
+        .cats button,
+        .subs button {
+            padding: 8px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: 0.15s;
+        }
+        .cats button:hover,
+        .subs button:hover {
+            background: #f1f5f9;
+        }
+        .cats button.act,
+        .subs button.act {
+            background: #1e40af;
+            color: #fff;
+            border-color: #1e40af;
+        }
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0 14px;
+        }
+        .actions button {
+            padding: 10px 18px;
+            border: 0;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            color: #fff;
+            transition: 0.15s;
+        }
+        .actions button:hover {
+            filter: brightness(0.92);
+        }
+        .blue {
+            background: #3b82f6;
+        }
+        .orange {
+            background: #f59e0b;
+        }
+        .green {
+            background: #16a34a;
+        }
+        .gray {
+            background: #64748b;
+        }
+        .red {
+            background: #ef4444;
+        }
+        .purple {
+            background: #8b5cf6;
+        }
+        .search {
+            margin: 12px 0;
+        }
+        .search input {
+            width: 100%;
+            max-width: 480px;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 15px;
+            background: #fff;
+        }
+        .search input:focus {
+            outline: 2px solid #3b82f6;
+            border-color: transparent;
+        }
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .item {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.12s;
+        }
+        .item:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+        .item .nm {
+            flex: 1;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .item .mt {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+        .item .badge {
+            font-size: 11px;
+            background: #e2e8f0;
+            padding: 2px 10px;
+            border-radius: 8px;
+            color: #1e293b;
+            flex-shrink: 0;
+        }
+        .item .dl {
+            background: none;
+            border: 0;
+            color: #ef4444;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        .item .dl:hover {
+            background: #fef2f2;
+        }
+        .empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: #94a3b8;
+        }
+        .empty span {
+            font-size: 42px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .hid {
+            display: none;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            z-index: 999;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.3s;
+            opacity: 0;
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.on {
+            opacity: 1;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            .actions button {
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+            .item {
+                padding: 12px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📚 Платформа за настава</h1>
+    <div class="subtitle">СОУ „28 Ноември“ – Дебар</div>
+    <div class="subtitle2">Проф. Решат Маловски</div>
+
+    <!-- Категории -->
+    <div class="cats" id="cats">
+        <button data-cat="site" class="act">📂 Сите</button>
+        <button data-cat="matematika">📐 Математика</button>
+        <button data-cat="klasen-cas">🧑‍🏫 Класен час</button>
+    </div>
+
+    <!-- Поткатегории -->
+    <div class="subs" id="subs">
+        <button data-sub="podgotovka" class="act">📝 Подготовка</button>
+        <button data-sub="nastavni">📚 Наставни</button>
+        <button data-sub="vonnastavni">🏫 Воннаставни</button>
+        <button data-sub="drugo">📌 Друго</button>
+    </div>
+
+    <!-- Акции -->
+    <div class="actions">
+        <button class="blue" id="btnHtml">📄 Увези HTML</button>
+        <button class="orange" id="btnDoc">📎 Увези документ</button>
+        <button class="green" id="btnJson">📥 Увези JSON</button>
+        <button class="gray" id="btnSaveJson">💾 Зачувај JSON</button>
+        <button class="purple" id="btnClearAll">🗑 Избриши се</button>
+    </div>
+
+    <!-- Пребарување -->
+    <div class="search">
+        <input type="text" id="searchInput" placeholder="🔍 Пребарај по наслов (почетни букви)…">
+    </div>
+
+    <!-- Листа -->
+    <div class="list" id="list"></div>
+
+    <!-- Сокриени file inputs -->
+    <input type="file" id="fHtml" class="hid" accept=".html,.htm" multiple>
+    <input type="file" id="fDoc" class="hid" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.md" multiple>
+    <input type="file" id="fJson" class="hid" accept=".json">
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ========== LocalForage инстанца ==========
+            const store = localforage.createInstance({
+                name: 'EduPlatform',
+                storeName: 'documents'
+            });
+
+            const STORAGE_KEY = 'edu_data'; // клуч за еден запис (ќе чуваме цела низа)
+
+            // ========== ПОМОШНИ ==========
+            const SUB_NAMES = {
+                podgotovka: 'Подготовка',
+                nastavni: 'Наставни',
+                vonnastavni: 'Воннаставни',
+                drugo: 'Друго'
+            };
+
+            let currentCat = 'site';
+            let currentSub = 'podgotovka';
+            let searchTerm = '';
+
+            const listEl = document.getElementById('list');
+            const searchInput = document.getElementById('searchInput');
+            const toastEl = document.getElementById('toast');
+
+            function toast(msg, duration) {
+                duration = duration || 2500;
+                toastEl.textContent = msg;
+                toastEl.classList.add('on');
+                clearTimeout(toastEl._hideTimer);
+                toastEl._hideTimer = setTimeout(function() {
+                    toastEl.classList.remove('on');
+                }, duration);
+            }
+
+            function uid() {
+                return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+            }
+
+            function escapeHtml(str) {
+                return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+
+            // ========== АСИНХРОНИ ФУНКЦИИ ЗА ПОДАТОЦИ ==========
+
+            // Вчитување на сите податоци (ако нема, креирај пример)
+            async function loadAll() {
+                try {
+                    const data = await store.getItem(STORAGE_KEY);
+                    if (Array.isArray(data) && data.length > 0) {
+                        return data;
+                    }
+                } catch (e) { /* ignore */ }
+
+                // Креирај пример ако нема
+                const sample = [{
+                    id: uid(),
+                    naslov: 'Геометриски фигури - вовед',
+                    htmlContent: '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Геометрија</title></head><body style="font-family:sans-serif;padding:40px;background:#f0f9ff"><h1>📐 Геометриски фигури</h1><p>Вовед</p></body></html>',
+                    datum: new Date().toISOString(),
+                    kategorija: 'matematika',
+                    subkategorija: 'podgotovka'
+                }, {
+                    id: uid(),
+                    naslov: 'Квадратни равенки',
+                    htmlContent: '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Квадратни</title></head><body style="font-family:sans-serif;padding:40px;background:#f0fdf4"><h1>Квадратни равенки</h1><p style="font-size:22px">ax² + bx + c = 0</p></body></html>',
+                    datum: new Date(Date.now() - 86400000).toISOString(),
+                    kategorija: 'matematika',
+                    subkategorija: 'nastavni'
+                }, {
+                    id: uid(),
+                    naslov: 'Родителска средба',
+                    htmlContent: '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Родителска</title></head><body style="font-family:sans-serif;padding:40px;background:#fef2f2"><h1>Родителска средба</h1></body></html>',
+                    datum: new Date(Date.now() - 172800000).toISOString(),
+                    kategorija: 'klasen-cas',
+                    subkategorija: null
+                }];
+                await store.setItem(STORAGE_KEY, sample);
+                return sample;
+            }
+
+            // Зачувување на целата низа
+            async function saveAll(data) {
+                await store.setItem(STORAGE_KEY, data);
+            }
+
+            // Добивање на податоци (со кеширање)
+            let cachedData = null;
+            async function getAll() {
+                if (cachedData) return cachedData;
+                cachedData = await loadAll();
+                return cachedData;
+            }
+
+            // Освежување на кешот
+            async function refreshCache() {
+                cachedData = await loadAll();
+                return cachedData;
+            }
+
+            // ========== ФИЛТРИРАЊЕ ==========
+            async function getFiltered() {
+                const data = await getAll();
+                const term = searchTerm.trim().toLowerCase();
+                let result = data;
+
+                if (term) {
+                    result = result.filter(item => {
+                        const naslov = (item.naslov || '').toLowerCase();
+                        return naslov.indexOf(term) === 0;
+                    });
+                } else {
+                    if (currentCat === 'matematika') {
+                        result = result.filter(item => {
+                            return item.kategorija === 'matematika' &&
+                                (!currentSub || item.subkategorija === currentSub);
+                        });
+                    } else if (currentCat === 'klasen-cas') {
+                        result = result.filter(item => item.kategorija === 'klasen-cas');
+                    }
+                }
+                result.sort((a, b) => new Date(b.datum) - new Date(a.datum));
+                return result;
+            }
+
+            // ========== ПРИКАЖУВАЊЕ ==========
+            async function render() {
+                const items = await getFiltered();
+                if (!items.length) {
+                    listEl.innerHTML =
+                        `<div class="empty"><span>📭</span>${searchTerm ? 'Нема наслов што почнува со „' + escapeHtml(searchTerm) + '“' : 'Нема документи во оваа листа.'}</div>`;
+                    return;
+                }
+
+                let html = '';
+                items.forEach(item => {
+                    const tip = item.htmlContent ? 'HTML' : 'Док';
+                    let meta = '';
+                    if (item.kategorija === 'matematika') {
+                        meta = '📐 Математика';
+                        if (item.subkategorija) {
+                            meta += ' · ' + (SUB_NAMES[item.subkategorija] || item.subkategorija);
+                        }
+                    } else if (item.kategorija === 'klasen-cas') {
+                        meta = '🧑‍🏫 Класен час';
+                    }
+
+                    html += `
+                        <div class="item" data-id="${item.id}">
+                            <div class="nm">
+                                ${escapeHtml(item.naslov)}
+                                ${meta ? `<div class="mt">${escapeHtml(meta)}</div>` : ''}
+                            </div>
+                            <span class="badge">${tip}</span>
+                            <button class="dl" data-del="${item.id}" title="Избриши">✕</button>
+                        </div>
+                    `;
+                });
+                listEl.innerHTML = html;
+            }
+
+            // ========== ОТВОРАЊЕ ДОКУМЕНТ ==========
+            async function openDocument(id) {
+                const data = await getAll();
+                const doc = data.find(item => item.id === id);
+                if (!doc) {
+                    toast('❌ Документот не е пронајден');
+                    return;
+                }
+
+                if (doc.htmlContent) {
+                    const win = window.open('', '_blank');
+                    if (win) {
+                        win.document.write(doc.htmlContent);
+                        win.document.close();
+                    } else {
+                        toast('⚠️ Отвори нов прозорец (поп-ап блокиран)');
+                    }
+                    return;
+                }
+
+                if (doc.fileData) {
+                    try {
+                        const binary = atob(doc.fileData);
+                        const bytes = new Uint8Array(binary.length);
+                        for (let i = 0; i < binary.length; i++) {
+                            bytes[i] = binary.charCodeAt(i);
+                        }
+                        const blob = new Blob([bytes], { type: doc.fileType || 'application/octet-stream' });
+                        const url = URL.createObjectURL(blob);
+
+                        if ((doc.fileType || '').indexOf('pdf') >= 0) {
+                            window.open(url, '_blank');
+                            setTimeout(() => URL.revokeObjectURL(url), 60000);
+                            return;
+                        }
+
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = doc.fileName || doc.naslov || 'документ';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        setTimeout(() => URL.revokeObjectURL(url), 5000);
+                        toast('📥 Преземање: ' + doc.naslov);
+                    } catch (e) {
+                        toast('❌ Грешка при отворање на документот');
+                        console.error(e);
+                    }
+                    return;
+                }
+
+                toast('❌ Нема содржина за приказ');
+            }
+
+            // ========== БРИШЕЊЕ ==========
+            async function deleteDocument(id) {
+                if (!confirm('Дали сте сигурни?')) return;
+                let data = await getAll();
+                data = data.filter(item => item.id !== id);
+                await saveAll(data);
+                cachedData = data;
+                render();
+                toast('🗑 Избришано');
+            }
+
+            async function clearAll() {
+                if (!confirm('Дали сте сигурни? Ова ќе ги избрише СИТЕ документи.')) return;
+                await saveAll([]);
+                cachedData = [];
+                render();
+                toast('🗑 Сите документи се избришани');
+            }
+
+            // ========== УВЕЗ HTML ==========
+            async function importHtml(files) {
+                if (!files || !files.length) {
+                    toast('❌ Нема избрани датотеки');
+                    return;
+                }
+
+                const cat = currentCat === 'site' ? 'matematika' : currentCat;
+                const sub = cat === 'matematika' ? currentSub : null;
+                const data = await getAll();
+                let processed = 0;
+                const total = files.length;
+                let errors = [];
+
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        try {
+                            const content = e.target.result;
+                            let titleMatch = content.match(/<title>([\s\S]*?)<\/title>/i);
+                            let name = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : file.name
+                                .replace(/\.html?$/i, '');
+                            if (!name) name = file.name;
+
+                            data.push({
+                                id: uid(),
+                                naslov: name,
+                                htmlContent: content,
+                                datum: new Date().toISOString(),
+                                kategorija: cat,
+                                subkategorija: sub
+                            });
+                        } catch (err) {
+                            errors.push(file.name + ': ' + err.message);
+                        }
+                        processed++;
+                        if (processed === total) {
+                            await saveAll(data);
+                            cachedData = data;
+                            render();
+                            if (errors.length) {
+                                toast('⚠️ Зачувани ' + data.length + ' датотеки, грешки: ' + errors.join('; '));
+                            } else {
+                                toast('✅ Зачувани ' + data.length + ' HTML датотеки');
+                            }
+                        }
+                    };
+                    reader.onerror = function() {
+                        errors.push(file.name + ': грешка при читање');
+                        processed++;
+                        if (processed === total) {
+                            saveAll(data).then(() => {
+                                cachedData = data;
+                                render();
+                                toast('⚠️ Зачувани ' + data.length + ', грешки: ' + errors.join('; '));
+                            });
+                        }
+                    };
+                    reader.readAsText(file);
+                });
+            }
+
+            // ========== УВЕЗ ДОКУМЕНТ ==========
+            async function importDoc(files) {
+                if (!files || !files.length) {
+                    toast('❌ Нема избрани датотеки');
+                    return;
+                }
+
+                const cat = currentCat === 'site' ? 'matematika' : currentCat;
+                const sub = cat === 'matematika' ? currentSub : null;
+                const data = await getAll();
+                let processed = 0;
+                const total = files.length;
+                let errors = [];
+
+                const mimeMap = {
+                    pdf: 'application/pdf',
+                    doc: 'application/msword',
+                    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    xls: 'application/vnd.ms-excel',
+                    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    txt: 'text/plain',
+                    md: 'text/markdown'
+                };
+
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        try {
+                            const arrayBuffer = e.target.result;
+                            const bytes = new Uint8Array(arrayBuffer);
+                            let binary = '';
+                            for (let i = 0; i < bytes.length; i++) {
+                                binary += String.fromCharCode(bytes[i]);
+                            }
+                            const base64 = btoa(binary);
+
+                            const ext = file.name.split('.').pop().toLowerCase();
+                            const mime = mimeMap[ext] || file.type || 'application/octet-stream';
+
+                            data.push({
+                                id: uid(),
+                                naslov: file.name,
+                                htmlContent: null,
+                                datum: new Date().toISOString(),
+                                kategorija: cat,
+                                subkategorija: sub,
+                                fileType: mime,
+                                fileData: base64,
+                                fileName: file.name
+                            });
+                        } catch (err) {
+                            errors.push(file.name + ': ' + err.message);
+                        }
+                        processed++;
+                        if (processed === total) {
+                            await saveAll(data);
+                            cachedData = data;
+                            render();
+                            if (errors.length) {
+                                toast('⚠️ Зачувани ' + data.length + ' датотеки, грешки: ' + errors.join('; '));
+                            } else {
+                                toast('✅ Зачувани ' + data.length + ' документи');
+                            }
+                        }
+                    };
+                    reader.onerror = function() {
+                        errors.push(file.name + ': грешка при читање');
+                        processed++;
+                        if (processed === total) {
+                            saveAll(data).then(() => {
+                                cachedData = data;
+                                render();
+                                toast('⚠️ Зачувани ' + data.length + ', грешки: ' + errors.join('; '));
+                            });
+                        }
+                    };
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+
+            // ========== УВЕЗ JSON ==========
+            async function importJson(file) {
+                if (!file) {
+                    toast('❌ Нема датотека');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    try {
+                        const parsed = JSON.parse(e.target.result);
+                        if (!Array.isArray(parsed)) {
+                            toast('❌ JSON мора да биде низа од објекти');
+                            return;
+                        }
+                        await saveAll(parsed);
+                        cachedData = parsed;
+                        render();
+                        toast('✅ Зачувани ' + parsed.length + ' записи од JSON');
+                    } catch (err) {
+                        toast('❌ Невалиден JSON: ' + err.message);
+                    }
+                };
+                reader.onerror = function() {
+                    toast('❌ Грешка при читање на JSON');
+                };
+                reader.readAsText(file);
+            }
+
+            // ========== ЗАЧУВАЈ JSON ==========
+            async function exportJson() {
+                const data = await getAll();
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'nastava-data.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+                toast('💾 Зачувано ' + data.length + ' записи');
+            }
+
+            // ========== ИНИЦИЈАЛИЗАЦИЈА ==========
+            async function init() {
+                // Категории
+                document.querySelectorAll('#cats button[data-cat]').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        document.querySelectorAll('#cats button[data-cat]').forEach(b => b.classList.remove(
+                            'act'));
+                        this.classList.add('act');
+                        currentCat = this.getAttribute('data-cat');
+                        searchTerm = '';
+                        searchInput.value = '';
+                        render();
+                    });
+                });
+
+                // Поткатегории
+                document.querySelectorAll('#subs button[data-sub]').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        document.querySelectorAll('#subs button[data-sub]').forEach(b => b.classList.remove(
+                            'act'));
+                        this.classList.add('act');
+                        currentSub = this.getAttribute('data-sub');
+                        if (currentCat !== 'matematika') {
+                            document.querySelector('#cats button[data-cat="matematika"]').click();
+                        } else {
+                            render();
+                        }
+                    });
+                });
+
+                // Пребарување
+                searchInput.addEventListener('input', function() {
+                    searchTerm = this.value;
+                    render();
+                });
+
+                // Копчиња
+                document.getElementById('btnHtml').addEventListener('click', () => document.getElementById('fHtml')
+                .click());
+                document.getElementById('btnDoc').addEventListener('click', () => document.getElementById('fDoc')
+                .click());
+                document.getElementById('btnJson').addEventListener('click', () => document.getElementById('fJson')
+                    .click());
+                document.getElementById('btnSaveJson').addEventListener('click', exportJson);
+                document.getElementById('btnClearAll').addEventListener('click', clearAll);
+
+                // file inputs
+                document.getElementById('fHtml').addEventListener('change', function() {
+                    if (this.files && this.files.length) {
+                        importHtml(this.files);
+                        this.value = '';
+                    }
+                });
+                document.getElementById('fDoc').addEventListener('change', function() {
+                    if (this.files && this.files.length) {
+                        importDoc(this.files);
+                        this.value = '';
+                    }
+                });
+                document.getElementById('fJson').addEventListener('change', function() {
+                    if (this.files && this.files.length) {
+                        importJson(this.files[0]);
+                        this.value = '';
+                    }
+                });
+
+                // Клик на листа
+                listEl.addEventListener('click', function(e) {
+                    const item = e.target.closest('.item');
+                    if (!item) return;
+
+                    const delBtn = e.target.closest('[data-del]');
+                    if (delBtn) {
+                        e.stopPropagation();
+                        const id = delBtn.getAttribute('data-del');
+                        deleteDocument(id);
+                        return;
+                    }
+
+                    const id = item.getAttribute('data-id');
+                    if (id) {
+                        openDocument(id);
+                    }
+                });
+
+                // Прво вчитување
+                await refreshCache();
+                render();
+                toast('📚 Добредојде! (LocalForage / IndexedDB)', 3000);
+            }
+
+            // Старт
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+
+</body>
+</html>havior:"smooth"})}}
+function azurirajStatistika(){const data=getData(),p={matematika:{podgotovka:0,nastavni:0,vonnastavni:0,drugo:0},"klasen-cas":0};data.forEach(i=>{if(i.kategorija==="matematika"&&i.subkategorija&&p.matematika[i.subkategorija]!==undefined)p.matematika[i.subkategorija]++;else if(i.kategorija==="klasen-cas")p["klasen-cas"]++});let t=0;for(const s in p.matematika)t+=p.matematika[s];t+=p["klasen-cas"];document.getElementById("vkupnoMesta").textContent=70;document.getElementById("popolnetiMesta").innerHTML="📄 "+t;document.getElementById("slobodniMesta").innerHTML="📭 "+(70-t)}
+function mapSubLabel(s){return{podgotovka:"📝 Подготовка",nastavni:"📚 Наставни",vonnastavni:"🏫 Воннаставни",drugo:"📌 Друго"}[s]||s}
+function renderLista(){const data=getData(),c=document.getElementById("listaContainer");let f=data;if(activeCategory==="matematika")f=data.filter(i=>i.kategorija==="matematika"&&i.subkategorija===activeSub);else if(activeCategory==="klasen-cas")f=data.filter(i=>i.kategorija==="klasen-cas");if(!f.length){c.innerHTML='<div class="prazno"><span>📭</span>Нема датотеки.<br>Увези HTML или документ.</div>';return}const sorted=[...f].sort((a,b)=>new Date(b.datum)-new Date(a.datum));c.innerHTML=sorted.map(item=>{const isH=!!item.htmlContent,tip=isH?"HTML":"Док",fn=isH?"previewHtml('"+item.id+"')":"previewDokument('"+item.id+"')",sub=item.subkategorija?mapSubLabel(item.subkategorija):"";return'<div class="karticka"><div class="naslov-html">'+escHtml(item.naslov)+' <span style="font-size:11px;background:#e2e8f0;padding:2px 8px;border-radius:10px">'+tip+'</span></div><div class="datum-html">📅 '+formatDate(item.datum)+'</div>'+(sub?'<div class="kategorija-badge">'+sub+'</div>':'')+'<div class="akcii"><button class="btn btn-success" onclick="'+fn+'">👁 Преглед</button><button class="btn btn-danger" onclick="izbrisiEdna(\''+item.id+'\')">🗑</button></div></div>'}).join("");const first=sorted.find(i=>i.htmlContent);if(first){const iframe=document.getElementById("previewIframe"),blob=new Blob([first.htmlContent],{type:"text/html"}),url=URL.createObjectURL(blob);iframe.src=url;setTimeout(()=>URL.revokeObjectURL(url),60000)}}
+function renderTabela(){const data=getData(),tb=document.getElementById("tabelaBody");document.getElementById("brojDatoteki").textContent="("+data.length+")";if(!data.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:#94a3b8">Нема датотеки</td></tr>';return}const sorted=[...data].sort((a,b)=>new Date(b.datum)-new Date(a.datum));tb.innerHTML=sorted.map((item,idx)=>{const isH=!!item.htmlContent,tip=isH?"HTML":"Док",tc=isH?"html":"dokument",fn=isH?"previewHtml('"+item.id+"')":"previewDokument('"+item.id+"')";return"<tr><td>"+(idx+1)+"</td><td><strong>"+escHtml(item.naslov)+'</strong></td><td><span class="tip-badge '+tc+'">'+tip+'</span></td><td><button class="btn btn-success" style="padding:6px 10px;font-size:12px" onclick="'+fn+'">👁</button> <button class="btn btn-danger" style="padding:6px 10px;font-size:12px" onclick="izbrisiEdna(\''+item.id+'\')">🗑</button></td></tr>'}).join("")}
+let tabelaVidlivost=false;function toggleTabela(){tabelaVidlivost=!tabelaVidlivost;document.getElementById("tabelaContainer").style.display=tabelaVidlivost?"block":"none";if(tabelaVidlivost)renderTabela()}
+let iframeVidlivost=true;function toggleIframe(){const b=document.getElementById("iframeBody"),btn=document.querySelector(".toggle-iframe-btn");iframeVidlivost=!iframeVidlivost;if(iframeVidlivost){b.classList.remove("hidden");btn.textContent="🔽"}else{b.classList.add("hidden");btn.textContent="🔼"}}
+function uvoziHTML(ev){const files=ev.target.files;if(!files.length)return;let data=getData();const kat=activeCategory==="site"?"matematika":(activeCategory||"matematika"),sub=kat==="matematika"?(activeSub||"podgotovka"):null;Array.from(files).forEach(file=>{const r=new FileReader();r.onload=function(e){const html=e.target.result,m=html.match(/<title>(.*?)<\/title>/i),naslov=m?m[1].trim():file.name.replace(/\.html$/i,"");data.push({id:generateId(),naslov,htmlContent:html,datum:new Date().toISOString(),kategorija:kat,subkategorija:sub});setData(data);renderLista();renderTabela();azurirajStatistika();showToast("✅ "+naslov)};r.readAsText(file)});ev.target.value=""}
+function uvoziDokument(ev){const files=ev.target.files;if(!files.length)return;let data=getData();const kat=activeCategory==="site"?"matematika":(activeCategory||"matematika"),sub=kat==="matematika"?(activeSub||"podgotovka"):null;Array.from(files).forEach(file=>{const r=new FileReader();r.onload=function(e){let content=e.target.result,b64="";try{b64=btoa(content)}catch(err){b64=btoa(unescape(encodeURIComponent(content)))}data.push({id:generateId(),naslov:file.name,htmlContent:null,datum:new Date().toISOString(),kategorija:kat,subkategorija:sub,fileType:file.type||"application/octet-stream",fileData:b64,fileName:file.name});setData(data);renderLista();renderTabela();azurirajStatistika();showToast("✅ "+file.name)};r.readAsBinaryString(file)});ev.target.value=""}
+function previewHtml(id){const item=getData().find(d=>d.id===id);if(!item||!item.htmlContent){showToast("Нема содржина");return}const blob=new Blob([item.htmlContent],{type:"text/html"}),url=URL.createObjectURL(blob);window.open(url,"_blank");setTimeout(()=>URL.revokeObjectURL(url),60000)}
+function previewDokument(id){const item=getData().find(d=>d.id===id);if(!item||!item.fileData){showToast("Нема податоци");return}try{const bin=atob(item.fileData),bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);const blob=new Blob([bytes],{type:item.fileType||"application/octet-stream"}),url=URL.createObjectURL(blob);if(item.fileType==="application/pdf")window.open(url,"_blank");else{const a=document.createElement("a");a.href=url;a.download=item.fileName||"document";document.body.appendChild(a);a.click();document.body.removeChild(a)}setTimeout(()=>URL.revokeObjectURL(url),60000)}catch(e){showToast("❌ Грешка при отворање")}}
+function izbrisiEdna(id){if(!confirm("Да ја избришеме оваа датотека?"))return;setData(getData().filter(i=>i.id!==id));renderLista();renderTabela();azurirajStatistika();showToast("🗑 Избришано")}
+function izbrisiSite(){if(!confirm("Сигурен? Ќе ги избришеш СИТЕ датотеки."))return;setData([]);renderLista();renderTabela();azurirajStatistika();showToast("🗑 Сите избришани")}
+function initSample(){if(getData().length)return;setData([{id:generateId(),naslov:"📐 Геометриски фигури - вовед",htmlContent:"<!DOCTYPE html><html><head><title>Геометрија</title><style>body{font-family:sans-serif;padding:40px;background:#f0f9ff;text-align:center}</style></head><body><h1>📐 Геометриски фигури</h1><p>Вовед</p></body></html>",datum:new Date().toISOString(),kategorija:"matematika",subkategorija:"podgotovka"},{id:generateId(),naslov:"📐 Квадратни равенки",htmlContent:"<!DOCTYPE html><html><head><title>Квадратни</title><style>body{font-family:sans-serif;padding:40px;background:#f0fdf4;text-align:center}</style></head><body><h1>📐 Квадратни равенки</h1><p style='font-size:22px'>ax² + bx + c = 0</p></body></html>",datum:new Date(Date.now()-86400000).toISOString(),kategorija:"matematika",subkategorija:"nastavni"},{id:generateId(),naslov:"👪 Родителска средба",htmlContent:"<!DOCTYPE html><html><head><title>Родителска</title><style>body{font-family:sans-serif;padding:40px;background:#fef2f2;text-align:center}</style></head><body><h1>👪 Родителска средба</h1></body></html>",datum:new Date(Date.now()-172800000).toISOString(),kategorija:"klasen-cas",subkategorija:null}])}
+let deferredPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;document.getElementById("installBanner").classList.add("show")});
+function installPWA(){if(!deferredPrompt){showToast("Отвори во Chrome/Edge и додај на почетен екран");return}deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;document.getElementById("installBanner").classList.remove("show")})}
+function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1)}
+document.addEventListener("DOMContentLoaded",function(){setupManifest();registerSW();initSample();renderLista();renderTabela();azurirajStatistika();if(isIOS()&&!window.navigator.standalone)document.getElementById("iosHint").classList.add("show");showToast("🚀 Апликацијата е активна!")});
+</script>
+</body>
+</html>
