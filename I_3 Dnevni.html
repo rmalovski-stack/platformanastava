@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сценарија - Математика (I година)_3</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Times New Roman', Times, serif; background: #e8ebf0; padding: 20px; }
+        
+        .toolbar { max-width: 1100px; margin: 0 auto 20px; background: white; padding: 15px 20px; border-radius: 8px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .toolbar select, .toolbar button { padding: 8px 16px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; }
+        .toolbar button { background: #1e3f70; color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+        .toolbar button:hover { background: #0f2a4a; }
+        
+        .word-document { max-width: 1100px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .doc-title { text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #1e3f70; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+        td, th { border: 1px solid #000; padding: 6px 10px; font-size: 13px; vertical-align: top; }
+        .lbl { font-weight: bold; background: #f4f6f8; width: 20%; }
+        .lbl-sm { font-weight: bold; background: #f4f6f8; }
+        
+        [contenteditable="true"] { outline: none; min-height: 20px; }
+        [contenteditable="true"]:hover { background: #f8fcff; }
+        
+        .scenario-selector { background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .no-print { }
+        
+        @media print { .no-print { display: none !important; } body { background: white; padding: 0; } .word-document { box-shadow: none; padding: 20px; } }
+        
+        .status-bar {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 8px 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #2e7d32;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .status-bar.error {
+            background: #ffebee;
+            border-left-color: #f44336;
+            color: #c62828;
+        }
+        
+        .multiselect-container { position: relative; width: 100%; }
+        .dropdown-button {
+            background: #f0f2f5;
+            border: 1px dashed #666;
+            padding: 4px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            color: #1e3f70;
+            border-radius: 3px;
+            margin-bottom: 3px;
+            user-select: none;
+            display: inline-block;
+        }
+        .dropdown-button:hover { background: #e2e6ec; }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: #ffffff;
+            min-width: 380px;
+            max-height: 320px;
+            overflow-y: auto;
+            border: 2px solid #1e3f70;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            z-index: 9999;
+            padding: 10px 12px;
+            border-radius: 6px;
+            left: 0;
+            top: 100%;
+        }
+        .dropdown-content.show { display: block; }
+        .dropdown-content .category-title { font-weight: bold; background: #e2e6ec; padding: 4px 8px; margin: 6px 0 4px 0; font-size: 11px; text-transform: uppercase; border-radius: 3px; color: #1e3f70; }
+        .dropdown-content label { display: flex; align-items: flex-start; padding: 3px 0; font-size: 12px; cursor: pointer; border-bottom: 1px solid #f0f2f5; }
+        .dropdown-content label:hover { background: #f8fcff; }
+        .dropdown-content input[type="checkbox"] { margin-right: 8px; margin-top: 2px; cursor: pointer; width: 16px; height: 16px; flex-shrink: 0; }
+        .selected-items-display { padding-left: 20px; margin: 4px 0; list-style-type: disc; }
+        .selected-items-display li { font-size: 12px; margin-bottom: 2px; }
+        .selected-items-display .no-items { color: #8896ae; font-style: italic; }
+        
+        .dropdown-content .actions-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .dropdown-content .actions-row button { padding: 4px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .dropdown-content .actions-row .btn-select-all { background: #28a745; color: white; }
+        .dropdown-content .actions-row .btn-select-all:hover { background: #1e7e34; }
+        .dropdown-content .actions-row .btn-deselect-all { background: #dc3545; color: white; }
+        .dropdown-content .actions-row .btn-deselect-all:hover { background: #c82333; }
+        .dropdown-content .actions-row .btn-close-dropdown { background: #6c757d; color: white; }
+        .dropdown-content .actions-row .btn-close-dropdown:hover { background: #5a6268; }
+        
+        .import-area { background: #f8f9fa; border: 2px dashed #6c757d; border-radius: 8px; padding: 15px; margin-top: 20px; }
+        .import-area textarea { width: 100%; height: 80px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: 'Times New Roman', Times, serif; font-size: 13px; resize: vertical; }
+        .scenario-content { line-height: 1.5; }
+        .import-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; cursor: pointer; }
+        .toggle-arrow { font-size: 18px; transition: transform 0.3s; display: inline-block; }
+        .toggle-arrow.open { transform: rotate(180deg); }
+        .import-body { overflow: hidden; transition: max-height 0.3s ease; }
+        .import-body.collapsed { max-height: 0 !important; padding: 0 !important; margin: 0 !important; }
+        
+        .textarea-row { margin-bottom: 10px; }
+        .textarea-label { font-weight: bold; display: block; margin-bottom: 4px; font-size: 13px; color: #1e3f70; }
+        .textarea-actions { margin-top: 4px; display: flex; gap: 6px; }
+        .btn-sm { padding: 4px 12px; font-size: 12px; }
+        .btn-blue { background: #17a2b8 !important; color: white !important; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-red { background: #dc3545 !important; color: white !important; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-purple { background: #6f42c1 !important; color: white !important; border: none; border-radius: 4px; cursor: pointer; padding: 8px 16px; font-weight: bold; }
+        .btn-green { background: #28a745 !important; color: white !important; border: none; border-radius: 4px; cursor: pointer; padding: 8px 16px; font-weight: bold; }
+        
+        .paralelka-selector { display: flex; align-items: center; gap: 8px; position: relative; }
+        .paralelka-selector .dropdown-btn {
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px 30px 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 80px;
+            position: relative;
+            text-align: left;
+        }
+        .paralelka-selector .dropdown-btn::after {
+            content: '▼';
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            color: #666;
+        }
+        .paralelka-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 2px solid #1e3f70;
+            border-radius: 6px;
+            padding: 8px 12px;
+            min-width: 120px;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-top: 2px;
+        }
+        .paralelka-dropdown.show { display: block; }
+        .paralelka-dropdown label { display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; font-size: 14px; }
+        .paralelka-dropdown label:hover { background: #f5f5f5; }
+        .paralelka-dropdown input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+        .paralelka-dropdown .actions { display: flex; gap: 6px; margin-top: 6px; padding-top: 6px; border-top: 1px solid #eee; flex-wrap: wrap; }
+        .paralelka-dropdown .actions button { padding: 3px 10px; border: none; border-radius: 3px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .paralelka-dropdown .actions .select-all-btn { background: #28a745; color: white; }
+        .paralelka-dropdown .actions .deselect-all-btn { background: #dc3545; color: white; }
+        .paralelka-dropdown .actions .close-btn { background: #6c757d; color: white; }
+        .paralelka-display { font-size: 13px; color: #1e3f70; font-weight: bold; padding: 2px 8px; background: #f0f4ff; border-radius: 4px; min-width: 40px; text-align: center; }
+        
+        .generating-spinner { display: none; margin-left: 10px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .storage-info { font-size: 12px; color: #666; margin-top: 4px; }
+        .close-application-box {
+            background: #ffebee;
+            border: 2px solid #f44336;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .close-application-box h3 { color: #c62828; font-size: 18px; margin-bottom: 5px; }
+        .close-application-box p { color: #555; font-size: 14px; }
+        .close-application-box .close-btn { background: #dc3545; color: white; border: none; padding: 10px 30px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; margin: 5px; }
+        .close-application-box .close-btn:hover { background: #c82333; }
+        .bottom-section { margin-top: 30px; border-top: 2px solid #dee2e6; padding-top: 20px; }
+        
+        .json-upload-area {
+            background: #f0f4ff;
+            border: 2px dashed #1e3f70;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .json-upload-area .upload-btn {
+            background: #1e3f70;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .json-upload-area .upload-btn:hover { background: #0f2a4a; }
+        .json-upload-area small { display: block; margin-top: 5px; color: #666; }
+        
+        #jsonContainer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        #jsonButtonsContainer {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        #jsonButtonsContainer.hidden {
+            display: none !important;
+        }
+        .toggle-json-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .toggle-json-btn:hover { background: #5a6268; }
+        .toggle-json-btn.active { background: #28a745; }
+    </style>
+</head>
+<body>
+
+<div class="toolbar no-print">
+    <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+        <span style="font-weight:bold; color:#1e3f70;">🎓 Математика - I година</span>
+        
+        <div class="paralelka-selector no-print">
+            <label style="font-size:14px; font-weight:bold;">📋 Паралелка:</label>
+            <div class="dropdown-btn" id="paralelkaBtn" onclick="toggleParalelkaDropdown(event)">
+                <span id="paralelkaSelectedText">6</span>
+            </div>
+            <span class="paralelka-display" id="paralelkaDisplay">6</span>
+            <div class="paralelka-dropdown" id="paralelkaDropdown">
+                <label><input type="checkbox" value="5" onchange="updateParalelkaSelection()"> 5</label>
+                <label><input type="checkbox" value="6" checked onchange="updateParalelkaSelection()"> 6</label>
+                <label><input type="checkbox" value="7" onchange="updateParalelkaSelection()"> 7</label>
+                <div class="actions">
+                    <button class="select-all-btn" onclick="selectAllParalelki()">✓ Сите</button>
+                    <button class="deselect-all-btn" onclick="deselectAllParalelki()">✗ Ниедна</button>
+                    <button class="close-btn" onclick="closeParalelkaDropdown()">Затвори</button>
+                </div>
+            </div>
+        </div>
+        
+        <label for="temaSelect">📖 Тема:</label>
+        <select id="temaSelect" onchange="updateCasovi()">
+            <option value="">-- Вчитај тема --</option>
+        </select>
+        
+        <label for="casSelect">⏳ Час:</label>
+        <select id="casSelect" onchange="loadLessonData()">
+            <option value="">-- Вчитај сценарио --</option>
+        </select>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+        <button style="background:#fd7e14;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:bold;" onclick="generateVariations()">🔄 Генерирај ново <span class="generating-spinner" id="spinner">⏳</span></button>
+        <button style="background:#17a2b8;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:bold;" onclick="saveCurrentScenario()">💾 Зачувај</button>
+        <button style="background:#6c757d;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:bold;" onclick="previewPlan()">👁️ Преглед</button>
+        
+        <div id="jsonContainer">
+            <button class="toggle-json-btn" id="jsonToggleBtn" onclick="toggleJSONButtons()">📂 JSON опции (скриј)</button>
+            <div id="jsonButtonsContainer">
+                <button class="btn-purple" onclick="exportAllScenariosJSON()">📤 Извези JSON</button>
+                <button class="btn-green" onclick="document.getElementById('jsonFileInput').click()">📂 Вчитај JSON</button>
+                <input type="file" id="jsonFileInput" accept=".json" onchange="loadJSONFile(event)" style="display:none;">
+            </div>
+        </div>
+        
+        <button onclick="window.print()" style="background:#343a40;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:bold;">🖨️ Печати</button>
+    </div>
+</div>
+
+<div class="word-document" id="documentContainer">
+    <div id="statusBar" class="status-bar">
+        <span>📌 Подготвено</span>
+        <span id="saveStatus">Работа со податоци</span>
+    </div>
+
+    <div class="doc-title">Сценарио за реализација на наставен час - I година</div>
+    
+    <div class="scenario-selector no-print">
+        <label for="scenarioVersionSelect">📂 Избери сценарио:</label>
+        <select id="scenarioVersionSelect" onchange="loadSelectedScenario()">
+            <option value="original">📄 Оригинално сценарио</option>
+            <option value="additional">📄 Дополнително сценарио</option>
+            <option value="generated1">🔄 Генерирано 1</option>
+            <option value="generated2">🔄 Генерирано 2</option>
+            <option value="generated3">🔄 Генерирано 3</option>
+        </select>
+    </div>
+    
+    <table>
+        <tr>
+            <td class="lbl-sm"><b>Предмет</b></td>
+            <td contenteditable="true"><b>МАТЕМАТИКА</b></td>
+            <td class="lbl-sm"><b>Тема:</b></td>
+            <td id="cell-tema-label" contenteditable="true"></td>
+            <td class="lbl-sm"><b>Час бр.</b></td>
+            <td id="cell-chas" contenteditable="true"></td>
+        </tr>
+        <tr>
+            <td class="lbl-sm"><b>Година:</b></td>
+            <td id="cell-godina" contenteditable="true"><b>I година</b></td>
+            <td class="lbl-sm"><b>Паралелка:</b></td>
+            <td id="cell-paralelka" contenteditable="true"><b>6</b></td>
+            <td class="lbl-sm"><b>Датум:</b></td>
+            <td contenteditable="true"><b>__________</b></td>
+        </tr>
+        <tr>
+            <td class="lbl-sm"><b>Изготвил:</b></td>
+            <td contenteditable="true"><b>проф. РЕШАТ МАЛОВСКИ</b></td>
+            <td class="lbl-sm"><b>СОУ:</b></td>
+            <td colspan="3" contenteditable="true"><b>„28 НОЕМВРИ“ – ДЕБАР</b></td>
+        </tr>
+    </table>
+
+    <table>
+        <tr><td class="lbl"><b>Содржини:</b></td><td id="cell-sodrzini" contenteditable="true"></td></tr>
+        <tr><td class="lbl"><b>Стандарди:</b></td><td id="cell-kriteriumi" contenteditable="true"></td></tr>
+        <tr><td class="lbl"><b>Сценарио:</b></td><td id="cell-scenario" class="scenario-content" contenteditable="true"></td></tr>
+        
+        <tr>
+            <td class="lbl"><b>Наставни средства и ресурси:</b></td>
+            <td>
+                <div class="multiselect-container">
+                    <div class="dropdown-button no-print" onclick="toggleDropdown(event, 'dropdownSredstva')">
+                        ▼ Избор на средства (<span id="sredstvaCount">0</span> избрани)
+                    </div>
+                    <div id="dropdownSredstva" class="dropdown-content no-print">
+                        <div class="category-title">🖥️ Основни дигитални средства</div>
+                        <label><input type="checkbox" value="Дигитална табла / Проектор" onchange="syncSelection('dropdownSredstva','listSredstva')"> Дигитална табла / Проектор</label>
+                        <label><input type="checkbox" value="Компјутер / Лаптоп" onchange="syncSelection('dropdownSredstva','listSredstva')"> Компјутер / Лаптоп</label>
+                        <label><input type="checkbox" value="Презентација (PPT/Canva)" onchange="syncSelection('dropdownSredstva','listSredstva')"> Презентација (PPT/Canva)</label>
+                        <label><input type="checkbox" value="Работен лист / Материјал" onchange="syncSelection('dropdownSredstva','listSredstva')"> Работен лист / Материјал</label>
+                        <label><input type="checkbox" value="Интернет конекција" onchange="syncSelection('dropdownSredstva','listSredstva')"> Интернет конекција</label>
+                        
+                        <div class="category-title">📚 Класични средства</div>
+                        <label><input type="checkbox" value="Учебник" onchange="syncSelection('dropdownSredstva','listSredstva')"> Учебник</label>
+                        <label><input type="checkbox" value="Табла / Маркери / Креда" onchange="syncSelection('dropdownSredstva','listSredstva')"> Табла / Маркери / Креда</label>
+                        <label><input type="checkbox" value="Збирка задачи" onchange="syncSelection('dropdownSredstva','listSredstva')"> Збирка задачи</label>
+                        
+                        <div class="category-title">🔧 Математички алатки</div>
+                        <label><input type="checkbox" value="Геометриски прибор" onchange="syncSelection('dropdownSredstva','listSredstva')"> Геометриски прибор</label>
+                        <label><input type="checkbox" value="Калкулатор" onchange="syncSelection('dropdownSredstva','listSredstva')"> Калкулатор</label>
+                        <label><input type="checkbox" value="Geogebra" onchange="syncSelection('dropdownSredstva','listSredstva')"> Geogebra</label>
+                        <label><input type="checkbox" value="Дигитални квизови" onchange="syncSelection('dropdownSredstva','listSredstva')"> Дигитални квизови</label>
+                        
+                        <div class="actions-row">
+                            <button class="btn-select-all" onclick="selectAll('dropdownSredstva', 'listSredstva')">✓ Избери ги сите</button>
+                            <button class="btn-deselect-all" onclick="deselectAll('dropdownSredstva', 'listSredstva')">✗ Одбери ги сите</button>
+                            <button class="btn-close-dropdown" onclick="closeDropdown('dropdownSredstva')">Затвори</button>
+                        </div>
+                    </div>
+                </div>
+                <ul id="listSredstva" class="selected-items-display">
+                    <li class="no-items">Нема избрани средства.</li>
+                </ul>
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="lbl"><b>Следење на напредокот:</b></td>
+            <td>
+                <div class="multiselect-container">
+                    <div class="dropdown-button no-print" onclick="toggleDropdown(event, 'dropdownSledenje')">
+                        ▼ Избор на следење (<span id="sledenjeCount">0</span> избрани)
+                    </div>
+                    <div id="dropdownSledenje" class="dropdown-content no-print">
+                        <div class="category-title">👀 Тековно следење</div>
+                        <label><input type="checkbox" value="Воведна мотивација / Проверка на претходно знаење" onchange="syncSelection('dropdownSledenje','listSledenje')"> Воведна мотивација / Проверка на претходно знаење</label>
+                        <label><input type="checkbox" value="Презентација на нови содржини" onchange="syncSelection('dropdownSledenje','listSledenje')"> Презентација на нови содржини</label>
+                        <label><input type="checkbox" value="Интерактивна активност" onchange="syncSelection('dropdownSledenje','listSledenje')"> Интерактивна активност</label>
+                        <label><input type="checkbox" value="Запис / Белешки" onchange="syncSelection('dropdownSledenje','listSledenje')"> Запис / Белешки</label>
+                        <label><input type="checkbox" value="Завршна евалуација / Резиме" onchange="syncSelection('dropdownSledenje','listSledenje')"> Завршна евалуација / Резиме</label>
+                        
+                        <div class="category-title">🗣️ Усна проверка</div>
+                        <label><input type="checkbox" value="Кратки усни прашања" onchange="syncSelection('dropdownSledenje','listSledenje')"> Кратки усни прашања</label>
+                        <label><input type="checkbox" value="Ученички објаснувања" onchange="syncSelection('dropdownSledenje','listSledenje')"> Ученички објаснувања</label>
+                        
+                        <div class="category-title">✍️ Писмена проверка</div>
+                        <label><input type="checkbox" value="Мини-квиз" onchange="syncSelection('dropdownSledenje','listSledenje')"> Мини-квиз</label>
+                        <label><input type="checkbox" value="Излезни листови" onchange="syncSelection('dropdownSledenje','listSledenje')"> Излезни листови</label>
+                        
+                        <div class="category-title">📊 Евалуација</div>
+                        <label><input type="checkbox" value="Самооценка" onchange="syncSelection('dropdownSledenje','listSledenje')"> Самооценка</label>
+                        <label><input type="checkbox" value="Врсничко оценување" onchange="syncSelection('dropdownSledenje','listSledenje')"> Врсничко оценување</label>
+                        
+                        <div class="actions-row">
+                            <button class="btn-select-all" onclick="selectAll('dropdownSledenje', 'listSledenje')">✓ Избери ги сите</button>
+                            <button class="btn-deselect-all" onclick="deselectAll('dropdownSledenje', 'listSledenje')">✗ Одбери ги сите</button>
+                            <button class="btn-close-dropdown" onclick="closeDropdown('dropdownSledenje')">Затвори</button>
+                        </div>
+                    </div>
+                </div>
+                <ul id="listSledenje" class="selected-items-display">
+                    <li class="no-items">Нема избрани постапки.</li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+
+    <div class="import-area no-print" id="importArea">
+        <div class="import-header" onclick="toggleImportArea()">
+            <span style="font-weight:bold; color:#1e3f70;">📝 Внеси/замени сценарија</span>
+            <span><span class="toggle-arrow" id="toggleArrow">▼</span><span style="font-size:12px; color:#6c757d; margin-left:5px;">(кликни за отворање/затворање)</span></span>
+        </div>
+        <div class="import-body" id="importBody">
+            <div class="textarea-row">
+                <span class="textarea-label">📄 Оригинално сценарио:</span>
+                <textarea id="scenarioInput" placeholder="Залепи го оригиналното сценарио овде..."></textarea>
+                <div class="textarea-actions">
+                    <button class="btn-sm btn-blue" onclick="importScenarioFromText('original')">📥 Вчитај</button>
+                    <button class="btn-sm btn-red" onclick="clearImportArea('original')">🗑️ Избриши</button>
+                </div>
+            </div>
+            <div class="textarea-row">
+                <span class="textarea-label">📄 Дополнително сценарио:</span>
+                <textarea id="additionalScenarioInput" placeholder="Залепи го дополнителното сценарио овде..."></textarea>
+                <div class="textarea-actions">
+                    <button class="btn-sm btn-blue" onclick="importScenarioFromText('additional')">📥 Вчитај</button>
+                    <button class="btn-sm btn-red" onclick="clearImportArea('additional')">🗑️ Избриши</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-section no-print">
+        <div class="json-upload-area no-print">
+            <strong>📂 Вчитај JSON база</strong>
+            <br><br>
+            <button class="upload-btn" onclick="document.getElementById('jsonFileInputBottom').click()">📂 Избери JSON датотека</button>
+            <input type="file" id="jsonFileInputBottom" accept=".json" onchange="loadJSONFile(event)" style="display:none;">
+            <small>Поддржува JSON структура за I година</small>
+            <div class="storage-info" id="storageInfo"></div>
+        </div>
+
+        <div class="close-application-box no-print">
+            <h3>⛔ Затвори ја апликацијата</h3>
+            <p>Апликацијата е затворена. За да продолжите со работа, освежете ја страницата.</p>
+            <br>
+            <button class="close-btn" onclick="closeApplication()">🔒 Затвори апликација</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// 1. ГЛОБАЛНИ ПРОМЕНЛИВИ
+// ============================================================
+let SCENARIO_BASE = {};
+let ADDITIONAL_SCENARIOS = {};
+let GENERATED_VARIATIONS = { generated1: '', generated2: '', generated3: '' };
+let currentScenarioId = null;
+let isAppClosed = false;
+let selectedParalelki = ['6'];
+let TEMI_BASE = {};
+let jsonVisible = true;
+
+// ============================================================
+// 2. СТАНДАРДНИ СРЕДСТВА И ПОСТАПКИ ЗА I ГОДИНА
+// ============================================================
+const DEFAULT_SREDSTVA = [
+    'Дигитална табла / Проектор',
+    'Компјутер / Лаптоп',
+    'Презентација (PPT/Canva)',
+    'Работен лист / Материјал',
+    'Учебник',
+    'Табла / Маркери / Креда'
+];
+
+const DEFAULT_SLEDENJE = [
+    'Воведна мотивација / Проверка на претходно знаење',
+    'Презентација на нови содржини',
+    'Интерактивна активност',
+    'Запис / Белешки',
+    'Завршна евалуација / Резиме',
+    'Кратки усни прашања',
+    'Самооценка',
+    'Излезни листови'
+];
+
+// ============================================================
+// 3. ФУНКЦИИ ЗА ПАРАЛЕЛКИ
+// ============================================================
+function toggleParalelkaDropdown(event) {
+    if (event) event.stopPropagation();
+    document.getElementById('paralelkaDropdown').classList.toggle('show');
+    document.getElementById('paralelkaBtn').classList.toggle('active');
+}
+
+function closeParalelkaDropdown() {
+    document.getElementById('paralelkaDropdown').classList.remove('show');
+    document.getElementById('paralelkaBtn').classList.remove('active');
+}
+
+function updateParalelkaSelection() {
+    const checkboxes = document.querySelectorAll('#paralelkaDropdown input[type="checkbox"]');
+    selectedParalelki = [];
+    checkboxes.forEach(cb => {
+        if (cb.checked) selectedParalelki.push(cb.value);
+    });
+    
+    const display = document.getElementById('paralelkaDisplay');
+    const text = document.getElementById('paralelkaSelectedText');
+    if (selectedParalelki.length === 0) {
+        display.textContent = '❌';
+        text.textContent = 'Избери';
+    } else {
+        display.textContent = selectedParalelki.join(', ');
+        text.textContent = selectedParalelki.join(', ');
+    }
+    
+    document.getElementById('cell-paralelka').innerHTML = '<b>' + selectedParalelki.join(', ') + '</b>';
+    saveAllToLocalStorage();
+}
+
+function selectAllParalelki() {
+    document.querySelectorAll('#paralelkaDropdown input[type="checkbox"]').forEach(cb => cb.checked = true);
+    updateParalelkaSelection();
+}
+
+function deselectAllParalelki() {
+    document.querySelectorAll('#paralelkaDropdown input[type="checkbox"]').forEach(cb => cb.checked = false);
+    updateParalelkaSelection();
+}
+
+document.addEventListener('click', function(e) {
+    const container = document.querySelector('.paralelka-selector');
+    if (container && !container.contains(e.target)) {
+        closeParalelkaDropdown();
+    }
+});
+
+// ============================================================
+// 4. LOCALSTORAGE ФУНКЦИИ
+// ============================================================
+function saveAllToLocalStorage() {
+    if (isAppClosed) return false;
+    try {
+        saveSelectedItems();
+        const data = {
+            scenarioBase: SCENARIO_BASE,
+            additionalScenarios: ADDITIONAL_SCENARIOS,
+            generatedVariations: GENERATED_VARIATIONS,
+            temiPoGodini: TEMI_BASE,
+            savedAt: new Date().toISOString(),
+            paralelki: selectedParalelki
+        };
+        localStorage.setItem('scenarioAppData_I', JSON.stringify(data));
+        document.getElementById('saveStatus').textContent = '✅ Зачувано во ' + new Date().toLocaleTimeString();
+        document.getElementById('statusBar').className = 'status-bar';
+        return true;
+    } catch (e) {
+        console.error('Грешка при зачувување:', e);
+        return false;
+    }
+}
+
+function loadGodinaData() {
+    try {
+        const savedData = localStorage.getItem('scenarioAppData_I');
+        if (!savedData) {
+            console.log('📂 Нема зачувани податоци.');
+            return false;
+        }
+        const data = JSON.parse(savedData);
+        SCENARIO_BASE = data.scenarioBase || {};
+        ADDITIONAL_SCENARIOS = data.additionalScenarios || {};
+        GENERATED_VARIATIONS = data.generatedVariations || { generated1: '', generated2: '', generated3: '' };
+        TEMI_BASE = data.temiPoGodini || {};
+        if (data.paralelki) {
+            selectedParalelki = data.paralelki;
+            document.querySelectorAll('#paralelkaDropdown input[type="checkbox"]').forEach(cb => {
+                cb.checked = selectedParalelki.includes(cb.value);
+            });
+            updateParalelkaSelection();
+        }
+        updateTemi();
+        document.getElementById('saveStatus').textContent = '📥 Вчитано од локално складиште';
+        document.getElementById('statusBar').className = 'status-bar';
+        return true;
+    } catch (e) {
+        console.error('Грешка при вчитување:', e);
+        return false;
+    }
+}
+
+function saveSelectedItems() {
+    const currentCas = document.getElementById('casSelect').value;
+    if (currentCas && SCENARIO_BASE[currentCas]) {
+        const sredstvaList = getSelectedSredstva();
+        const sledenjeList = getSelectedSledenje();
+        SCENARIO_BASE[currentCas].sredstva = sredstvaList.join(', ');
+        SCENARIO_BASE[currentCas].sledenje = sledenjeList.join(', ');
+    }
+}
+
+function loadSelectedItems() {
+    const currentCas = document.getElementById('casSelect').value;
+    if (!currentCas || !SCENARIO_BASE[currentCas]) {
+        setDefaultItems();
+        return;
+    }
+    
+    const data = SCENARIO_BASE[currentCas];
+    const sredstvaFromData = data.sredstva ? data.sredstva.split(', ').map(s => s.trim()) : [];
+    const sledenjeFromData = data.sledenje ? data.sledenje.split(', ').map(s => s.trim()) : [];
+    
+    const sredstvaCheckboxes = document.querySelectorAll('#dropdownSredstva input[type="checkbox"]');
+    sredstvaCheckboxes.forEach(cb => {
+        if (sredstvaFromData.length > 0) {
+            cb.checked = sredstvaFromData.includes(cb.value);
+        } else {
+            cb.checked = DEFAULT_SREDSTVA.includes(cb.value);
+        }
+    });
+    
+    const sledenjeCheckboxes = document.querySelectorAll('#dropdownSledenje input[type="checkbox"]');
+    sledenjeCheckboxes.forEach(cb => {
+        if (sledenjeFromData.length > 0) {
+            cb.checked = sledenjeFromData.includes(cb.value);
+        } else {
+            cb.checked = DEFAULT_SLEDENJE.includes(cb.value);
+        }
+    });
+    
+    syncSelection('dropdownSredstva', 'listSredstva');
+    syncSelection('dropdownSledenje', 'listSledenje');
+}
+
+function setDefaultItems() {
+    const sredstvaCheckboxes = document.querySelectorAll('#dropdownSredstva input[type="checkbox"]');
+    sredstvaCheckboxes.forEach(cb => {
+        cb.checked = DEFAULT_SREDSTVA.includes(cb.value);
+    });
+    
+    const sledenjeCheckboxes = document.querySelectorAll('#dropdownSledenje input[type="checkbox"]');
+    sledenjeCheckboxes.forEach(cb => {
+        cb.checked = DEFAULT_SLEDENJE.includes(cb.value);
+    });
+    
+    syncSelection('dropdownSredstva', 'listSredstva');
+    syncSelection('dropdownSledenje', 'listSledenje');
+}
+
+// ============================================================
+// 5. ВЧИТУВАЊЕ НА JSON
+// ============================================================
+function loadJSONFile(event) {
+    if (isAppClosed) { alert('⛔ Апликацијата е затворена!'); return; }
+    const file = event.target.files[0];
+    if (!file) { alert('Нема датотека!'); return; }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const jsonData = JSON.parse(e.target.result);
+            console.log('📄 Вчитан JSON - клучеви:', Object.keys(jsonData));
+
+            // Пробај да конвертираш
+            const converted = convertToScenarioBase(jsonData);
+            
+            if (Object.keys(converted).length === 0) {
+                alert('❌ Нема валидни податоци во JSON-от!');
+                return;
+            }
+
+            SCENARIO_BASE = {};
+            for (const [key, value] of Object.entries(converted)) {
+                SCENARIO_BASE[key] = value;
+            }
+
+            // Гради TEMI_BASE
+            TEMI_BASE = {};
+            for (const [key, value] of Object.entries(SCENARIO_BASE)) {
+                const tema = value.tema || 'Општо';
+                if (!TEMI_BASE[tema]) TEMI_BASE[tema] = [];
+                if (!TEMI_BASE[tema].includes(key)) {
+                    TEMI_BASE[tema].push(key);
+                }
+            }
+
+            saveAllToLocalStorage();
+            updateTemi();
+            
+            // Автоматски избери ја првата тема и првиот час
+            const temaSelect = document.getElementById('temaSelect');
+            if (temaSelect.options.length > 1) {
+                temaSelect.value = temaSelect.options[1].value;
+                updateCasovi();
+                const casSelect = document.getElementById('casSelect');
+                if (casSelect.options.length > 1) {
+                    casSelect.value = casSelect.options[1].value;
+                    loadLessonData();
+                }
+            }
+
+            alert(`✅ Успешно вчитани ${Object.keys(SCENARIO_BASE).length} сценарија!`);
+            document.getElementById('saveStatus').textContent = `✅ Вчитани ${Object.keys(SCENARIO_BASE).length} сценарија`;
+        } catch (err) {
+            alert('❌ Грешка при читање на JSON: ' + err.message);
+            console.error(err);
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+function convertToScenarioBase(raw) {
+    console.log('🔄 Конвертирање на податоци');
+    if (!raw || typeof raw !== 'object') {
+        console.warn('⚠️ Нема валидни податоци');
+        return {};
+    }
+
+    // ФОРМАТ 1: "casovi" (директен)
+    if (raw.casovi && Array.isArray(raw.casovi)) {
+        console.log('📚 Препознаен формат "casovi"');
+        const result = {};
+        raw.casovi.forEach(cas => {
+            const chasBroj = cas.id || cas.chas_broj_vkupno || 1;
+            const temaKey = cas.tema || cas.tema_kod || 'Општо';
+            const id = `${temaKey.replace(/[^a-zA-Z0-9\u0430-\u044A]/g, '_')}_${chasBroj}`;
+            
+            let scenarioText = cas.scenario || 'Сценариото не е достапно.';
+            if (typeof scenarioText === 'object') {
+                const parts = [];
+                if (scenarioText.voved_grupna) parts.push(`Воведна активност (групна): ${scenarioText.voved_grupna}`);
+                if (scenarioText.istrazuvacki_primer_parovi) parts.push(`Истражувачки пример (во парови): ${scenarioText.istrazuvacki_primer_parovi}`);
+                if (scenarioText.glavni_aktivnosti_poedinecna) parts.push(`Главни активности (поединечна работа): ${scenarioText.glavni_aktivnosti_poedinecna}`);
+                if (scenarioText.dopolnitelna_aktivnost_poedinecna) parts.push(`Дополнителна активност (поединечна): ${scenarioText.dopolnitelna_aktivnost_poedinecna}`);
+                if (scenarioText.stem_primer) parts.push(`СТЕМ пример: ${scenarioText.stem_primer}`);
+                if (scenarioText.problem_realen_kontekst) parts.push(`Проблем во реален контекст: ${scenarioText.problem_realen_kontekst}`);
+                if (scenarioText.refleksija) parts.push(`Рефлексија: ${scenarioText.refleksija}`);
+                if (scenarioText.domasna_rabota) parts.push(`Домашна работа: ${scenarioText.domasna_rabota}`);
+                scenarioText = parts.join('<br><br>');
+            }
+            
+            // ЧИТАЊЕ НА СРЕДСТВА И ПОСТАПКИ
+            let sredstva = '';
+            if (cas.sredstva) {
+                if (Array.isArray(cas.sredstva)) {
+                    sredstva = cas.sredstva.join(', ');
+                } else if (typeof cas.sredstva === 'string') {
+                    sredstva = cas.sredstva;
+                }
+            }
+            
+            let sledenje = '';
+            if (cas.sledenje_na_napredokot) {
+                if (Array.isArray(cas.sledenje_na_napredokot)) {
+                    sledenje = cas.sledenje_na_napredokot.join(', ');
+                } else if (typeof cas.sledenje_na_napredokot === 'string') {
+                    sledenje = cas.sledenje_na_napredokot;
+                }
+            }
+            
+            let standarti = '';
+            if (cas.konkretni_celi && Array.isArray(cas.konkretni_celi)) {
+                standarti = cas.konkretni_celi.join('; ');
+            }
+
+            result[id] = {
+                naslov: cas.naslov || cas.tema || id,
+                sodrzini: cas.sodrzini_poimi || cas.sodrzini || '',
+                kriteriumi: standarti || '',
+                standarti: standarti || '',
+                originalScenario: typeof scenarioText === 'string' ? scenarioText : JSON.stringify(scenarioText),
+                godina: 'I година',
+                paralelka: cas.paralelka || selectedParalelki.join(', '),
+                izgotvil: cas.izgotvil || 'проф. РЕШАТ МАЛОВСКИ',
+                sou: cas.uciliste || '„28 НОЕМВРИ“ – ДЕБАР',
+                cas: chasBroj,
+                tema: temaKey,
+                chas_broj: chasBroj,
+                chas_tema: cas.naslov || cas.tema || '',
+                allVarijanti: [scenarioText],
+                sredstva: sredstva,
+                sledenje: sledenje
+            };
+        });
+        return result;
+    }
+
+    // ФОРМАТ 2: "temi"
+    if (raw.temi && Array.isArray(raw.temi)) {
+        console.log('📚 Препознаен формат "temi"');
+        const result = {};
+        raw.temi.forEach(tema => {
+            const temaName = tema.tema || 'Општо';
+            if (tema.casovi && Array.isArray(tema.casovi)) {
+                tema.casovi.forEach(cas => {
+                    const chasBroj = parseInt(cas.chas_broj) || 1;
+                    const id = `${temaName.replace(/[^a-zA-Z0-9\u0430-\u044A]/g, '_')}_${chasBroj}`;
+                    
+                    let scenarioText = cas.scenario || 'Сценариото не е достапно.';
+                    if (typeof scenarioText === 'object') {
+                        const parts = [];
+                        if (scenarioText.voved_grupna) parts.push(`Воведна активност (групна): ${scenarioText.voved_grupna}`);
+                        if (scenarioText.istrazuvacki_primer_parovi) parts.push(`Истражувачки пример (во парови): ${scenarioText.istrazuvacki_primer_parovi}`);
+                        if (scenarioText.glavni_aktivnosti_poedinecna) parts.push(`Главни активности (поединечна работа): ${scenarioText.glavni_aktivnosti_poedinecna}`);
+                        if (scenarioText.dopolnitelna_aktivnost_poedinecna) parts.push(`Дополнителна активност (поединечна): ${scenarioText.dopolnitelna_aktivnost_poedinecna}`);
+                        if (scenarioText.stem_primer) parts.push(`СТЕМ пример: ${scenarioText.stem_primer}`);
+                        if (scenarioText.problem_realen_kontekst) parts.push(`Проблем во реален контекст: ${scenarioText.problem_realen_kontekst}`);
+                        if (scenarioText.refleksija) parts.push(`Рефлексија: ${scenarioText.refleksija}`);
+                        if (scenarioText.domasna_rabota) parts.push(`Домашна работа: ${scenarioText.domasna_rabota}`);
+                        scenarioText = parts.join('<br><br>');
+                    }
+                    
+                    let sredstva = '';
+                    if (cas.sredstva) {
+                        if (Array.isArray(cas.sredstva)) {
+                            sredstva = cas.sredstva.join(', ');
+                        } else if (typeof cas.sredstva === 'string') {
+                            sredstva = cas.sredstva;
+                        }
+                    }
+                    
+                    let sledenje = '';
+                    if (cas.sledenje) {
+                        if (Array.isArray(cas.sledenje)) {
+                            sledenje = cas.sledenje.join(', ');
+                        } else if (typeof cas.sledenje === 'string') {
+                            sledenje = cas.sledenje;
+                        }
+                    }
+                    
+                    result[id] = {
+                        naslov: cas.tema || cas.chas_tema || id,
+                        sodrzini: cas.sodrzini || '',
+                        kriteriumi: cas.standardi || '',
+                        standarti: cas.standarti || '',
+                        originalScenario: typeof scenarioText === 'string' ? scenarioText : JSON.stringify(scenarioText),
+                        godina: 'I година',
+                        paralelka: cas.paralelka || selectedParalelki.join(', '),
+                        izgotvil: cas.izgotvil || 'проф. РЕШАТ МАЛОВСКИ',
+                        sou: cas.uciliste || '„28 НОЕМВРИ“ – ДЕБАР',
+                        cas: chasBroj,
+                        tema: temaName,
+                        chas_broj: chasBroj,
+                        chas_tema: cas.tema || '',
+                        allVarijanti: [scenarioText],
+                        sredstva: sredstva,
+                        sledenje: sledenje
+                    };
+                });
+            }
+        });
+        return result;
+    }
+
+    console.warn('⚠️ Непознат формат на JSON');
+    return {};
+}
+
+// ============================================================
+// 6. UI ФУНКЦИИ
+// ============================================================
+function updateTemi() {
+    const temaSelect = document.getElementById('temaSelect');
+    temaSelect.innerHTML = '';
+    const emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    emptyOpt.textContent = '-- Избери тема --';
+    temaSelect.appendChild(emptyOpt);
+    
+    const sortedTemi = Object.keys(TEMI_BASE).sort();
+    for (const naziv of sortedTemi) {
+        const casovi = TEMI_BASE[naziv];
+        const opt = document.createElement('option');
+        opt.value = naziv;
+        opt.textContent = naziv + ' (' + casovi.length + 'ч)';
+        temaSelect.appendChild(opt);
+    }
+    
+    if (temaSelect.options.length > 1) {
+        temaSelect.value = temaSelect.options[1].value;
+    }
+    updateCasovi();
+}
+
+function updateCasovi() {
+    const tema = document.getElementById('temaSelect').value;
+    const casSelect = document.getElementById('casSelect');
+    const casovi = TEMI_BASE[tema] || [];
+    casSelect.innerHTML = '';
+    
+    const emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    emptyOpt.textContent = '-- Избери час --';
+    casSelect.appendChild(emptyOpt);
+    
+    const sortedCasovi = [...casovi].sort((a, b) => {
+        const numA = parseInt(a.split('_').pop()) || 0;
+        const numB = parseInt(b.split('_').pop()) || 0;
+        return numA - numB;
+    });
+    
+    for (const c of sortedCasovi) {
+        const opt = document.createElement('option');
+        opt.value = c;
+        const data = SCENARIO_BASE[c];
+        const chasTema = data ? data.chas_tema || data.naslov || '' : '';
+        const chasBroj = data ? data.chas_broj || '' : '';
+        opt.textContent = chasTema ? `${chasTema} (Час ${chasBroj})` : c;
+        casSelect.appendChild(opt);
+    }
+    
+    if (casSelect.options.length > 1) {
+        casSelect.value = casSelect.options[1].value;
+    }
+    loadLessonData();
+}
+
+function formatScenario(text) {
+    if (!text) return '';
+    let formatted = text;
+    const sections = [
+        'Воведна активност (групна):',
+        'Истражувачки пример (во парови):',
+        'Главни активности (поединечна работа):',
+        'Дополнителна активност (поединечна):',
+        'СТЕМ пример:',
+        'Проблем во реален контекст:',
+        'Рефлексија:',
+        'Домашна работа:'
+    ];
+    sections.forEach(section => {
+        formatted = formatted.replace(new RegExp(`(${section})`, 'g'), '<br><b>$1</b>');
+    });
+    formatted = formatted.replace(/(Задача \d+:)/g, '<br><b>$1</b>');
+    formatted = formatted.replace(/\n/g, '<br>');
+    return formatted;
+}
+
+function loadSelectedScenario() {
+    const selected = document.getElementById('scenarioVersionSelect').value;
+    const currentCas = document.getElementById('casSelect').value;
+    let text = '';
+    if (selected === 'original') {
+        text = SCENARIO_BASE[currentCas]?.originalScenario || 'Нема оригинално сценарио.';
+    } else if (selected === 'additional') {
+        text = ADDITIONAL_SCENARIOS[currentCas] || 'Нема дополнително сценарио.';
+    } else {
+        text = GENERATED_VARIATIONS[selected] || 'Нема генерирано сценарио.';
+    }
+    document.getElementById('cell-scenario').innerHTML = formatScenario(text);
+}
+
+function loadLessonData() {
+    const id = document.getElementById('casSelect').value;
+    currentScenarioId = id;
+    if (!id || !SCENARIO_BASE[id]) {
+        document.getElementById('cell-tema-label').innerHTML = 'Нема избрано сценарио';
+        document.getElementById('cell-chas').innerHTML = '...';
+        document.getElementById('cell-sodrzini').innerHTML = 'Избери час од менито';
+        document.getElementById('cell-kriteriumi').innerHTML = '';
+        document.getElementById('cell-scenario').innerHTML = 'Избери час од менито.';
+        return;
+    }
+    const data = SCENARIO_BASE[id];
+    document.getElementById('cell-tema-label').innerHTML = data.chas_tema || data.naslov || id;
+    document.getElementById('cell-chas').innerHTML = data.chas_broj || id.replace(/^[A-Z]+_/, '');
+    document.getElementById('cell-sodrzini').innerHTML = data.sodrzini || 'Содржини...';
+    document.getElementById('cell-kriteriumi').innerHTML = data.kriteriumi || data.standarti || 'Стандарди...';
+    if (data.originalScenario) document.getElementById('scenarioInput').value = data.originalScenario;
+    if (ADDITIONAL_SCENARIOS[id]) document.getElementById('additionalScenarioInput').value = ADDITIONAL_SCENARIOS[id];
+    document.getElementById('scenarioVersionSelect').value = 'original';
+    loadSelectedScenario();
+    
+    // Вчитај ги средствата и постапките за овој час
+    loadSelectedItems();
+}
+
+// ============================================================
+// 7. ГЕНЕРИРАЊЕ
+// ============================================================
+function generateVariations() {
+    if (isAppClosed) { alert('⛔ Апликацијата е затворена!'); return; }
+    
+    const currentCas = document.getElementById('casSelect').value;
+    if (!currentCas || !SCENARIO_BASE[currentCas]) { 
+        alert('Прво избери час!'); 
+        return; 
+    }
+    
+    const data = SCENARIO_BASE[currentCas];
+    document.getElementById('spinner').style.display = 'inline-block';
+    document.getElementById('saveStatus').textContent = '⏳ Генерирање сценарија...';
+    
+    setTimeout(() => {
+        try {
+            const chasTema = data.chas_tema || '';
+            const chasBroj = data.chas_broj || 1;
+            const sredstvaList = getSelectedSredstva();
+            const sledenjeList = getSelectedSledenje();
+            
+            for (let v = 0; v < 3; v++) {
+                const newScenario = generateFullScenario(chasTema, chasBroj, v, sredstvaList, sledenjeList);
+                GENERATED_VARIATIONS['generated' + (v + 1)] = newScenario;
+            }
+            
+            document.getElementById('scenarioVersionSelect').value = 'generated1';
+            loadSelectedScenario();
+            saveAllToLocalStorage();
+            
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('saveStatus').textContent = '✅ Генерирани 3 нови сценарија!';
+            document.getElementById('statusBar').className = 'status-bar';
+            
+            alert('✅ Генерирани 3 нови сценарија!');
+        } catch (err) {
+            console.error('Грешка при генерирање:', err);
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('saveStatus').textContent = '❌ Грешка при генерирање';
+            document.getElementById('statusBar').className = 'status-bar error';
+        }
+    }, 100);
+}
+
+function generateFullScenario(chasTema, chasBroj, variant, sredstvaList, sledenjeList) {
+    const parts = [];
+    const a = 2 + (variant * 3) % 8;
+    const b = 3 + (variant * 5 + 2) % 10;
+    const c = 4 + (variant * 7 + 1) % 12;
+    const a2 = a*a, b2 = b*b, c2 = c*c;
+    
+    parts.push(`<b>Воведна активност (групна):</b> Наставникот поставува прашање за темата "${chasTema}" и ги мотивира учениците. Групна дискусија за примери: ${a}, ${b}, ${c}.`);
+    parts.push(`<b>Истражувачки пример (во парови):</b> Учениците во парови решаваат пример со бројки ${a}, ${b}, ${c} и ги споредуваат резултатите.`);
+    
+    let zadaci = '';
+    for (let i = 1; i <= 4; i++) {
+        zadaci += `Задача ${i}: Реши пример со бројки ${a+i}, ${b+i}, ${c+i}.<br>`;
+    }
+    parts.push(`<b>Главни активности (поединечна работа):</b><br>${zadaci}`);
+    parts.push(`<b>Дополнителна активност (поединечна):</b> Секој ученик составува свој пример за "${chasTema}" со бројки ${a2}, ${b2}, ${c2} и го решава.`);
+    parts.push(`<b>СТЕМ пример:</b> Примена на "${chasTema}" во науката. Пример: пресметка со ${a}, ${b}, ${c}.`);
+    parts.push(`<b>Проблем во реален контекст:</b> Реален проблем со бројки ${a}, ${b}, ${c} од секојдневниот живот.`);
+    parts.push(`<b>Рефлексија:</b> Усно рефлектирање + самооценка од 1 до 5.`);
+    
+    if (sredstvaList && sredstvaList.length > 0) {
+        parts.push(`<b>Наставни средства:</b> ${sredstvaList.join(', ')}`);
+    }
+    if (sledenjeList && sledenjeList.length > 0) {
+        parts.push(`<b>Следење на напредокот:</b> ${sledenjeList.join(', ')}`);
+    }
+    
+    parts.push(`<b>Домашна работа:</b> Реши 3 задачи од учебникот за "${chasTema}" и провери ги решенијата.`);
+    
+    return parts.join('<br><br>');
+}
+
+function getSelectedSredstva() {
+    const items = document.querySelectorAll('#listSredstva li');
+    const result = [];
+    items.forEach(item => {
+        if (!item.classList.contains('no-items')) {
+            result.push(item.innerText);
+        }
+    });
+    return result;
+}
+
+function getSelectedSledenje() {
+    const items = document.querySelectorAll('#listSledenje li');
+    const result = [];
+    items.forEach(item => {
+        if (!item.classList.contains('no-items')) {
+            result.push(item.innerText);
+        }
+    });
+    return result;
+}
+
+// ============================================================
+// 8. ИЗВОЗ НА JSON
+// ============================================================
+function exportAllScenariosJSON() {
+    if (isAppClosed) { alert('⛔ Апликацијата е затворена!'); return; }
+    
+    if (Object.keys(SCENARIO_BASE).length === 0) {
+        alert('❌ Нема податоци за извоз! Прво вчитајте JSON.');
+        return;
+    }
+    
+    const exportData = {
+        godina: 'I',
+        broj_scenarija: Object.keys(SCENARIO_BASE).length,
+        broj_temi: Object.keys(TEMI_BASE).length,
+        temi: []
+    };
+    
+    for (const [tema, casovi] of Object.entries(TEMI_BASE)) {
+        const temaObj = { tema: tema, casovi: [] };
+        for (const c of casovi) {
+            const data = SCENARIO_BASE[c];
+            if (data) {
+                temaObj.casovi.push({
+                    chas_broj: data.chas_broj || 1,
+                    tema: data.tema || '',
+                    naslov: data.naslov || '',
+                    sodrzini: data.sodrzini || '',
+                    standarti: data.standarti || '',
+                    scenario: data.originalScenario || '',
+                    sredstva: data.sredstva || '',
+                    sledenje: data.sledenje || '',
+                    paralelka: data.paralelka || ''
+                });
+            }
+        }
+        exportData.temi.push(temaObj);
+    }
+    
+    const jsonStr = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'scenarija_I_godina.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    alert(`✅ JSON преземен! (${Object.keys(SCENARIO_BASE).length} сценарија, ${Object.keys(TEMI_BASE).length} теми)`);
+}
+
+// ============================================================
+// 9. JSON ОПЦИИ - ПРИКАЖИ/СКРИЈ
+// ============================================================
+function toggleJSONButtons() {
+    const container = document.getElementById('jsonButtonsContainer');
+    const btn = document.getElementById('jsonToggleBtn');
+    jsonVisible = !jsonVisible;
+    if (jsonVisible) {
+        container.classList.remove('hidden');
+        btn.textContent = '📂 JSON опции (скриј)';
+        btn.className = 'toggle-json-btn';
+    } else {
+        container.classList.add('hidden');
+        btn.textContent = '📂 JSON опции (покажи)';
+        btn.className = 'toggle-json-btn active';
+    }
+}
+
+// ============================================================
+// 10. ОСТАНАТИ UI ФУНКЦИИ
+// ============================================================
+function importScenarioFromText(type) {
+    if (isAppClosed) { alert('⛔ Апликацијата е затворена!'); return; }
+    const textarea = type === 'original' ? document.getElementById('scenarioInput') : document.getElementById('additionalScenarioInput');
+    const text = textarea.value;
+    if (!text.trim()) { alert('Нема текст!'); return; }
+    const currentCas = document.getElementById('casSelect').value;
+    if (!currentCas || !SCENARIO_BASE[currentCas]) { alert('Прво избери час!'); return; }
+    if (type === 'original') {
+        SCENARIO_BASE[currentCas].originalScenario = text;
+        document.getElementById('scenarioVersionSelect').value = 'original';
+    } else {
+        ADDITIONAL_SCENARIOS[currentCas] = text;
+        document.getElementById('scenarioVersionSelect').value = 'additional';
+    }
+    loadSelectedScenario();
+    saveAllToLocalStorage();
+    alert('✅ Сценариото е зачувано!');
+}
+
+function clearImportArea(type) {
+    if (type === 'original') document.getElementById('scenarioInput').value = '';
+    else document.getElementById('additionalScenarioInput').value = '';
+    alert('🗑️ Избришано!');
+}
+
+function saveCurrentScenario() {
+    if (isAppClosed) { alert('⛔ Апликацијата е затворена!'); return; }
+    const text = document.getElementById('cell-scenario').innerHTML;
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = text;
+    const plain = tempDiv.textContent || tempDiv.innerText || '';
+    const version = document.getElementById('scenarioVersionSelect').value;
+    const currentCas = document.getElementById('casSelect').value;
+    if (version === 'original') {
+        if (SCENARIO_BASE[currentCas]) SCENARIO_BASE[currentCas].originalScenario = plain;
+        document.getElementById('scenarioInput').value = plain;
+        alert('💾 Оригиналното е зачувано!');
+    } else if (version === 'additional') {
+        ADDITIONAL_SCENARIOS[currentCas] = plain;
+        document.getElementById('additionalScenarioInput').value = plain;
+        alert('💾 Дополнителното е зачувано!');
+    } else {
+        GENERATED_VARIATIONS[version] = plain;
+        alert('💾 Генерираното е зачувано!');
+    }
+    saveAllToLocalStorage();
+}
+
+function previewPlan() {
+    const data = {
+        godina: document.getElementById('cell-godina').innerHTML,
+        tema: document.getElementById('cell-tema-label').innerHTML,
+        chas: document.getElementById('cell-chas').innerHTML,
+        sodrzini: document.getElementById('cell-sodrzini').innerHTML,
+        kriteriumi: document.getElementById('cell-kriteriumi').innerHTML,
+        scenario: document.getElementById('cell-scenario').innerHTML
+    };
+    
+    const win = window.open('', '_blank', 'width=1100,height=750,scrollbars=yes');
+    if (!win) { alert('Овозможете скокачки прозорци!'); return; }
+    win.document.write(`
+        <!DOCTYPE html><html><head><meta charset="UTF-8"><title>Преглед</title>
+        <style>body{font-family:'Times New Roman',serif;padding:40px;background:white;} table{width:100%;border-collapse:collapse;border:2px solid #000;} td{border:1px solid #000;padding:5px 8px;font-size:13px;vertical-align:top;} .lbl{font-weight:bold;background:#f4f6f8;width:20%;} .doc-title{text-align:center;font-size:18px;font-weight:bold;}</style>
+        </head><body>
+        <div style="max-width:1100px;margin:0 auto;">
+        <div class="doc-title">Сценарио за реализација на наставен час</div>
+        <table><tr><td class="lbl">Предмет</td><td>МАТЕМАТИКА</td><td class="lbl">Тема:</td><td>${data.tema}</td><td class="lbl">Час бр.</td><td>${data.chas}</td></tr>
+        <tr><td class="lbl">Година:</td><td>${data.godina}</td><td class="lbl">Паралелка:</td><td>${selectedParalelki.join(', ')}</td><td class="lbl">Датум:</td><td>__________</td></tr>
+        <tr><td class="lbl">Изготвил:</td><td>проф. РЕШАТ МАЛОВСКИ</td><td class="lbl">СОУ:</td><td colspan="3">„28 НОЕМВРИ“ – ДЕБАР</td></tr></table>
+        <table><tr><td class="lbl">Содржини:</td><td>${data.sodrzini}</td></tr>
+        <tr><td class="lbl">Стандарди:</td><td>${data.kriteriumi}</td></tr>
+        <tr><td class="lbl">Сценарио:</td><td style="white-space:pre-wrap;">${data.scenario}</td></tr></table>
+        </div></body></html>
+    `);
+    win.document.close();
+}
+
+function toggleDropdown(event, id) {
+    event.stopPropagation();
+    const dropdown = document.getElementById(id);
+    document.querySelectorAll('.dropdown-content').forEach(d => {
+        if (d.id !== id) d.classList.remove('show');
+    });
+    dropdown.classList.toggle('show');
+}
+
+function closeDropdown(id) { document.getElementById(id).classList.remove('show'); }
+
+function syncSelection(dropId, listId) {
+    const checkboxes = document.getElementById(dropId).querySelectorAll("input[type='checkbox']");
+    const displayList = document.getElementById(listId);
+    displayList.innerHTML = "";
+    let count = 0;
+    checkboxes.forEach(cb => {
+        if (cb.checked) {
+            count++;
+            const li = document.createElement("li");
+            li.innerText = cb.value;
+            displayList.appendChild(li);
+        }
+    });
+    if (count === 0) displayList.innerHTML = '<li class="no-items">Нема избрани ставки.</li>';
+    const countSpan = document.getElementById(dropId.replace('dropdown', '').toLowerCase() + 'Count');
+    if (countSpan) countSpan.textContent = count;
+}
+
+function selectAll(dropId, listId) {
+    document.getElementById(dropId).querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = true);
+    syncSelection(dropId, listId);
+}
+
+function deselectAll(dropId, listId) {
+    document.getElementById(dropId).querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+    syncSelection(dropId, listId);
+}
+
+function toggleImportArea() {
+    const body = document.getElementById('importBody');
+    const arrow = document.getElementById('toggleArrow');
+    if (body.classList.contains('collapsed')) {
+        body.classList.remove('collapsed');
+        arrow.classList.add('open');
+        arrow.textContent = '▼';
+    } else {
+        body.classList.add('collapsed');
+        arrow.classList.remove('open');
+        arrow.textContent = '▶';
+    }
+}
+
+function closeApplication() {
+    isAppClosed = true;
+    document.querySelector('.close-application-box').style.background = '#ffcdd2';
+    document.getElementById('statusBar').className = 'status-bar error';
+    document.getElementById('saveStatus').textContent = '⛔ Апликацијата е затворена';
+    document.querySelectorAll('.toolbar button, .toolbar select, .dropdown-button, .import-area button').forEach(el => {
+        el.disabled = true;
+        el.style.opacity = '0.5';
+        el.style.cursor = 'not-allowed';
+    });
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        el.contentEditable = 'false';
+        el.style.opacity = '0.7';
+    });
+    alert('⛔ Апликацијата е затворена!');
+}
+
+// ============================================================
+// 11. ИНИЦИЈАЛИЗАЦИЈА
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔄 Апликацијата стартува...');
+    
+    loadGodinaData();
+    
+    document.getElementById('importBody').classList.add('collapsed');
+    document.getElementById('toggleArrow').textContent = '▶';
+    
+    updateParalelkaSelection();
+    
+    // Иницијално JSON опциите се видливи
+    document.getElementById('jsonButtonsContainer').classList.remove('hidden');
+    
+    console.log('✅ Апликацијата е иницијализирана!');
+});
+</script>
+</body>
+</html>

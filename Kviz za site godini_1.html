@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивен квиз по математика_1</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 20px; color: #333; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 15px; margin-bottom: 25px; font-size: 28px; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #2c3e50; font-size: 15px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 14px; border: 2px solid #dce1e8; border-radius: 8px; font-size: 15px; background: white; cursor: pointer; }
+        .form-group input:focus, .form-group select:focus { border-color: #3498db; outline: none; }
+        .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .btn { padding: 12px 30px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-primary:hover { background: #2980b9; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(52,152,219,0.4); }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-success:hover { background: #219a52; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(39,174,96,0.4); }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-danger:hover { background: #c0392b; transform: translateY(-2px); }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-warning:hover { background: #d68910; transform: translateY(-2px); }
+        .btn-purple { background: #8e44ad; color: white; }
+        .btn-purple:hover { background: #7d3c98; transform: translateY(-2px); }
+        .btn-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        .quiz-container { margin-top: 30px; border-top: 2px solid #e9ecef; padding-top: 25px; display: none; }
+        .quiz-container.show { display: block; }
+        .quiz-question { margin: 15px 0; padding: 20px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #3498db; }
+        .quiz-question.correct { border-left-color: #27ae60; background: #e8f8e8; }
+        .quiz-question.wrong { border-left-color: #e74c3c; background: #fde8e8; }
+        .quiz-question .q-text { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+        .quiz-question .q-type { font-size: 12px; color: #7f8c8d; margin-bottom: 8px; }
+        .quiz-question .options { margin-left: 20px; }
+        .quiz-question .option { margin: 5px 0; padding: 8px 15px; background: white; border-radius: 6px; border: 2px solid #e9ecef; cursor: pointer; transition: all 0.2s; }
+        .quiz-question .option:hover { border-color: #3498db; background: #ebf5fb; }
+        .quiz-question .option input[type="radio"] { margin-right: 10px; cursor: pointer; }
+        .quiz-question .fill-input { padding: 8px 15px; border: 2px solid #dce1e8; border-radius: 6px; font-size: 14px; width: 100%; max-width: 300px; margin-top: 5px; }
+        .quiz-question .fill-input:focus { border-color: #3498db; outline: none; }
+        .quiz-question .feedback { margin-top: 10px; padding: 10px 15px; border-radius: 6px; display: none; }
+        .quiz-question .feedback.show { display: block; }
+        .quiz-question .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .quiz-question .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .quiz-result { margin: 20px 0; padding: 20px; background: #e8f4fd; border-radius: 10px; text-align: center; display: none; }
+        .quiz-result.show { display: block; }
+        .quiz-result .score { font-size: 48px; font-weight: bold; color: #2c3e50; }
+        .quiz-result .grade { font-size: 24px; margin-top: 10px; }
+        .quiz-result .grade-excellent { color: #27ae60; }
+        .quiz-result .grade-good { color: #f39c12; }
+        .quiz-result .grade-poor { color: #e74c3c; }
+        .student-info-form { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #e9ecef; }
+        .student-info-form .row { grid-template-columns: 1fr 1fr 1fr 1fr; }
+        .status-message { padding: 12px 20px; border-radius: 8px; margin: 10px 0; display: none; }
+        .status-message.info { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+        .status-message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+        .status-message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+        .status-message.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; display: block; }
+        .loadingspinner { display: none; text-align: center; padding: 20px; }
+        .loadingspinner.show { display: block; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .standard-display { background: #f0f4f8; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #3498db; }
+        .format-info { background: #e8f4fd; padding: 12px 18px; border-radius: 8px; margin: 10px 0; font-size: 14px; color: #2c3e50; border: 1px solid #b8d4e8; }
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; }
+        .quiz-header .info { font-size: 14px; color: #7f8c8d; }
+        .share-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 15px 0; }
+        .submit-progress { display: none; }
+        .submit-progress.show { display: block; }
+        .submit-progress .bar { width: 100%; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-top: 5px; }
+        .submit-progress .bar .fill { height: 100%; background: #27ae60; border-radius: 3px; width: 0%; transition: width 0.5s; }
+        @media (max-width: 768px) { .row { grid-template-columns: 1fr; } .container { padding: 15px; } .btn-group { flex-direction: column; align-items: center; } .btn { width: 100%; justify-content: center; } .student-info-form .row { grid-template-columns: 1fr 1fr; } }
+        @media print { body { background: white; padding: 0; } .container { box-shadow: none; padding: 20px; } .btn-group, .share-buttons, .format-info, .quiz-header .info, .student-info-form { display: none; } .quiz-container { display: block !important; } .quiz-question .option { cursor: default; } .quiz-question .option input[type="radio"] { display: none; } .quiz-question .fill-input { border: none; border-bottom: 1px solid #333; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Интерактивен квиз по математика</h1>
+        
+        <div id="statusMessage" class="status-message"></div>
+        <div id="loadingSpinner" class="loadingspinner">
+            <div class="spinner"></div>
+            <p style="margin-top:10px;">Генерирање на квиз...</p>
+        </div>
+        
+        <!-- Форма за податоци за ученикот -->
+        <div class="student-info-form">
+            <h3 style="margin-bottom:15px;color:#2c3e50;">👤 Внеси ги твоите податоци</h3>
+            <div class="row">
+                <div class="form-group">
+                    <label for="studentName">Име и презиме *</label>
+                    <input type="text" id="studentName" placeholder="Внеси го твоето име..." value="">
+                </div>
+                <div class="form-group">
+                    <label for="studentClass">Паралелка</label>
+                    <input type="text" id="studentClass" placeholder="пр. IV-3" value="">
+                </div>
+                <div class="form-group">
+                    <label for="studentGrade">Година</label>
+                    <select id="studentGrade">
+                        <option value="I">I година</option>
+                        <option value="II">II година</option>
+                        <option value="III">III година</option>
+                        <option value="IV" selected>IV година</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="studentGroup">Група</label>
+                    <select id="studentGroup">
+                        <option value="I">Група I</option>
+                        <option value="II">Група II</option>
+                        <option value="III">Група III</option>
+                        <option value="IV">Група IV</option>
+                        <option value="V">Група V</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="form-group">
+                <label for="grade">Година</label>
+                <select id="grade">
+                    <option value="">-- Избери --</option>
+                    <option value="I">I година</option>
+                    <option value="II">II година</option>
+                    <option value="III">III година</option>
+                    <option value="IV">IV година</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="themeSelect">Тема / Целина</label>
+                <select id="themeSelect">
+                    <option value="">-- Избери --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="standardSelect">Стандард за оценување</label>
+                <select id="standardSelect">
+                    <option value="">-- Избери --</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="format-info">
+            <strong>📋 За квизот:</strong> Се генерираат <strong>5 прашања</strong> од секој тип (избор, дополнување, задача) <strong>исклучиво</strong> за избраниот стандард.
+            <br><span style="font-size:13px;color:#555;">✅ Резултатите автоматски се зачувуваат во Google Sheets.</span>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="generateQuiz()">🎯 Генерирај квиз</button>
+            <button class="btn btn-success" onclick="shareQuiz()">📤 Сподели квиз</button>
+            <button class="btn btn-warning" onclick="printQuiz()">🖨️ Печати</button>
+            <button class="btn btn-danger" onclick="resetForm()">🔄 Нов квиз</button>
+        </div>
+        
+        <div id="quizContainer" class="quiz-container">
+            <div class="quiz-header">
+                <h2 id="quizTitle">📋 Квиз</h2>
+                <span class="info" id="quizInfo"></span>
+            </div>
+            <div id="standardDisplay" class="standard-display"></div>
+            <div id="quizQuestions"></div>
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="checkAnswers()">✅ Провери одговори</button>
+                <button class="btn btn-primary" onclick="resetQuiz()">🔄 Ресетирај квиз</button>
+                <button class="btn btn-purple" onclick="submitResults()">📤 Испрати резултати</button>
+            </div>
+            <div id="quizResult" class="quiz-result"></div>
+            <div id="submitStatus" class="status-message"></div>
+            <div id="submitProgress" class="submit-progress">
+                <p style="font-size:14px;color:#555;">Испраќање на резултатите...</p>
+                <div class="bar"><div class="fill" id="progressFill"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  КОНФИГУРАЦИЈА - ВНЕСИ ГО ТВОЈОТ WEB APP URL
+        //  Откако ќе го поставиш Google Apps Script, вметни го URL-то овде
+        // ================================================================
+        var WEB_APP_URL = "https://script.google.com/macros/s/ТВОЈОТ_URL/exec";
+        
+        // ================================================================
+        //  КОМПЛЕТНА БАНКА НА ПРАШАЊА ПО СИТЕ ТЕМИ И ГОДИНИ
+        //  (скратена верзија - за целосна банка видете ги претходните кодови)
+        // ================================================================
+        var QUESTION_BANK_BY_STANDARD = {
+            'I': {
+                'Броеви и операции со броеви': {
+                    'Го разбира поимот множество и го претставува описно, табеларно и со Венов дијаграм.': {
+                        mc: [
+                            { q: 'Што претставува множеството A={1,2,3}?', opts: ['Множество од 3 елементи', 'Множество од 2 елементи', 'Празно множество', 'Бесконечно множество'], answer: 0 },
+                            { q: 'Кој од наведените начини НЕ е начин за претставување на множество?', opts: ['Описно', 'Табеларно', 'Со Венов дијаграм', 'Со бројна оска'], answer: 3 },
+                            { q: 'Множеството A={x | x е природен број, x<5} е:', opts: ['{1,2,3,4}', '{0,1,2,3,4}', '{1,2,3,4,5}', '{2,3,4}'], answer: 0 },
+                            { q: 'Кое од следниве е табеларно претставување на множеството природни броеви помали од 5?', opts: ['{1,2,3,4}', '{0,1,2,3,4}', '{1,2,3,4,5}', '{2,3,4}'], answer: 0 },
+                            { q: 'Венов дијаграм се користи за:', opts: ['Претставување на множества', 'Решавање равенки', 'Цртање графикони', 'Пресметување'], answer: 0 }
+                        ],
+                        fill: [
+                            { q: 'Множеството од сите природни броеви помали од 5 е: A = {____}', answer: '1,2,3,4' },
+                            { q: 'Празно множество се означува со _____.', answer: '∅' },
+                            { q: 'Елемент на множество се означува со симболот _____.', answer: '∈' },
+                            { q: 'Множеството A={x | x е непарен природен број, x<10} описно е: _____.', answer: 'непарни природни броеви помали од 10' },
+                            { q: 'Табеларно претставување на множеството A={1,3,5,7,9} е _____.', answer: '{1,3,5,7,9}' }
+                        ],
+                        problem: [
+                            'Претстави го множеството A={1,2,3,4} описно.',
+                            'Нацртај Венов дијаграм за множествата A={1,2,3} и B={3,4,5}.',
+                            'Претстави го множеството на парни броеви помали од 10 табеларно.',
+                            'Кои елементи припаѓаат на множеството A={x | x е делител на 6}?',
+                            'Напиши го множеството на буквите од зборот "МАТЕМАТИКА" табеларно.'
+                        ]
+                    },
+                    'Наоѓа и запишува подмножество и вистинско подмножество на дадено множество.': {
+                        mc: [
+                            { q: 'Кое од следниве е подмножество на A={1,2,3}?', opts: ['{1,2}', '{1,2,3,4}', '{4,5}', '{0,1,2}'], answer: 0 },
+                            { q: 'Колку подмножества има множеството A={a,b,c}?', opts: ['8', '6', '4', '3'], answer: 0 },
+                            { q: 'Кое е вистинско подмножество на A={1,2,3}?', opts: ['{1,2}', '{1,2,3}', '{1,2,3,4}', '∅'], answer: 0 },
+                            { q: 'Колку вистински подмножества има множеството A={1,2,3}?', opts: ['7', '8', '6', '4'], answer: 0 },
+                            { q: 'Дали ∅ е подмножество на секое множество?', opts: ['Да', 'Не', 'Само на конечни', 'Само на бесконечни'], answer: 0 }
+                        ],
+                        fill: [
+                            { q: 'Множеството {1,2} е _____ подмножество на {1,2,3}.', answer: 'вистинско' },
+                            { q: 'Бројот на подмножества на множество со n елементи е _____.', answer: '2ⁿ' },
+                            { q: 'Празно множество е _____ на секое множество.', answer: 'подмножество' },
+                            { q: 'Ако A⊆B и A≠B, тогаш A е _____ подмножество на B.', answer: 'вистинско' },
+                            { q: 'Бројот на вистински подмножества на множество со n елементи е _____.', answer: '2ⁿ-1' }
+                        ],
+                        problem: [
+                            'Најди ги сите подмножества на множеството A={1,2}.',
+                            'Дали B={1,2} е вистинско подмножество на A={1,2,3}? Образложи.',
+                            'Колку подмножества има множеството A={1,2,3,4}?',
+                            'Најди ги сите вистински подмножества на A={a,b}.',
+                            'Дали ∅ е вистинско подмножество на A={1,2,3}? Образложи.'
+                        ]
+                    }
+                }
+            },
+            'IV': {
+                'Низи и прогресии': {
+                    'Дефинира аритметичка прогресија.': {
+                        mc: [
+                            { q: 'Која низа е аритметичка прогресија?', opts: ['2,4,6,8', '2,4,8,16', '1,3,5,7', '1,4,9,16'], answer: 0 },
+                            { q: 'Која е разликата на 2,4,6,8?', opts: ['2', '3', '1', '4'], answer: 0 },
+                            { q: 'Кој е општиот член на 2,4,6,8?', opts: ['aₙ=2n', 'aₙ=n+1', 'aₙ=2n+1', 'aₙ=n²'], answer: 0 },
+                            { q: 'Која е разликата на 3,7,11,15?', opts: ['4', '2', '3', '5'], answer: 0 },
+                            { q: 'Кој е општиот член на 3,7,11,15?', opts: ['aₙ=4n-1', 'aₙ=4n+1', 'aₙ=3n', 'aₙ=2n+1'], answer: 0 }
+                        ],
+                        fill: [
+                            { q: 'aₙ = a₁ + (n-1)____ за аритметичка прогресија.', answer: 'd' },
+                            { q: 'Разликата на 2,4,6,8 е _____.', answer: '2' },
+                            { q: 'aₙ = 2n+1 е _____ прогресија.', answer: 'аритметичка' },
+                            { q: 'Разликата на 3,7,11,15 е _____.', answer: '4' },
+                            { q: 'aₙ = 4n-1 е _____ прогресија.', answer: 'аритметичка' }
+                        ],
+                        problem: [
+                            'Дадена е аритметичка прогресија со a₁=3 и d=2. Најди го збирот на првите 10 членови.',
+                            'Дадена е аритметичка прогресија 3,7,11,15,... Најди a₁₀.',
+                            'Дадена е аритметичка прогресија 5,8,11,14,... Најди a₂₀.',
+                            'Дадена е аритметичка прогресија со a₁=2 и d=3. Најди S₅.',
+                            'Дадена е аритметичка прогресија 4,9,14,19,... Најди S₁₀.'
+                        ]
+                    },
+                    'Дефинира геометриска прогресија.': {
+                        mc: [
+                            { q: 'Која низа е геометриска прогресија?', opts: ['2,4,8,16', '2,4,6,8', '1,3,5,7', '1,4,9,16'], answer: 0 },
+                            { q: 'Која е односот на 2,4,8,16?', opts: ['2', '3', '1', '4'], answer: 0 },
+                            { q: 'Кој е општиот член на 2,4,8,16?', opts: ['aₙ=2·2^(n-1)', 'aₙ=2n', 'aₙ=2n+1', 'aₙ=n²'], answer: 0 },
+                            { q: 'Која е односот на 3,9,27,81?', opts: ['3', '2', '4', '5'], answer: 0 },
+                            { q: 'Кој е општиот член на 3,9,27,81?', opts: ['aₙ=3·3^(n-1)', 'aₙ=3n', 'aₙ=3n+1', 'aₙ=n³'], answer: 0 }
+                        ],
+                        fill: [
+                            { q: 'aₙ = a₁ · q^(____) за геометриска прогресија.', answer: 'n-1' },
+                            { q: 'Односот на 2,4,8,16 е _____.', answer: '2' },
+                            { q: 'aₙ = 2·3^(n-1) е _____ прогресија.', answer: 'геометриска' },
+                            { q: 'Односот на 3,9,27,81 е _____.', answer: '3' },
+                            { q: 'aₙ = 3·3^(n-1) е _____ прогресија.', answer: 'геометриска' }
+                        ],
+                        problem: [
+                            'Дадена е геометриска прогресија со a₁=2 и q=3. Најди го збирот на првите 5 членови.',
+                            'Дадена е геометриска прогресија 2,6,18,54,... Најди a₆.',
+                            'Дадена е геометриска прогресија 3,6,12,24,... Најди S₆.',
+                            'Дадена е геометриска прогресија со a₁=5 и q=2. Најди a₇.',
+                            'Дадена е геометриска прогресија 4,12,36,108,... Најди S₅.'
+                        ]
+                    }
+                }
+            }
+        };
+
+        // ================================================================
+        //  ГЛОБАЛНИ ПРОМЕНЛИВИ
+        // ================================================================
+        var currentQuestions = [];
+        var quizData = {};
+        var currentStandards = [];
+        var quizResults = {};
+
+        // ================================================================
+        //  ФУНКЦИИ
+        // ================================================================
+        function showStatus(msg, type) {
+            var div = document.getElementById('statusMessage');
+            div.textContent = msg;
+            div.className = 'status-message ' + (type || 'info');
+            setTimeout(function() { div.className = 'status-message'; }, 5000);
+        }
+
+        function initThemes() {
+            var grade = document.getElementById('grade').value;
+            var themeSelect = document.getElementById('themeSelect');
+            var standardSelect = document.getElementById('standardSelect');
+            
+            themeSelect.innerHTML = '<option value="">-- Избери --</option>';
+            standardSelect.innerHTML = '<option value="">-- Избери --</option>';
+            
+            if (!grade || !QUESTION_BANK_BY_STANDARD[grade]) return;
+            
+            var themes = Object.keys(QUESTION_BANK_BY_STANDARD[grade]);
+            themes.forEach(function(theme) {
+                var option = document.createElement('option');
+                option.value = theme;
+                option.textContent = theme;
+                themeSelect.appendChild(option);
+            });
+        }
+
+        function initStandards() {
+            var grade = document.getElementById('grade').value;
+            var theme = document.getElementById('themeSelect').value;
+            var standardSelect = document.getElementById('standardSelect');
+            
+            standardSelect.innerHTML = '<option value="">-- Избери --</option>';
+            currentStandards = [];
+            
+            if (!grade || !theme || !QUESTION_BANK_BY_STANDARD[grade] || !QUESTION_BANK_BY_STANDARD[grade][theme]) return;
+            
+            var standards = Object.keys(QUESTION_BANK_BY_STANDARD[grade][theme]);
+            currentStandards = standards;
+            
+            standards.forEach(function(std, index) {
+                var option = document.createElement('option');
+                option.value = std;
+                var short = std.length > 60 ? std.substring(0, 60) + '...' : std;
+                option.textContent = (index + 1) + '. ' + short;
+                standardSelect.appendChild(option);
+            });
+        }
+
+        function shuffleArray(arr) {
+            for (var i = arr.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+            return arr;
+        }
+
+        function getRandomItems(arr, count) {
+            if (!arr || arr.length === 0) return [];
+            var shuffled = shuffleArray(arr.slice());
+            return shuffled.slice(0, Math.min(count, shuffled.length));
+        }
+
+        function generateQuiz() {
+            var grade = document.getElementById('grade').value;
+            var theme = document.getElementById('themeSelect').value;
+            var standard = document.getElementById('standardSelect').value;
+            
+            if (!grade) { showStatus('Изберете година!', 'error'); return; }
+            if (!theme) { showStatus('Изберете тема!', 'error'); return; }
+            if (!standard) { showStatus('Изберете стандард за оценување!', 'error'); return; }
+            
+            document.getElementById('loadingSpinner').classList.add('show');
+            document.getElementById('quizContainer').classList.remove('show');
+            
+            setTimeout(function() {
+                try {
+                    var gradeText = document.getElementById('grade').selectedOptions[0].text;
+                    
+                    var standardData = QUESTION_BANK_BY_STANDARD[grade][theme][standard];
+                    
+                    if (!standardData) {
+                        showStatus('Нема прашања за избраниот стандард!', 'error');
+                        document.getElementById('loadingSpinner').classList.remove('show');
+                        return;
+                    }
+                    
+                    var mcQuestions = [];
+                    var fillQuestions = [];
+                    var problemQuestions = [];
+                    
+                    var mcBank = standardData.mc || [];
+                    var fillBank = standardData.fill || [];
+                    var probBank = standardData.problem || [];
+                    
+                    for (var i = 0; i < Math.min(5, mcBank.length); i++) {
+                        var q = mcBank[i];
+                        mcQuestions.push({
+                            type: 'mc',
+                            question: q.q,
+                            options: q.opts,
+                            answer: q.answer,
+                            standard: standard
+                        });
+                    }
+                    
+                    for (var i = 0; i < Math.min(5, fillBank.length); i++) {
+                        var q = fillBank[i];
+                        fillQuestions.push({
+                            type: 'fill',
+                            question: q.q,
+                            answer: q.answer,
+                            standard: standard
+                        });
+                    }
+                    
+                    for (var i = 0; i < Math.min(5, probBank.length); i++) {
+                        var q = probBank[i];
+                        problemQuestions.push({
+                            type: 'problem',
+                            question: q,
+                            answer: 'Провери кај наставник',
+                            standard: standard
+                        });
+                    }
+                    
+                    currentQuestions = mcQuestions.concat(fillQuestions).concat(problemQuestions);
+                    
+                    if (currentQuestions.length === 0) {
+                        showStatus('Нема генерирани прашања за овој стандард!', 'error');
+                        document.getElementById('loadingSpinner').classList.remove('show');
+                        return;
+                    }
+                    
+                    quizData = {
+                        grade: gradeText,
+                        theme: theme,
+                        standard: standard,
+                        questions: currentQuestions
+                    };
+                    
+                    displayQuiz(currentQuestions, gradeText, theme, standard);
+                    
+                    document.getElementById('loadingSpinner').classList.remove('show');
+                    document.getElementById('quizContainer').classList.add('show');
+                    document.getElementById('quizContainer').scrollIntoView({ behavior: 'smooth' });
+                    
+                    showStatus('Квизот е успешно генериран! ' + currentQuestions.length + ' прашања.', 'info');
+                } catch(e) {
+                    document.getElementById('loadingSpinner').classList.remove('show');
+                    showStatus('Грешка: ' + e.message, 'error');
+                    console.error(e);
+                }
+            }, 500);
+        }
+
+        function displayQuiz(questions, gradeText, theme, standard) {
+            var container = document.getElementById('quizQuestions');
+            var title = document.getElementById('quizTitle');
+            var info = document.getElementById('quizInfo');
+            var standardDisplay = document.getElementById('standardDisplay');
+            
+            title.textContent = '📋 ' + theme + ' - ' + gradeText;
+            info.textContent = questions.length + ' прашања • ' + new Date().toLocaleDateString('mk-MK');
+            
+            standardDisplay.innerHTML = '<strong>📖 Стандард за оценување:</strong> ' + standard;
+            
+            var html = '';
+            var cyrillicOptions = ['а', 'б', 'в', 'г'];
+            
+            for (var i = 0; i < questions.length; i++) {
+                var q = questions[i];
+                var qNum = i + 1;
+                var typeLabel = '';
+                
+                if (q.type === 'mc') {
+                    typeLabel = '📝 Избор на одговор';
+                    html += '<div class="quiz-question" data-index="' + i + '" data-type="mc" data-answer="' + q.answer + '">';
+                    html += '<div class="q-type">' + typeLabel + '</div>';
+                    html += '<div class="q-text">' + qNum + '. ' + q.question + '</div>';
+                    html += '<div class="options">';
+                    for (var o = 0; o < q.options.length && o < cyrillicOptions.length; o++) {
+                        html += '<div class="option">';
+                        html += '<input type="radio" name="q' + i + '" value="' + o + '" id="q' + i + '_' + o + '">';
+                        html += '<label for="q' + i + '_' + o + '">' + cyrillicOptions[o] + ') ' + q.options[o] + '</label>';
+                        html += '</div>';
+                    }
+                    html += '</div>';
+                    html += '<div class="feedback" id="feedback_' + i + '"></div>';
+                    html += '</div>';
+                } else if (q.type === 'fill') {
+                    typeLabel = '✏️ Дополнување';
+                    html += '<div class="quiz-question" data-index="' + i + '" data-type="fill" data-answer="' + q.answer + '">';
+                    html += '<div class="q-type">' + typeLabel + '</div>';
+                    html += '<div class="q-text">' + qNum + '. ' + q.question + '</div>';
+                    html += '<div><input type="text" class="fill-input" id="fill_' + i + '" placeholder="Внеси одговор..."></div>';
+                    html += '<div class="feedback" id="feedback_' + i + '"></div>';
+                    html += '</div>';
+                } else {
+                    typeLabel = '📐 Задача';
+                    html += '<div class="quiz-question" data-index="' + i + '" data-type="problem">';
+                    html += '<div class="q-type">' + typeLabel + '</div>';
+                    html += '<div class="q-text">' + qNum + '. ' + q.question + '</div>';
+                    html += '<div><textarea style="width:100%;min-height:60px;padding:8px;border:2px solid #dce1e8;border-radius:6px;font-size:14px;margin-top:5px;" placeholder="Внеси го твоето решение..." id="problem_' + i + '"></textarea></div>';
+                    html += '<div class="feedback" id="feedback_' + i + '"></div>';
+                    html += '</div>';
+                }
+            }
+            
+            container.innerHTML = html;
+            document.getElementById('quizResult').classList.remove('show');
+            document.getElementById('submitStatus').className = 'status-message';
+            document.getElementById('submitProgress').classList.remove('show');
+        }
+
+        function checkAnswers() {
+            var questions = document.querySelectorAll('.quiz-question');
+            var correct = 0;
+            var total = questions.length;
+            var mcCount = 0, fillCount = 0, problemCount = 0;
+            
+            for (var i = 0; i < questions.length; i++) {
+                var q = questions[i];
+                var type = q.dataset.type;
+                var feedback = document.getElementById('feedback_' + i);
+                
+                if (type === 'mc') {
+                    mcCount++;
+                    var selected = q.querySelector('input[type="radio"]:checked');
+                    if (selected) {
+                        var answer = parseInt(selected.value);
+                        var correctAnswer = parseInt(q.dataset.answer);
+                        if (answer === correctAnswer) {
+                            correct++;
+                            q.classList.add('correct');
+                            feedback.className = 'feedback show correct';
+                            feedback.textContent = '✅ Точен одговор!';
+                        } else {
+                            q.classList.add('wrong');
+                            feedback.className = 'feedback show wrong';
+                            var opts = q.querySelectorAll('.option');
+                            feedback.textContent = '❌ Неточен одговор. Точниот одговор е: ' + opts[correctAnswer].textContent.trim();
+                        }
+                    } else {
+                        q.classList.add('wrong');
+                        feedback.className = 'feedback show wrong';
+                        feedback.textContent = '⚠️ Ве молиме изберете одговор.';
+                    }
+                } else if (type === 'fill') {
+                    fillCount++;
+                    var input = document.getElementById('fill_' + i);
+                    if (input && input.value.trim()) {
+                        var userAnswer = input.value.trim().toLowerCase();
+                        var correctAnswer = q.dataset.answer.toLowerCase();
+                        if (userAnswer === correctAnswer || 
+                            userAnswer.replace(/\s/g, '') === correctAnswer.replace(/\s/g, '')) {
+                            correct++;
+                            q.classList.add('correct');
+                            feedback.className = 'feedback show correct';
+                            feedback.textContent = '✅ Точен одговор!';
+                        } else {
+                            q.classList.add('wrong');
+                            feedback.className = 'feedback show wrong';
+                            feedback.textContent = '❌ Неточен одговор. Точниот одговор е: ' + q.dataset.answer;
+                        }
+                    } else {
+                        q.classList.add('wrong');
+                        feedback.className = 'feedback show wrong';
+                        feedback.textContent = '⚠️ Ве молиме внесете одговор.';
+                    }
+                } else {
+                    problemCount++;
+                    q.classList.add('correct');
+                    feedback.className = 'feedback show correct';
+                    feedback.textContent = '📝 Решението проверете го со наставникот.';
+                    correct++;
+                }
+            }
+            
+            var resultDiv = document.getElementById('quizResult');
+            var percentage = Math.round((correct / total) * 100);
+            var grade = '';
+            var gradeClass = '';
+            var gradeNumber = 1;
+            
+            if (percentage >= 90) { grade = 'Одличен (5) ⭐'; gradeClass = 'grade-excellent'; gradeNumber = 5; }
+            else if (percentage >= 75) { grade = 'Многу добар (4) 👍'; gradeClass = 'grade-good'; gradeNumber = 4; }
+            else if (percentage >= 60) { grade = 'Добар (3) 📘'; gradeClass = 'grade-good'; gradeNumber = 3; }
+            else if (percentage >= 45) { grade = 'Доволен (2) 📗'; gradeClass = 'grade-poor'; gradeNumber = 2; }
+            else { grade = 'Недоволен (1) 📕'; gradeClass = 'grade-poor'; gradeNumber = 1; }
+            
+            resultDiv.innerHTML = '<div class="score">' + correct + ' / ' + total + '</div>' +
+                                  '<div class="grade ' + gradeClass + '">' + grade + ' (' + percentage + '%)</div>' +
+                                  '<div style="font-size:14px;color:#7f8c8d;margin-top:10px;">' +
+                                  '📝 Избор: ' + mcCount + ' | ✏️ Дополнување: ' + fillCount + ' | 📐 Задачи: ' + problemCount +
+                                  '</div>';
+            resultDiv.classList.add('show');
+            
+            // Зачувај ги резултатите за испраќање
+            quizResults = {
+                correct: correct,
+                total: total,
+                percentage: percentage,
+                gradeText: grade,
+                gradeNumber: gradeNumber,
+                mcCount: mcCount,
+                fillCount: fillCount,
+                problemCount: problemCount
+            };
+        }
+
+        function resetQuiz() {
+            var questions = document.querySelectorAll('.quiz-question');
+            for (var i = 0; i < questions.length; i++) {
+                var q = questions[i];
+                var type = q.dataset.type;
+                q.classList.remove('correct', 'wrong');
+                
+                if (type === 'mc') {
+                    var radios = q.querySelectorAll('input[type="radio"]');
+                    for (var r = 0; r < radios.length; r++) {
+                        radios[r].checked = false;
+                    }
+                } else if (type === 'fill') {
+                    var input = document.getElementById('fill_' + i);
+                    if (input) input.value = '';
+                } else {
+                    var textarea = document.getElementById('problem_' + i);
+                    if (textarea) textarea.value = '';
+                }
+                
+                var feedback = document.getElementById('feedback_' + i);
+                if (feedback) {
+                    feedback.className = 'feedback';
+                    feedback.textContent = '';
+                }
+            }
+            document.getElementById('quizResult').classList.remove('show');
+            document.getElementById('submitStatus').className = 'status-message';
+            document.getElementById('submitProgress').classList.remove('show');
+            showStatus('Квизот е ресетиран!', 'info');
+        }
+
+        // ================================================================
+        //  ИСПРАЌАЊЕ НА РЕЗУЛТАТИ ВО GOOGLE SHEETS
+        // ================================================================
+        function submitResults() {
+            var studentName = document.getElementById('studentName').value.trim();
+            var studentClass = document.getElementById('studentClass').value.trim();
+            var studentGrade = document.getElementById('studentGrade').value;
+            var studentGroup = document.getElementById('studentGroup').value;
+            
+            if (!studentName) {
+                showStatus('Ве молиме внесете го вашето име!', 'error');
+                return;
+            }
+            
+            if (!quizResults.total) {
+                showStatus('Прво проверете ги одговорите!', 'error');
+                return;
+            }
+            
+            var data = {
+                student: studentName,
+                class: studentClass || "-",
+                grade: studentGrade,
+                group: studentGroup,
+                theme: quizData.theme || "-",
+                standard: quizData.standard || "-",
+                total: quizResults.total,
+                correct: quizResults.correct,
+                percentage: quizResults.percentage,
+                gradeText: quizResults.gradeText,
+                gradeNumber: quizResults.gradeNumber
+            };
+            
+            // Прикажи прогресивна лента
+            var progressDiv = document.getElementById('submitProgress');
+            var progressFill = document.getElementById('progressFill');
+            progressDiv.classList.add('show');
+            progressFill.style.width = '0%';
+            
+            var submitStatus = document.getElementById('submitStatus');
+            submitStatus.className = 'status-message info';
+            submitStatus.textContent = '⏳ Испраќање на резултатите...';
+            
+            // Симулација на прогресивна лента
+            var progress = 0;
+            var progressInterval = setInterval(function() {
+                progress += 10;
+                if (progress <= 90) {
+                    progressFill.style.width = progress + '%';
+                }
+            }, 200);
+            
+            // Испрати ги податоците
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(function(response) {
+                clearInterval(progressInterval);
+                progressFill.style.width = '100%';
+                
+                setTimeout(function() {
+                    progressDiv.classList.remove('show');
+                    submitStatus.className = 'status-message success';
+                    submitStatus.textContent = '✅ Резултатите се успешно зачувани!';
+                    showStatus('✅ Резултатите се зачувани! Наставникот може да ги прегледа.', 'success');
+                }, 500);
+            })
+            .catch(function(error) {
+                clearInterval(progressInterval);
+                progressDiv.classList.remove('show');
+                submitStatus.className = 'status-message error';
+                submitStatus.textContent = '❌ Грешка при испраќање: ' + error.message;
+                showStatus('❌ Грешка при испраќање: ' + error.message, 'error');
+            });
+        }
+
+        // ================================================================
+        //  СПОДЕЛУВАЊЕ И ПЕЧАТЕЊЕ
+        // ================================================================
+        function shareQuiz() {
+            if (currentQuestions.length === 0) {
+                showStatus('Прво генерирајте квиз!', 'error');
+                return;
+            }
+            
+            var shareData = {
+                grade: quizData.grade,
+                theme: quizData.theme,
+                standard: quizData.standard,
+                questions: quizData.questions.map(function(q) {
+                    return {
+                        type: q.type,
+                        question: q.question,
+                        options: q.options || null,
+                        answer: q.answer,
+                        standard: q.standard
+                    };
+                })
+            };
+            
+            try {
+                var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
+                var shareUrl = window.location.href.split('?')[0] + '?quiz=' + encoded;
+                
+                var input = document.createElement('input');
+                input.value = shareUrl;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                
+                showStatus('📤 Линкот за квизот е копиран! Споделете го со учениците.', 'info');
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Математика квиз - ' + quizData.theme,
+                        text: 'Реши го квизот по математика!',
+                        url: shareUrl
+                    }).catch(function() {});
+                }
+            } catch(e) {
+                showStatus('Грешка при споделување: ' + e.message, 'error');
+            }
+        }
+
+        function printQuiz() {
+            if (currentQuestions.length === 0) {
+                showStatus('Прво генерирајте квиз!', 'error');
+                return;
+            }
+            window.print();
+        }
+
+        function resetForm() {
+            document.getElementById('grade').value = '';
+            document.getElementById('themeSelect').innerHTML = '<option value="">-- Избери --</option>';
+            document.getElementById('standardSelect').innerHTML = '<option value="">-- Избери --</option>';
+            document.getElementById('quizContainer').classList.remove('show');
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentClass').value = '';
+            currentQuestions = [];
+            quizData = {};
+            currentStandards = [];
+            quizResults = {};
+            document.getElementById('submitStatus').className = 'status-message';
+            document.getElementById('submitProgress').classList.remove('show');
+            showStatus('Формата е ресетирана. Генерирајте нов квиз!', 'info');
+        }
+
+        // ================================================================
+        //  ИНИЦИЈАЛИЗАЦИЈА
+        // ================================================================
+        document.getElementById('grade').addEventListener('change', function() {
+            initThemes();
+        });
+        document.getElementById('themeSelect').addEventListener('change', function() {
+            initStandards();
+        });
+        initThemes();
+
+        // Автоматско вчитување на квиз од URL
+        (function loadQuizFromURL() {
+            var params = new URLSearchParams(window.location.search);
+            var quizDataEncoded = params.get('quiz');
+            if (quizDataEncoded) {
+                try {
+                    var decoded = JSON.parse(decodeURIComponent(escape(atob(quizDataEncoded))));
+                    if (decoded && decoded.questions) {
+                        var gradeSelect = document.getElementById('grade');
+                        var themeSelect = document.getElementById('themeSelect');
+                        var standardSelect = document.getElementById('standardSelect');
+                        
+                        var gradeKey = Object.keys(QUESTION_BANK_BY_STANDARD).find(function(g) {
+                            return QUESTION_BANK_BY_STANDARD[g] && QUESTION_BANK_BY_STANDARD[g][decoded.theme];
+                        });
+                        
+                        if (gradeKey) {
+                            gradeSelect.value = gradeKey;
+                            initThemes();
+                            setTimeout(function() {
+                                themeSelect.value = decoded.theme;
+                                initStandards();
+                                setTimeout(function() {
+                                    standardSelect.value = decoded.standard;
+                                    currentQuestions = decoded.questions;
+                                    quizData = decoded;
+                                    displayQuiz(currentQuestions, decoded.grade || gradeKey, decoded.theme, decoded.standard);
+                                    document.getElementById('quizContainer').classList.add('show');
+                                    showStatus('📚 Квизот е вчитан! Реши ги прашањата.', 'info');
+                                }, 300);
+                            }, 300);
+                        }
+                    }
+                } catch(e) {
+                    console.log('Грешка при вчитување на квиз од URL:', e);
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
